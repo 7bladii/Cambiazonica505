@@ -24964,7 +24964,7 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _app = require("firebase/app");
 var _auth = require("firebase/auth");
 var _firestore = require("firebase/firestore");
-var _s = $RefreshSig$(), _s1 = $RefreshSig$(), _s2 = $RefreshSig$(), _s3 = $RefreshSig$(), _s4 = $RefreshSig$(), _s5 = $RefreshSig$(), _s6 = $RefreshSig$(), _s7 = $RefreshSig$(), _s8 = $RefreshSig$(), _s9 = $RefreshSig$(), _s10 = $RefreshSig$(), _s11 = $RefreshSig$();
+var _s = $RefreshSig$(), _s1 = $RefreshSig$(), _s2 = $RefreshSig$(), _s3 = $RefreshSig$(), _s4 = $RefreshSig$(), _s5 = $RefreshSig$(), _s6 = $RefreshSig$(), _s7 = $RefreshSig$(), _s8 = $RefreshSig$(), _s9 = $RefreshSig$();
 // Contexto para Firebase y usuario
 const FirebaseContext = /*#__PURE__*/ (0, _react.createContext)(null);
 // Lista de ciudades de Nicaragua (duplicados eliminados)
@@ -25106,73 +25106,72 @@ const productCategories = [
     "Herramientas",
     "Otros"
 ];
-// Componente para mostrar notificaciones simuladas
-const NotificationBanner = ({ message, type, onClose })=>{
-    _s();
-    const bgColor = type === 'success' ? 'bg-green-500' : 'bg-blue-500';
-    const textColor = 'text-white';
-    (0, _react.useEffect)(()=>{
-        const timer = setTimeout(()=>{
-            onClose();
-        }, 3000); // La notificación desaparece después de 3 segundos
-        return ()=>clearTimeout(timer);
-    }, [
-        onClose
-    ]);
+// Componente para mostrar mensajes/notificaciones al usuario
+const MessageBox = ({ message, type, onClose })=>{
+    if (!message) return null; // No renderizar si no hay mensaje
+    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500'; // Color de fondo según el tipo
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: `fixed top-0 left-0 right-0 p-3 text-center ${bgColor} ${textColor} text-sm sm:text-base font-semibold shadow-lg z-50 transition-transform duration-300 ease-out transform translate-y-0`,
+        className: `fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white ${bgColor} z-50`,
         children: [
-            message,
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                onClick: onClose,
-                className: "ml-4 text-white font-bold",
-                children: "\xd7"
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
+                children: message
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 79,
+                lineNumber: 72,
                 columnNumber: 7
-            }, undefined)
+            }, undefined),
+            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                onClick: onClose,
+                className: "ml-4 font-bold",
+                children: "X"
+            }, void 0, false, {
+                fileName: "src/App.js",
+                lineNumber: 73,
+                columnNumber: 7
+            }, undefined),
+            " "
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 77,
+        lineNumber: 71,
         columnNumber: 5
     }, undefined);
 };
-_s(NotificationBanner, "OD7bBpZva5O2jO+Puf00hKivP7c=");
-_c = NotificationBanner;
+_c = MessageBox;
 // Componente principal de la aplicación
-const App = ()=>{
-    _s1();
+function App() {
+    _s();
+    var _s1 = $RefreshSig$(), _s2 = $RefreshSig$();
+    // Estados para la inicialización de Firebase
     const [appInitialized, setAppInitialized] = (0, _react.useState)(false);
     const [user, setUser] = (0, _react.useState)(null);
     const [db, setDb] = (0, _react.useState)(null);
     const [auth, setAuth] = (0, _react.useState)(null);
     const [userId, setUserId] = (0, _react.useState)(null);
-    const [appId, setAppId] = (0, _react.useState)(null); // Estado para almacenar el appId
-    // Estado para la notificación simulada
-    const [notification, setNotification] = (0, _react.useState)({
-        show: false,
-        message: '',
-        type: ''
-    });
-    const showSimulatedNotification = (message, type = 'info')=>{
-        setNotification({
-            show: true,
-            message,
-            type
-        });
-    };
-    const closeSimulatedNotification = ()=>{
-        setNotification({
-            ...notification,
-            show: false
-        });
-    };
+    const [appId, setAppId] = (0, _react.useState)(null);
+    // Estados para la navegación y visibilidad de modales
+    const [activeTab, setActiveTab] = (0, _react.useState)('productos');
+    const [showAuthForm, setShowAuthForm] = (0, _react.useState)(false);
+    const [isRegistering, setIsRegistering] = (0, _react.useState)(false);
+    const [showProfile, setShowProfile] = (0, _react.useState)(false);
+    const [userProfile, setUserProfile] = (0, _react.useState)(null);
+    const [editingProfile, setEditingProfile] = (0, _react.useState)(false);
+    const [message, setMessage] = (0, _react.useState)('');
+    const [messageType, setMessageType] = (0, _react.useState)('');
+    // Estados para la visualización de reseñas de otros usuarios
+    const [showReviewsDisplay, setShowReviewsDisplay] = (0, _react.useState)(false);
+    const [reviewsTargetUserId, setReviewsTargetUserId] = (0, _react.useState)(null);
+    // Estados para los campos del perfil del usuario (usados en registro y edición)
+    const [name, setName] = (0, _react.useState)('');
+    const [location, setLocation] = (0, _react.useState)('');
+    const [photoURL, setPhotoURL] = (0, _react.useState)('');
+    const [role, setRole] = (0, _react.useState)('buyer'); // Rol por defecto
+    // Efecto para inicializar Firebase y manejar el estado de autenticación
     (0, _react.useEffect)(()=>{
         const initializeFirebase = async ()=>{
             try {
-                // Tu configuración de Firebase real (asegúrate de que estos valores sean correctos de tu consola Firebase)
+                // Tu configuración de Firebase real
+                // ¡¡¡IMPORTANTE!!! Reemplaza estos valores con los de tu propio proyecto de Firebase.
                 const yourFirebaseConfig = {
                     apiKey: "AIzaSyD93M8YLAlaJ4k03CZbh9PBQMbFyUOGPPM",
                     authDomain: "cabiazo2.firebaseapp.com",
@@ -25194,13 +25193,13 @@ const App = ()=>{
                     'messagingSenderId',
                     'appId'
                 ];
-                const isConfigComplete = requiredConfigKeys.every((key)=>firebaseConfigToUse[key] && !firebaseConfigToUse[key].includes("TU_API_KEY_DE_FIREBASE") && // Evitar marcadores de posición
-                    !firebaseConfigToUse[key].includes("YOUR_") // Evitar otros marcadores de posición comunes
+                const isConfigComplete = requiredConfigKeys.every((key)=>firebaseConfigToUse[key] && !firebaseConfigToUse[key].includes("TU_") // Evitar marcadores de posición
                 );
                 if (!isConfigComplete) {
                     console.error("Error: La configuraci\xf3n de Firebase est\xe1 incompleta o contiene marcadores de posici\xf3n. Por favor, aseg\xfarate de reemplazar todos los valores con tus credenciales reales de Firebase.");
-                    setAppInitialized(true); // Marcar como inicializada para mostrar el spinner y el error en la consola
-                    return; // Detener la inicialización de Firebase
+                    // No inicializar Firebase si la configuración es incorrecta
+                    setAppInitialized(true); // Marcar como inicializada para evitar el spinner infinito
+                    return;
                 }
                 // Determinar el appId a usar:
                 // Si __app_id está definido (entorno Canvas), úsalo.
@@ -25211,7 +25210,7 @@ const App = ()=>{
                 // Si __initial_auth_token está definido (entorno Canvas), úsalo.
                 // De lo contrario, no uses ningún token (para signInAnonymously).
                 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                // Inicializar la aplicación Firebase con la configuración determinada
+                // Inicializar la aplicación Firebase
                 const app = (0, _app.initializeApp)(firebaseConfigToUse);
                 const authInstance = (0, _auth.getAuth)(app);
                 const dbInstance = (0, _firestore.getFirestore)(app);
@@ -25228,7 +25227,8 @@ const App = ()=>{
                         console.log("Usuario autenticado:", currentUser.uid);
                     } else {
                         setUser(null);
-                        const newRandomUserId = crypto.randomUUID(); // Generar un ID aleatorio si no hay usuario
+                        // Generar un ID aleatorio si no hay usuario autenticado (para mantener la funcionalidad de Firestore)
+                        const newRandomUserId = crypto.randomUUID();
                         setUserId(newRandomUserId);
                         console.log("Usuario no autenticado. Usando ID aleatorio:", newRandomUserId);
                     }
@@ -25238,11 +25238,879 @@ const App = ()=>{
                 return ()=>unsubscribe();
             } catch (error) {
                 console.error("Error al inicializar Firebase:", error);
-                setAppInitialized(true); // Marcar como inicializada incluso si hay error para mostrar el fallback
+                showMessage("Error al inicializar la aplicaci\xf3n. Revisa la consola para m\xe1s detalles.", "error");
+                setAppInitialized(true); // Marcar como inicializada incluso si hay error para detener el spinner
             }
         };
         initializeFirebase();
     }, []); // Dependencias vacías para que se ejecute solo una vez al montar
+    // Efecto para cargar el perfil del usuario cuando cambia el usuario autenticado o Firebase está listo
+    (0, _react.useEffect)(()=>{
+        const fetchUserProfile = async ()=>{
+            if (user && userId && db && appId) try {
+                // Ruta del documento del perfil del usuario actual en Firestore
+                const docRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${user.uid}/profiles`, user.uid);
+                const docSnap = await (0, _firestore.getDoc)(docRef);
+                if (docSnap.exists()) {
+                    // Si el perfil existe, cargar sus datos
+                    setUserProfile(docSnap.data());
+                    setName(docSnap.data().name || '');
+                    setLocation(docSnap.data().location || '');
+                    setPhotoURL(docSnap.data().photoURL || '');
+                    setRole(docSnap.data().role || 'buyer');
+                } else {
+                    // Si no existe, establecer valores predeterminados y crear el perfil
+                    const defaultProfile = {
+                        name: user.displayName || '',
+                        email: user.email || '',
+                        location: '',
+                        photoURL: user.photoURL || 'https://placehold.co/100x100/aabbcc/ffffff?text=User',
+                        role: 'buyer'
+                    };
+                    await (0, _firestore.setDoc)(docRef, defaultProfile); // Crear el documento del perfil
+                    setUserProfile(defaultProfile);
+                    setName(defaultProfile.name);
+                    setLocation(defaultProfile.location);
+                    setPhotoURL(defaultProfile.photoURL);
+                    setRole(defaultProfile.role);
+                }
+            } catch (error) {
+                console.error("Error al cargar el perfil del usuario:", error);
+                showMessage("Error al cargar el perfil del usuario.", "error");
+            }
+            else {
+                // Limpiar el perfil si no hay usuario autenticado o Firebase no está listo
+                setUserProfile(null);
+                setName('');
+                setLocation('');
+                setPhotoURL('');
+                setRole('buyer');
+            }
+        };
+        if (appInitialized) fetchUserProfile();
+    }, [
+        user,
+        userId,
+        db,
+        appId,
+        appInitialized
+    ]); // Dependencias del efecto
+    // Función para mostrar mensajes temporales
+    const showMessage = (msg, type)=>{
+        setMessage(msg);
+        setMessageType(type);
+        setTimeout(()=>setMessage(''), 5000); // El mensaje desaparece después de 5 segundos
+    };
+    // Manejador para el registro o inicio de sesión con email y contraseña
+    const handleAuthAction = async (email, password)=>{
+        try {
+            if (isRegistering) {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const newUser = userCredential.user;
+                // Crear el perfil inicial en Firestore después del registro exitoso
+                await (0, _firestore.setDoc)((0, _firestore.doc)(db, `artifacts/${appId}/users/${newUser.uid}/profiles`, newUser.uid), {
+                    name: name || newUser.displayName || 'Nuevo Usuario',
+                    email: newUser.email,
+                    location: location || '',
+                    photoURL: photoURL || newUser.photoURL || 'https://placehold.co/100x100/aabbcc/ffffff?text=User',
+                    role: role
+                });
+                showMessage("Registro exitoso. \xa1Bienvenido!", "success");
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage("Inicio de sesi\xf3n exitoso.", "success");
+            }
+            setShowAuthForm(false); // Cerrar el formulario de autenticación
+        } catch (error) {
+            console.error("Error de autenticaci\xf3n:", error);
+            showMessage(`Error de autenticaci\xf3n: ${error.message}`, "error");
+        }
+    };
+    // Manejador para el inicio de sesión con Google
+    const handleGoogleSignIn = async ()=>{
+        try {
+            const provider = new (0, _auth.GoogleAuthProvider)();
+            const result = await (0, _auth.signInWithPopup)(auth, provider);
+            const newUser = result.user;
+            // Verificar si el perfil existe, si no, crearlo para los inicios de sesión de Google
+            const docRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${newUser.uid}/profiles`, newUser.uid);
+            const docSnap = await (0, _firestore.getDoc)(docRef);
+            if (!docSnap.exists()) await (0, _firestore.setDoc)((0, _firestore.doc)(db, `artifacts/${appId}/users/${newUser.uid}/profiles`, newUser.uid), {
+                name: newUser.displayName || 'Usuario Google',
+                email: newUser.email,
+                location: '',
+                photoURL: newUser.photoURL || 'https://placehold.co/100x100/aabbcc/ffffff?text=User',
+                role: 'buyer' // Rol por defecto para nuevos inicios de sesión con Google
+            });
+            showMessage("Inicio de sesi\xf3n con Google exitoso.", "success");
+            setShowAuthForm(false); // Cerrar el formulario de autenticación
+        } catch (error) {
+            console.error("Error con Google Sign-In:", error);
+            showMessage(`Error con Google Sign-In: ${error.message}`, "error");
+        }
+    };
+    // Manejador para cerrar sesión
+    const handleSignOut = async ()=>{
+        try {
+            await (0, _auth.signOut)(auth);
+            showMessage("Sesi\xf3n cerrada correctamente.", "success");
+            setShowProfile(false); // Cerrar la vista de perfil al cerrar sesión
+        } catch (error) {
+            console.error("Error al cerrar sesi\xf3n:", error);
+            showMessage(`Error al cerrar sesi\xf3n: ${error.message}`, "error");
+        }
+    };
+    // Manejador para guardar los cambios del perfil
+    const handleSaveProfile = async ()=>{
+        if (!user || !db || !appId) return; // Asegurarse de que haya un user autenticado y Firebase esté listo
+        try {
+            const docRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${user.uid}/profiles`, user.uid);
+            await (0, _firestore.setDoc)(docRef, {
+                name: name,
+                email: user.email,
+                location: location,
+                photoURL: photoURL,
+                role: role
+            }, {
+                merge: true
+            }); // Usar merge para actualizar campos existentes sin sobrescribir otros
+            setUserProfile({
+                name,
+                email: user.email,
+                location,
+                photoURL,
+                role
+            });
+            setEditingProfile(false); // Salir del modo de edición
+            showMessage("Perfil actualizado exitosamente.", "success");
+        } catch (error) {
+            console.error("Error al guardar el perfil:", error);
+            showMessage(`Error al guardar el perfil: ${error.message}`, "error");
+        }
+    };
+    // Manejador para ver las reseñas de un usuario específico
+    const handleViewReviews = (targetUserId)=>{
+        setReviewsTargetUserId(targetUserId);
+        setShowReviewsDisplay(true);
+    };
+    // Estados para el chat y el formulario de reseñas
+    const [showChat, setShowChat] = (0, _react.useState)(false);
+    const [chatRecipientId, setChatRecipientId] = (0, _react.useState)(null);
+    const [chatProductName, setChatProductName] = (0, _react.useState)('');
+    const [showReviewForm, setShowReviewForm] = (0, _react.useState)(false);
+    const [reviewTargetSellerId, setReviewTargetSellerId] = (0, _react.useState)(null);
+    const [reviewTargetProductId, setReviewTargetProductId] = (0, _react.useState)(null);
+    // Manejador para contactar a un vendedor (abre el chat)
+    const handleContactSeller = (sellerId, productName)=>{
+        setChatRecipientId(sellerId);
+        setChatProductName(productName);
+        setShowChat(true);
+    };
+    // Manejador para dejar una reseña (abre el formulario de reseña)
+    const handleLeaveReview = (sellerId, productId)=>{
+        setReviewTargetSellerId(sellerId);
+        setReviewTargetProductId(productId);
+        setShowReviewForm(true);
+    };
+    // Componente del formulario de autenticación (Registro/Inicio de Sesión)
+    const AuthForm = ()=>{
+        _s1();
+        const [email, setEmail] = (0, _react.useState)('');
+        const [password, setPassword] = (0, _react.useState)('');
+        const handleSubmit = (e)=>{
+            e.preventDefault();
+            handleAuthAction(email, password);
+        };
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-40",
+            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "bg-white p-8 rounded-lg shadow-xl w-96 max-w-full",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                        className: "text-2xl font-bold mb-6 text-center text-blue-700",
+                        children: isRegistering ? 'Registrarse' : "Iniciar Sesi\xf3n"
+                    }, void 0, false, {
+                        fileName: "src/App.js",
+                        lineNumber: 384,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("form", {
+                        onSubmit: handleSubmit,
+                        className: "space-y-4",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "email",
+                                        children: "Correo Electr\xf3nico"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 389,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                        type: "email",
+                                        id: "email",
+                                        className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: email,
+                                        onChange: (e)=>setEmail(e.target.value),
+                                        required: true
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 392,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 388,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "password",
+                                        children: "Contrase\xf1a"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 402,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                        type: "password",
+                                        id: "password",
+                                        className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: password,
+                                        onChange: (e)=>setPassword(e.target.value),
+                                        required: true
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 405,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 401,
+                                columnNumber: 13
+                            }, this),
+                            isRegistering && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                                className: "block text-gray-700 text-sm font-bold mb-2",
+                                                htmlFor: "name",
+                                                children: "Nombre"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 417,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                                type: "text",
+                                                id: "name",
+                                                className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                                value: name,
+                                                onChange: (e)=>setName(e.target.value)
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 420,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 416,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                                className: "block text-gray-700 text-sm font-bold mb-2",
+                                                htmlFor: "location",
+                                                children: "Ubicaci\xf3n"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 429,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                                type: "text",
+                                                id: "location",
+                                                className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                                value: location,
+                                                onChange: (e)=>setLocation(e.target.value)
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 432,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 428,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                                className: "block text-gray-700 text-sm font-bold mb-2",
+                                                htmlFor: "role",
+                                                children: "Rol"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 441,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
+                                                id: "role",
+                                                className: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                                value: role,
+                                                onChange: (e)=>setRole(e.target.value),
+                                                children: [
+                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                                        value: "buyer",
+                                                        children: "Comprador"
+                                                    }, void 0, false, {
+                                                        fileName: "src/App.js",
+                                                        lineNumber: 450,
+                                                        columnNumber: 21
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                                        value: "seller",
+                                                        children: "Vendedor"
+                                                    }, void 0, false, {
+                                                        fileName: "src/App.js",
+                                                        lineNumber: 451,
+                                                        columnNumber: 21
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 444,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 440,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                className: "flex items-center justify-between mt-6",
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        type: "submit",
+                                        className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                                        children: isRegistering ? 'Registrarse' : "Iniciar Sesi\xf3n"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 457,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        type: "button",
+                                        onClick: ()=>setIsRegistering(!isRegistering),
+                                        className: "inline-block align-baseline font-bold text-sm text-blue-600 hover:text-blue-800",
+                                        children: isRegistering ? 'Ya tengo una cuenta' : 'Crear una cuenta'
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 463,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 456,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/App.js",
+                        lineNumber: 387,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "mt-6 text-center",
+                        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                            onClick: handleGoogleSignIn,
+                            className: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200 w-full flex items-center justify-center",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("svg", {
+                                    className: "w-5 h-5 mr-2",
+                                    viewBox: "0 0 24 24",
+                                    fill: "currentColor",
+                                    children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("path", {
+                                        d: "M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.017-6.806 5.017-4.119 0-7.43-3.328-7.43-7.464 0-4.137 3.311-7.465 7.43-7.465 2.227 0 3.765.949 4.65 1.836l3.141-3.141c-1.705-1.607-3.98-2.607-7.791-2.607C6.012 2.525 2 6.538 2 11.525c0 4.987 4.012 9 10.24 9 5.736 0 9.42-4.147 9.42-8.795 0-.668-.073-1.3-.18-1.91z"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 478,
+                                        columnNumber: 17
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 477,
+                                    columnNumber: 15
+                                }, this),
+                                "Iniciar sesi\xf3n con Google"
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/App.js",
+                            lineNumber: 473,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "src/App.js",
+                        lineNumber: 472,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        onClick: ()=>setShowAuthForm(false),
+                        className: "mt-4 w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                        children: "Cerrar"
+                    }, void 0, false, {
+                        fileName: "src/App.js",
+                        lineNumber: 483,
+                        columnNumber: 11
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/App.js",
+                lineNumber: 383,
+                columnNumber: 9
+            }, this)
+        }, void 0, false, {
+            fileName: "src/App.js",
+            lineNumber: 382,
+            columnNumber: 7
+        }, this);
+    };
+    _s1(AuthForm, "TSZhDBNy8CmbxXgprY/vvMmTG1Q=");
+    // Componente para la vista del perfil del usuario
+    const ProfileView = ()=>{
+        _s2();
+        if (!userProfile) return null; // No renderizar si no hay perfil
+        const [receivedReviews, setReceivedReviews] = (0, _react.useState)([]);
+        const [averageRating, setAverageRating] = (0, _react.useState)(0);
+        // Efecto para obtener las reseñas recibidas por el usuario actual
+        (0, _react.useEffect)(()=>{
+            if (!db || !user || !appId) return;
+            const reviewsCollectionRef = (0, _firestore.collection)(db, `artifacts/${appId}/users/${user.uid}/reviews`);
+            const q = (0, _firestore.query)(reviewsCollectionRef, (0, _firestore.orderBy)('timestamp', 'desc')); // Ordenar por fecha descendente
+            const unsubscribe = (0, _firestore.onSnapshot)(q, (snapshot)=>{
+                const reviewsList = snapshot.docs.map((doc)=>({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                setReceivedReviews(reviewsList);
+                if (reviewsList.length > 0) {
+                    const totalRating = reviewsList.reduce((sum, review)=>sum + review.rating, 0);
+                    setAverageRating((totalRating / reviewsList.length).toFixed(1)); // Calcular promedio
+                } else setAverageRating(0);
+            }, (error)=>{
+                console.error("Error al obtener rese\xf1as recibidas:", error);
+            });
+            return ()=>unsubscribe(); // Limpiar el listener al desmontar
+        }, [
+            db,
+            user,
+            appId
+        ]);
+        return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-40",
+            children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                className: "bg-white p-8 rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-y-auto max-h-[90vh]",
+                children: [
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                        className: "text-2xl font-bold mb-6 text-center text-blue-700",
+                        children: "Perfil del Usuario"
+                    }, void 0, false, {
+                        fileName: "src/App.js",
+                        lineNumber: 532,
+                        columnNumber: 11
+                    }, this),
+                    !editingProfile ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "space-y-4 text-center",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("img", {
+                                src: userProfile.photoURL || 'https://placehold.co/100x100/aabbcc/ffffff?text=User',
+                                alt: "Foto de perfil",
+                                className: "w-24 h-24 rounded-full mx-auto object-cover border-2 border-blue-500",
+                                onError: (e)=>{
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://placehold.co/100x100/aabbcc/ffffff?text=User';
+                                }
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 535,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                className: "text-lg font-semibold",
+                                children: userProfile.name
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 541,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                className: "text-gray-600",
+                                children: [
+                                    "Email: ",
+                                    userProfile.email
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 542,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                className: "text-gray-600",
+                                children: [
+                                    "Ubicaci\xf3n: ",
+                                    userProfile.location || 'No especificada'
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 543,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                className: "text-gray-600",
+                                children: [
+                                    "Rol: ",
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
+                                        className: "font-bold capitalize",
+                                        children: userProfile.role
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 544,
+                                        columnNumber: 49
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 544,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                className: "text-gray-600",
+                                children: [
+                                    "ID de Usuario: ",
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("span", {
+                                        className: "font-mono text-sm",
+                                        children: user.uid
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 545,
+                                        columnNumber: 59
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 545,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                className: "mt-6",
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                                        className: "text-xl font-bold text-gray-800 mb-2",
+                                        children: "Rese\xf1as Recibidas"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 548,
+                                        columnNumber: 17
+                                    }, this),
+                                    receivedReviews.length > 0 ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                                className: "text-lg font-semibold text-gray-700 mb-2",
+                                                children: [
+                                                    "Calificaci\xf3n Promedio: ",
+                                                    averageRating,
+                                                    " / 5"
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 551,
+                                                columnNumber: 21
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                                className: "space-y-3 max-h-48 overflow-y-auto p-2 border rounded-lg bg-gray-50",
+                                                children: receivedReviews.map((review)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                                        className: "bg-white p-3 rounded-lg shadow-sm border-l-4 border-purple-400 text-left",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                                                className: "font-bold text-purple-700",
+                                                                children: [
+                                                                    "Calificaci\xf3n: ",
+                                                                    review.rating,
+                                                                    " / 5"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "src/App.js",
+                                                                lineNumber: 555,
+                                                                columnNumber: 27
+                                                            }, this),
+                                                            review.comment && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                                                className: "text-gray-700 italic",
+                                                                children: [
+                                                                    '"',
+                                                                    review.comment,
+                                                                    '"'
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "src/App.js",
+                                                                lineNumber: 556,
+                                                                columnNumber: 46
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                                                className: "text-xs text-gray-500 mt-1",
+                                                                children: [
+                                                                    "Por: ",
+                                                                    review.reviewerId.substring(0, 8),
+                                                                    "... el ",
+                                                                    new Date(review.timestamp).toLocaleDateString()
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "src/App.js",
+                                                                lineNumber: 557,
+                                                                columnNumber: 27
+                                                            }, this)
+                                                        ]
+                                                    }, review.id, true, {
+                                                        fileName: "src/App.js",
+                                                        lineNumber: 554,
+                                                        columnNumber: 25
+                                                    }, this))
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 552,
+                                                columnNumber: 21
+                                            }, this)
+                                        ]
+                                    }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        className: "text-gray-600 italic",
+                                        children: "A\xfan no has recibido rese\xf1as."
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 565,
+                                        columnNumber: 19
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 547,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setEditingProfile(true),
+                                className: "mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                                children: "Editar Perfil"
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 569,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setShowProfile(false),
+                                className: "mt-4 w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                                children: "Cerrar"
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 575,
+                                columnNumber: 15
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/App.js",
+                        lineNumber: 534,
+                        columnNumber: 13
+                    }, this) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "space-y-4",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "editName",
+                                        children: "Nombre"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 585,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                        type: "text",
+                                        id: "editName",
+                                        className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: name,
+                                        onChange: (e)=>setName(e.target.value)
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 588,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 584,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "editLocation",
+                                        children: "Ubicaci\xf3n"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 597,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                        type: "text",
+                                        id: "editLocation",
+                                        className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: location,
+                                        onChange: (e)=>setLocation(e.target.value)
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 600,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 596,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "editPhotoURL",
+                                        children: "URL de Foto de Perfil"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 609,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                                        type: "url",
+                                        id: "editPhotoURL",
+                                        className: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: photoURL,
+                                        onChange: (e)=>setPhotoURL(e.target.value)
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 612,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 608,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
+                                        className: "block text-gray-700 text-sm font-bold mb-2",
+                                        htmlFor: "editRole",
+                                        children: "Rol"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 621,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
+                                        id: "editRole",
+                                        className: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+                                        value: role,
+                                        onChange: (e)=>setRole(e.target.value),
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                                value: "buyer",
+                                                children: "Comprador"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 630,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                                value: "seller",
+                                                children: "Vendedor"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 631,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 624,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 620,
+                                columnNumber: 15
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                className: "flex justify-between mt-6",
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: handleSaveProfile,
+                                        className: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                                        children: "Guardar Cambios"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 635,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: ()=>setEditingProfile(false),
+                                        className: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200",
+                                        children: "Cancelar"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 641,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "src/App.js",
+                                lineNumber: 634,
+                                columnNumber: 15
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/App.js",
+                        lineNumber: 583,
+                        columnNumber: 13
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "src/App.js",
+                lineNumber: 531,
+                columnNumber: 9
+            }, this)
+        }, void 0, false, {
+            fileName: "src/App.js",
+            lineNumber: 530,
+            columnNumber: 7
+        }, this);
+    };
+    _s2(ProfileView, "YcQOZdCFkhBrCyqBNF90jwuF2TE=");
+    // Si la aplicación aún no está inicializada, muestra un spinner de carga
     if (!appInitialized) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "flex flex-1 justify-center items-center bg-gray-50 min-h-screen",
         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -25252,29 +26120,32 @@ const App = ()=>{
                     className: "animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 195,
+                    lineNumber: 660,
                     columnNumber: 11
-                }, undefined),
+                }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                     className: "mt-4 text-lg text-gray-700",
                     children: "Cargando aplicaci\xf3n..."
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 196,
+                    lineNumber: 661,
                     columnNumber: 11
-                }, undefined)
+                }, this)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 194,
+            lineNumber: 659,
             columnNumber: 9
-        }, undefined)
+        }, this)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 193,
+        lineNumber: 658,
         columnNumber: 7
-    }, undefined);
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FirebaseContext.Provider, {
+    }, this);
+    // El componente principal App renderiza todo el contenido
+    return(// FirebaseContext.Provider hace que db, auth, user, userId, appId estén disponibles
+    // para todos los componentes anidados sin pasarlos como props explícitamente.
+    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FirebaseContext.Provider, {
         value: {
             db,
             auth,
@@ -25282,262 +26153,241 @@ const App = ()=>{
             userId,
             appId
         },
-        children: [
-            " ",
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "min-h-screen bg-gray-100 font-sans",
-                children: [
-                    notification.show && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(NotificationBanner, {
-                        message: notification.message,
-                        type: notification.type,
-                        onClose: closeSimulatedNotification
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 206,
-                        columnNumber: 11
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(MainApp, {
-                        showSimulatedNotification: showSimulatedNotification
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 212,
-                        columnNumber: 9
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 204,
-                columnNumber: 7
-            }, undefined)
-        ]
-    }, void 0, true, {
-        fileName: "src/App.js",
-        lineNumber: 203,
-        columnNumber: 5
-    }, undefined);
-};
-_s1(App, "ov7tEiEb1U6IIIy7UYusK9uQZQ8=");
-_c1 = App;
-// Componente de la aplicación principal (después de la autenticación)
-const MainApp = ({ showSimulatedNotification })=>{
-    _s2();
-    const [activeTab, setActiveTab] = (0, _react.useState)('products'); // 'products', 'jobs' o 'favorites'
-    // eslint-disable-next-line no-unused-vars
-    const { auth, userId, appId } = (0, _react.useContext)(FirebaseContext); // Ahora userId y appId se desestructuran del contexto
-    // Estados para el chat
-    const [showChat, setShowChat] = (0, _react.useState)(false);
-    const [chatRecipientId, setChatRecipientId] = (0, _react.useState)(null);
-    const [chatProductName, setChatProductName] = (0, _react.useState)(''); // Para mostrar en el título del chat
-    // Estados para el formulario de reseña
-    const [showReviewForm, setShowReviewForm] = (0, _react.useState)(false);
-    const [reviewTargetSellerId, setReviewTargetSellerId] = (0, _react.useState)(null);
-    const [reviewTargetProductId, setReviewTargetProductId] = (0, _react.useState)(null);
-    // Estado para la configuración de perfil
-    const [showProfileSettings, setShowProfileSettings] = (0, _react.useState)(false);
-    // Estado para la política de privacidad
-    const [showPrivacyPolicy, setShowPrivacyPolicy] = (0, _react.useState)(false);
-    const handleLogout = async ()=>{
-        try {
-            await (0, _auth.signOut)(auth);
-            console.log("Sesi\xf3n cerrada exitosamente.");
-            showSimulatedNotification("Has cerrado sesi\xf3n.", "info");
-        } catch (error) {
-            console.error("Error al cerrar sesi\xf3n:", error);
-            showSimulatedNotification(`Error al cerrar sesi\xf3n: ${error.message}`, "error");
-        }
-    };
-    const handleContactSeller = (sellerId, productName)=>{
-        setChatRecipientId(sellerId);
-        setChatProductName(productName);
-        setShowChat(true);
-    };
-    const handleLeaveReview = (sellerId, productId)=>{
-        setReviewTargetSellerId(sellerId);
-        setReviewTargetProductId(productId);
-        setShowReviewForm(true);
-    };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "flex flex-col min-h-screen pt-4 sm:pt-10 bg-gray-100",
-        children: [
-            " ",
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "bg-blue-600 p-4 sm:p-6 flex flex-col items-center rounded-b-3xl shadow-xl",
-                children: [
-                    " ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
-                        className: "text-2xl sm:text-3xl font-bold text-white mb-1 sm:mb-2",
-                        children: "Cambiazo"
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 267,
-                        columnNumber: 9
-                    }, undefined),
-                    " ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "flex items-center space-x-4 mt-2",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "min-h-screen bg-gray-100 font-inter",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(MessageBox, {
+                    message: message,
+                    type: messageType,
+                    onClose: ()=>setMessage('')
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 674,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("header", {
+                    className: "bg-blue-700 text-white p-4 shadow-md",
+                    children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "container mx-auto flex flex-col md:flex-row justify-between items-center",
                         children: [
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold py-1 px-3 sm:py-2 sm:px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105",
-                                onClick: handleLogout,
-                                children: "Cerrar Sesi\xf3n"
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h1", {
+                                className: "text-4xl font-extrabold mb-4 md:mb-0",
+                                children: "Cambiazo"
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 270,
-                                columnNumber: 11
-                            }, undefined),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold py-1 px-3 sm:py-2 sm:px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105",
-                                onClick: ()=>setShowProfileSettings(true),
-                                children: "Configuraci\xf3n de Perfil"
-                            }, void 0, false, {
+                                lineNumber: 679,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("nav", {
+                                className: "flex flex-wrap justify-center md:justify-end space-x-2 md:space-x-4",
+                                children: [
+                                    user ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                                onClick: ()=>setShowProfile(true),
+                                                className: "bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-200",
+                                                children: "Configuraci\xf3n de Perfil"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 683,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                                onClick: handleSignOut,
+                                                className: "bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-200",
+                                                children: "Cerrar Sesi\xf3n"
+                                            }, void 0, false, {
+                                                fileName: "src/App.js",
+                                                lineNumber: 689,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: ()=>{
+                                            setShowAuthForm(true);
+                                            setIsRegistering(false);
+                                        },
+                                        className: "bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-200",
+                                        children: "Iniciar Sesi\xf3n"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 697,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: ()=>showMessage("La pol\xedtica de privacidad se mostrar\xeda aqu\xed en un modal.", "info"),
+                                        className: "bg-gray-600 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-200",
+                                        children: "Pol\xedtica de Privacidad"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 705,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                        onClick: ()=>showMessage("La p\xe1gina de eliminaci\xf3n de datos se mostrar\xeda aqu\xed en un modal.", "info"),
+                                        className: "bg-gray-600 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg transition duration-200",
+                                        children: "Eliminaci\xf3n de Datos"
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 711,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 276,
-                                columnNumber: 11
-                            }, undefined),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "bg-gray-700 hover:bg-gray-800 text-white text-xs sm:text-sm font-bold py-1 px-3 sm:py-2 sm:px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105",
-                                onClick: ()=>setShowPrivacyPolicy(true),
-                                children: "Pol\xedtica de Privacidad"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 282,
-                                columnNumber: 11
-                            }, undefined)
+                                lineNumber: 680,
+                                columnNumber: 13
+                            }, this)
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 269,
-                        columnNumber: 9
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 266,
-                columnNumber: 7
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "flex flex-wrap justify-around bg-white p-2 sm:p-3 rounded-2xl mx-2 sm:mx-4 mt-3 sm:mt-4 shadow-md border-b border-gray-200",
-                children: [
-                    " ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        className: `flex-1 py-2 px-3 sm:px-6 rounded-xl text-sm sm:text-lg font-semibold ${activeTab === 'products' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'} transition duration-300 ease-in-out`,
-                        onClick: ()=>setActiveTab('products'),
-                        children: "Productos"
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 292,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        className: `flex-1 py-2 px-3 sm:px-6 rounded-xl text-sm sm:text-lg font-semibold ${activeTab === 'jobs' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'} transition duration-300 ease-in-out`,
-                        onClick: ()=>setActiveTab('jobs'),
-                        children: "Trabajos"
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 299,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        className: `flex-1 py-2 px-3 sm:px-6 rounded-xl text-sm sm:text-lg font-semibold ${activeTab === 'favorites' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'} transition duration-300 ease-in-out`,
-                        onClick: ()=>setActiveTab('favorites'),
-                        children: "Favoritos"
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 306,
-                        columnNumber: 9
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 291,
-                columnNumber: 7
-            }, undefined),
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "flex-1 p-2 sm:p-4",
-                children: [
-                    " ",
-                    activeTab === 'products' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ProductsScreen, {
-                        onContactSeller: handleContactSeller,
-                        onLeaveReview: handleLeaveReview,
-                        showSimulatedNotification: showSimulatedNotification
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 317,
+                        lineNumber: 678,
                         columnNumber: 11
-                    }, undefined),
-                    activeTab === 'jobs' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(JobsScreen, {}, void 0, false, {
+                    }, this)
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 677,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "bg-gray-200 p-4 shadow-inner",
+                    children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                        className: "container mx-auto flex justify-center space-x-4",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setActiveTab('productos'),
+                                className: `py-2 px-6 rounded-lg font-semibold transition duration-200 ${activeTab === 'productos' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`,
+                                children: "Productos"
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 724,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setActiveTab('trabajos'),
+                                className: `py-2 px-6 rounded-lg font-semibold transition duration-200 ${activeTab === 'trabajos' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`,
+                                children: "Trabajos"
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 732,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                                onClick: ()=>setActiveTab('favoritos'),
+                                className: `py-2 px-6 rounded-lg font-semibold transition duration-200 ${activeTab === 'favoritos' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`,
+                                children: "Favoritos"
+                            }, void 0, false, {
+                                fileName: "src/App.js",
+                                lineNumber: 740,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 323,
-                        columnNumber: 34
-                    }, undefined),
-                    activeTab === 'favorites' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FavoritesScreen, {
-                        onContactSeller: handleContactSeller,
-                        onLeaveReview: handleLeaveReview,
-                        showSimulatedNotification: showSimulatedNotification
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 325,
+                        lineNumber: 723,
                         columnNumber: 11
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 315,
-                columnNumber: 7
-            }, undefined),
-            showChat && chatRecipientId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ChatScreen, {
-                recipientId: chatRecipientId,
-                productName: chatProductName,
-                onCloseChat: ()=>setShowChat(false),
-                showSimulatedNotification: showSimulatedNotification
-            }, void 0, false, {
-                fileName: "src/App.js",
-                lineNumber: 334,
-                columnNumber: 9
-            }, undefined),
-            showReviewForm && reviewTargetSellerId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ReviewForm, {
-                sellerId: reviewTargetSellerId,
-                productId: reviewTargetProductId,
-                onClose: ()=>setShowReviewForm(false),
-                showSimulatedNotification: showSimulatedNotification
-            }, void 0, false, {
-                fileName: "src/App.js",
-                lineNumber: 343,
-                columnNumber: 9
-            }, undefined),
-            showProfileSettings && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ProfileSettingsForm, {
-                onClose: ()=>setShowProfileSettings(false),
-                showSimulatedNotification: showSimulatedNotification
-            }, void 0, false, {
-                fileName: "src/App.js",
-                lineNumber: 352,
-                columnNumber: 9
-            }, undefined),
-            showPrivacyPolicy && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(PrivacyPolicyScreen, {
-                onClose: ()=>setShowPrivacyPolicy(false)
-            }, void 0, false, {
-                fileName: "src/App.js",
-                lineNumber: 359,
-                columnNumber: 9
-            }, undefined)
-        ]
-    }, void 0, true, {
+                    }, this)
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 722,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("main", {
+                    className: "py-8",
+                    children: [
+                        activeTab === 'productos' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ProductsScreen, {
+                            onContactSeller: handleContactSeller,
+                            onLeaveReview: handleLeaveReview,
+                            showSimulatedNotification: showMessage,
+                            onViewSellerReviews: handleViewReviews
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 753,
+                            columnNumber: 41
+                        }, this),
+                        activeTab === 'trabajos' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(JobsScreen, {}, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 754,
+                            columnNumber: 40
+                        }, this),
+                        activeTab === 'favoritos' && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(FavoritesScreen, {
+                            onContactSeller: handleContactSeller,
+                            onLeaveReview: handleLeaveReview,
+                            showSimulatedNotification: showMessage,
+                            onViewSellerReviews: handleViewReviews
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 756,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/App.js",
+                    lineNumber: 752,
+                    columnNumber: 9
+                }, this),
+                showAuthForm && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(AuthForm, {}, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 766,
+                    columnNumber: 26
+                }, this),
+                showProfile && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ProfileView, {}, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 767,
+                    columnNumber: 25
+                }, this),
+                showReviewsDisplay && reviewsTargetUserId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ReviewsDisplay, {
+                    targetUserId: reviewsTargetUserId,
+                    onClose: ()=>setShowReviewsDisplay(false),
+                    showSimulatedNotification: showMessage
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 769,
+                    columnNumber: 11
+                }, this),
+                showChat && chatRecipientId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ChatScreen, {
+                    recipientId: chatRecipientId,
+                    productName: chatProductName,
+                    onCloseChat: ()=>setShowChat(false),
+                    showSimulatedNotification: showMessage
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 776,
+                    columnNumber: 11
+                }, this),
+                showReviewForm && reviewTargetSellerId && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(ReviewForm, {
+                    sellerId: reviewTargetSellerId,
+                    productId: reviewTargetProductId,
+                    onClose: ()=>setShowReviewForm(false),
+                    showSimulatedNotification: showMessage
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 784,
+                    columnNumber: 11
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "src/App.js",
+            lineNumber: 672,
+            columnNumber: 7
+        }, this)
+    }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 265,
+        lineNumber: 671,
         columnNumber: 5
-    }, undefined);
-};
-_s2(MainApp, "l6ckXrjw9gdw7jk3Bl/j9Y1tTbo=");
-_c2 = MainApp;
+    }, this));
+}
+_s(App, "pBZqZqlzGxVVSnNjVMj8cVXGZa0=");
+_c1 = App;
+exports.default = App; // Exportar el componente principal App
 // Componente para una tarjeta de producto individual
-const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, onLeaveReview })=>{
-    _s3();
-    const { userId } = (0, _react.useContext)(FirebaseContext);
-    const isMyProduct = item.userId === userId;
+const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, onLeaveReview, onViewSellerReviews })=>{
+    _s1();
+    const { userId } = (0, _react.useContext)(FirebaseContext); // Obtener el ID del user actual del contexto
+    const isMyProduct = item.userId === userId; // Verificar si el producto es del user actual
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "bg-blue-50 p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-sm border-l-4 border-blue-500 flex flex-col",
         children: [
-            " ",
             item.imageUrls && item.imageUrls.length > 0 ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2 sm:mb-3",
                 children: item.imageUrls.map((url, index)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("img", {
@@ -25550,12 +26400,12 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                         }
                     }, index, false, {
                         fileName: "src/App.js",
-                        lineNumber: 377,
+                        lineNumber: 809,
                         columnNumber: 13
                     }, undefined))
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 375,
+                lineNumber: 807,
                 columnNumber: 9
             }, undefined) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("img", {
                 src: `https://placehold.co/400x200/cccccc/333333?text=No+Image`,
@@ -25563,7 +26413,7 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 className: "w-full h-40 sm:h-48 object-cover rounded-lg mb-2 sm:mb-3"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 387,
+                lineNumber: 819,
                 columnNumber: 9
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -25571,10 +26421,9 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 children: item.name
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 393,
+                lineNumber: 826,
                 columnNumber: 7
             }, undefined),
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                 className: "text-base sm:text-lg text-green-600 font-bold mb-1",
                 children: [
@@ -25583,19 +26432,17 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 394,
+                lineNumber: 827,
                 columnNumber: 7
             }, undefined),
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                 className: "text-sm sm:text-base text-gray-700 mb-1",
                 children: item.description
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 395,
+                lineNumber: 828,
                 columnNumber: 7
             }, undefined),
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                 className: "text-sm sm:text-base text-gray-700 mb-1",
                 children: [
@@ -25604,7 +26451,7 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 396,
+                lineNumber: 829,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -25615,7 +26462,7 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 397,
+                lineNumber: 830,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -25626,7 +26473,7 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 399,
+                lineNumber: 831,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -25638,20 +26485,19 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 401,
+                lineNumber: 832,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "flex justify-between items-center mt-3 sm:mt-4 flex-wrap gap-2",
                 children: [
-                    " ",
                     !isMyProduct && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
                         className: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg text-xs sm:text-sm shadow-md transition duration-300 ease-in-out",
                         onClick: ()=>onContactSeller(item.userId, item.name),
                         children: "Contactar Vendedor"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 405,
+                        lineNumber: 837,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -25660,7 +26506,7 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                         children: isFavoriteView ? 'Eliminar de Favoritos' : 'Agregar a Favoritos'
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 412,
+                        lineNumber: 844,
                         columnNumber: 9
                     }, undefined),
                     !isMyProduct && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -25669,27 +26515,36 @@ const ProductCard = ({ item, isFavoriteView, onToggleFavorite, onContactSeller, 
                         children: "Dejar Rese\xf1a"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 419,
+                        lineNumber: 851,
                         columnNumber: 11
+                    }, undefined),
+                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                        className: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 rounded-lg text-xs sm:text-sm shadow-md transition duration-300 ease-in-out",
+                        onClick: ()=>onViewSellerReviews(item.userId),
+                        children: "Ver Rese\xf1as del Vendedor"
+                    }, void 0, false, {
+                        fileName: "src/App.js",
+                        lineNumber: 858,
+                        columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 403,
+                lineNumber: 835,
                 columnNumber: 7
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 373,
+        lineNumber: 804,
         columnNumber: 5
     }, undefined);
 };
-_s3(ProductCard, "f1xc73H04AOIcBBBtmriXwWn3kM=");
-_c3 = ProductCard;
+_s1(ProductCard, "f1xc73H04AOIcBBBtmriXwWn3kM=");
+_c2 = ProductCard;
 // Pantalla de Productos
-const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotification })=>{
-    _s4();
+const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotification, onViewSellerReviews })=>{
+    _s2();
     const { db, userId, appId } = (0, _react.useContext)(FirebaseContext); // Obtener appId del contexto
     const [products, setProducts] = (0, _react.useState)([]);
     const [showPostForm, setShowPostForm] = (0, _react.useState)(false);
@@ -25725,7 +26580,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
         userId,
         appId
     ]); // Añadir appId a las dependencias
-    // Cargar favoritos del usuario para mostrar el estado en los botones
+    // Cargar favoritos del user para mostrar el estado en los botones
     (0, _react.useEffect)(()=>{
         if (!db || !userId || !appId) return; // Asegurarse de que appId esté disponible
         const favoritesCollectionRef = (0, _firestore.collection)(db, `artifacts/${appId}/users/${userId}/favorites`);
@@ -25767,7 +26622,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
     };
     const handleToggleFavorite = async (product)=>{
         if (!db || !userId || !appId) {
-            console.warn("Usuario o appId no disponible para favoritos.");
+            console.warn("User o appId no disponible para favoritos.");
             showSimulatedNotification("Necesitas iniciar sesi\xf3n para gestionar favoritos.", "error");
             return;
         }
@@ -25919,7 +26774,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                     className: "animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 647,
+                    lineNumber: 1085,
                     columnNumber: 11
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -25927,18 +26782,18 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                     children: "Cargando productos..."
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 648,
+                    lineNumber: 1086,
                     columnNumber: 11
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 646,
+            lineNumber: 1084,
             columnNumber: 9
         }, undefined)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 645,
+        lineNumber: 1083,
         columnNumber: 7
     }, undefined);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -25950,7 +26805,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                 children: "Productos en Venta"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 656,
+                lineNumber: 1094,
                 columnNumber: 7
             }, undefined),
             " ",
@@ -25960,7 +26815,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                 children: "Publicar Producto"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 657,
+                lineNumber: 1095,
                 columnNumber: 7
             }, undefined),
             showPostForm && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(PostProductForm, {
@@ -25968,7 +26823,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                 onCancel: ()=>setShowPostForm(false)
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 665,
+                lineNumber: 1103,
                 columnNumber: 9
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -25980,7 +26835,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                         children: "B\xfasqueda y Filtros"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 670,
+                        lineNumber: 1108,
                         columnNumber: 9
                     }, undefined),
                     " ",
@@ -25993,7 +26848,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                 children: "B\xfasqueda Inteligente:"
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 674,
+                                lineNumber: 1112,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26011,7 +26866,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         disabled: isSmartSearching
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 676,
+                                        lineNumber: 1114,
                                         columnNumber: 13
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26021,19 +26876,19 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         children: isSmartSearching ? 'Buscando...' : 'Buscar Inteligentemente'
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 689,
+                                        lineNumber: 1127,
                                         columnNumber: 13
                                     }, undefined)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 675,
+                                lineNumber: 1113,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 673,
+                        lineNumber: 1111,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
@@ -26043,7 +26898,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                         onChange: (e)=>setSearchTerm(e.target.value)
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 699,
+                        lineNumber: 1137,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26060,7 +26915,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         children: "Filtrar por Ciudad"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 711,
+                                        lineNumber: 1149,
                                         columnNumber: 13
                                     }, undefined),
                                     nicaraguanCities.map((cityName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26068,13 +26923,13 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                             children: cityName
                                         }, cityName, false, {
                                             fileName: "src/App.js",
-                                            lineNumber: 713,
+                                            lineNumber: 1151,
                                             columnNumber: 15
                                         }, undefined))
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 706,
+                                lineNumber: 1144,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -26087,7 +26942,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         children: "Filtrar por Categor\xeda"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 721,
+                                        lineNumber: 1159,
                                         columnNumber: 13
                                     }, undefined),
                                     productCategories.map((categoryName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26095,19 +26950,19 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                             children: categoryName
                                         }, categoryName, false, {
                                             fileName: "src/App.js",
-                                            lineNumber: 723,
+                                            lineNumber: 1161,
                                             columnNumber: 15
                                         }, undefined))
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 716,
+                                lineNumber: 1154,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 705,
+                        lineNumber: 1143,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26122,7 +26977,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                 onChange: (e)=>setFilterMinPrice(e.target.value)
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 728,
+                                lineNumber: 1166,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
@@ -26133,13 +26988,13 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                 onChange: (e)=>setFilterMaxPrice(e.target.value)
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 735,
+                                lineNumber: 1173,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 727,
+                        lineNumber: 1165,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26158,14 +27013,14 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         className: "mr-1"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 745,
+                                        lineNumber: 1183,
                                         columnNumber: 13
                                     }, undefined),
                                     "Todos"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 744,
+                                lineNumber: 1182,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -26180,14 +27035,14 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         className: "mr-1"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 756,
+                                        lineNumber: 1194,
                                         columnNumber: 13
                                     }, undefined),
                                     "Nuevo"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 755,
+                                lineNumber: 1193,
                                 columnNumber: 11
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
@@ -26202,26 +27057,26 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                                         className: "mr-1"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 767,
+                                        lineNumber: 1205,
                                         columnNumber: 13
                                     }, undefined),
                                     "Usado"
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 766,
+                                lineNumber: 1204,
                                 columnNumber: 11
                             }, undefined)
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 743,
+                        lineNumber: 1181,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 669,
+                lineNumber: 1107,
                 columnNumber: 7
             }, undefined),
             filteredProducts.length === 0 ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26229,7 +27084,7 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                 children: "No hay productos disponibles con estos filtros. \xa1S\xe9 el primero en publicar!"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 782,
+                lineNumber: 1220,
                 columnNumber: 9
             }, undefined) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "overflow-y-auto flex-1",
@@ -26238,39 +27093,39 @@ const ProductsScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotificat
                         isFavoriteView: favoriteProductIds[item.id],
                         onToggleFavorite: handleToggleFavorite,
                         onContactSeller: onContactSeller,
-                        onLeaveReview: onLeaveReview
+                        onLeaveReview: onLeaveReview,
+                        onViewSellerReviews: onViewSellerReviews
                     }, item.id, false, {
                         fileName: "src/App.js",
-                        lineNumber: 786,
+                        lineNumber: 1224,
                         columnNumber: 13
                     }, undefined))
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 784,
+                lineNumber: 1222,
                 columnNumber: 9
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 655,
+        lineNumber: 1093,
         columnNumber: 5
     }, undefined);
 };
-_s4(ProductsScreen, "16e+hTRsLVo/z1uAvLFrQqkZmr4=");
-_c4 = ProductsScreen;
+_s2(ProductsScreen, "16e+hTRsLVo/z1uAvLFrQqkZmr4=");
+_c3 = ProductsScreen;
 // Formulario para publicar un producto
 const PostProductForm = ({ onSubmit, onCancel })=>{
-    _s5();
+    _s3();
     const [name, setName] = (0, _react.useState)('');
     const [price, setPrice] = (0, _react.useState)('');
     const [description, setDescription] = (0, _react.useState)('');
-    // const [contact, setContact] = useState(''); // Eliminado
     const [city, setCity] = (0, _react.useState)('');
-    const [category, setCategory] = (0, _react.useState)(''); // Nuevo estado para categoría
-    const [condition, setCondition] = (0, _react.useState)(''); // Nuevo estado para condición
-    const [imageUrls, setImageUrls] = (0, _react.useState)([]); // Estado para las imágenes Base64 (array)
+    const [category, setCategory] = (0, _react.useState)('');
+    const [condition, setCondition] = (0, _react.useState)('');
+    const [imageUrls, setImageUrls] = (0, _react.useState)([]);
     const [message, setMessage] = (0, _react.useState)('');
-    const fileInputRef = (0, _react.useRef)(null); // Referencia para el input de archivo
+    const fileInputRef = (0, _react.useRef)(null);
     const MAX_IMAGES = 9;
     const handleImageChange = (e)=>{
         const files = Array.from(e.target.files);
@@ -26289,14 +27144,13 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                     newImageUrls.push(reader.result);
                     setImageUrls([
                         ...newImageUrls
-                    ]); // Actualiza el estado con la nueva imagen
+                    ]);
                     filesProcessed++;
-                    if (filesProcessed === files.length) setMessage(''); // Limpia el mensaje si todas las imágenes se procesaron
+                    if (filesProcessed === files.length) setMessage('');
                 };
                 reader.readAsDataURL(file);
             } else setMessage("Por favor, selecciona solo archivos de imagen v\xe1lidos.");
         });
-        // Limpiar el input de archivo para que se pueda seleccionar el mismo archivo de nuevo
         e.target.value = null;
     };
     const handleRemoveImage = (indexToRemove)=>{
@@ -26304,7 +27158,6 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
         setMessage('');
     };
     const handleSubmit = ()=>{
-        // Validar sin el campo de contacto
         if (name && price && description && city && category && condition) {
             onSubmit({
                 name,
@@ -26314,23 +27167,21 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 category,
                 condition,
                 imageUrls
-            }); // No pasar 'contact'
+            });
             setMessage('');
         } else setMessage('Por favor, completa todos los campos obligatorios.');
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "bg-blue-100 p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 shadow-lg overflow-y-auto max-h-96",
         children: [
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
                 className: "text-xl sm:text-2xl font-bold mb-4 sm:mb-5 text-blue-700 text-center",
                 children: "Publicar Nuevo Producto"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 863,
+                lineNumber: 1299,
                 columnNumber: 7
             }, undefined),
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                 className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg mb-2 sm:mb-3 bg-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-300",
                 placeholder: "Nombre del Producto",
@@ -26338,7 +27189,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 onChange: (e)=>setName(e.target.value)
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 864,
+                lineNumber: 1300,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
@@ -26349,7 +27200,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 type: "number"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 870,
+                lineNumber: 1306,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
@@ -26360,7 +27211,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 rows: 4
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 877,
+                lineNumber: 1313,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -26373,7 +27224,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         children: "Selecciona una ciudad"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 890,
+                        lineNumber: 1325,
                         columnNumber: 9
                     }, undefined),
                     nicaraguanCities.map((cityName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26381,13 +27232,13 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                             children: cityName
                         }, cityName, false, {
                             fileName: "src/App.js",
-                            lineNumber: 892,
+                            lineNumber: 1327,
                             columnNumber: 11
                         }, undefined))
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 885,
+                lineNumber: 1320,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -26400,7 +27251,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         children: "Selecciona una categor\xeda"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 901,
+                        lineNumber: 1335,
                         columnNumber: 9
                     }, undefined),
                     productCategories.map((categoryName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26408,13 +27259,13 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                             children: categoryName
                         }, categoryName, false, {
                             fileName: "src/App.js",
-                            lineNumber: 903,
+                            lineNumber: 1337,
                             columnNumber: 11
                         }, undefined))
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 896,
+                lineNumber: 1330,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -26427,7 +27278,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         children: "Selecciona la condici\xf3n"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 912,
+                        lineNumber: 1345,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26435,7 +27286,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         children: "Nuevo"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 913,
+                        lineNumber: 1346,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26443,13 +27294,13 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         children: "Usado"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 914,
+                        lineNumber: 1347,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 907,
+                lineNumber: 1340,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26465,7 +27316,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 919,
+                        lineNumber: 1351,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
@@ -26478,7 +27329,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         className: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 920,
+                        lineNumber: 1352,
                         columnNumber: 9
                     }, undefined),
                     imageUrls.length > 0 && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26492,7 +27343,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                                         className: "w-full h-24 object-cover rounded-lg"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 938,
+                                        lineNumber: 1370,
                                         columnNumber: 17
                                     }, undefined),
                                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26501,18 +27352,18 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                                         children: "\xd7"
                                     }, void 0, false, {
                                         fileName: "src/App.js",
-                                        lineNumber: 939,
+                                        lineNumber: 1371,
                                         columnNumber: 17
                                     }, undefined)
                                 ]
                             }, index, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 937,
+                                lineNumber: 1369,
                                 columnNumber: 15
                             }, undefined))
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 935,
+                        lineNumber: 1367,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26524,13 +27375,13 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 949,
+                        lineNumber: 1381,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 918,
+                lineNumber: 1350,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26539,7 +27390,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 children: "Publicar"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 954,
+                lineNumber: 1386,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26548,7 +27399,7 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 children: "Cancelar"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 960,
+                lineNumber: 1392,
                 columnNumber: 7
             }, undefined),
             message && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26556,21 +27407,21 @@ const PostProductForm = ({ onSubmit, onCancel })=>{
                 children: message
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 966,
+                lineNumber: 1398,
                 columnNumber: 19
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 862,
+        lineNumber: 1298,
         columnNumber: 5
     }, undefined);
 };
-_s5(PostProductForm, "0Gvb2ekdLbZXxzxtdH68cmG2HwI=");
-_c5 = PostProductForm;
+_s3(PostProductForm, "0Gvb2ekdLbZXxzxtdH68cmG2HwI=");
+_c4 = PostProductForm;
 // Pantalla de Trabajos
 const JobsScreen = ()=>{
-    _s6();
+    _s4();
     const { db, userId, appId } = (0, _react.useContext)(FirebaseContext); // Obtener appId del contexto
     const [jobs, setJobs] = (0, _react.useState)([]);
     const [showPostForm, setShowPostForm] = (0, _react.useState)(false);
@@ -26630,7 +27481,7 @@ const JobsScreen = ()=>{
                     className: "animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1034,
+                    lineNumber: 1466,
                     columnNumber: 11
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26638,18 +27489,18 @@ const JobsScreen = ()=>{
                     children: "Cargando trabajos..."
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1035,
+                    lineNumber: 1467,
                     columnNumber: 11
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 1033,
+            lineNumber: 1465,
             columnNumber: 9
         }, undefined)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 1032,
+        lineNumber: 1464,
         columnNumber: 7
     }, undefined);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26661,7 +27512,7 @@ const JobsScreen = ()=>{
                 children: "Ofertas de Trabajo"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1043,
+                lineNumber: 1475,
                 columnNumber: 7
             }, undefined),
             " ",
@@ -26671,7 +27522,7 @@ const JobsScreen = ()=>{
                 children: "Publicar Trabajo"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1044,
+                lineNumber: 1476,
                 columnNumber: 7
             }, undefined),
             showPostForm && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(PostJobForm, {
@@ -26679,7 +27530,7 @@ const JobsScreen = ()=>{
                 onCancel: ()=>setShowPostForm(false)
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1052,
+                lineNumber: 1484,
                 columnNumber: 9
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -26691,7 +27542,7 @@ const JobsScreen = ()=>{
                         children: "B\xfasqueda y Filtros"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 1057,
+                        lineNumber: 1489,
                         columnNumber: 9
                     }, undefined),
                     " ",
@@ -26702,11 +27553,11 @@ const JobsScreen = ()=>{
                         onChange: (e)=>setSearchTerm(e.target.value)
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 1058,
+                        lineNumber: 1490,
                         columnNumber: 9
                     }, undefined),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
-                        className: "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base",
+                        className: "w-full p-2 border border-gray-300 rounded-lg mb-2 sm:mb-3 focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base",
                         value: filterCity,
                         onChange: (e)=>setFilterCity(e.target.value),
                         children: [
@@ -26715,7 +27566,7 @@ const JobsScreen = ()=>{
                                 children: "Filtrar por Ciudad"
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 1069,
+                                lineNumber: 1501,
                                 columnNumber: 11
                             }, undefined),
                             nicaraguanCities.map((cityName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26723,19 +27574,19 @@ const JobsScreen = ()=>{
                                     children: cityName
                                 }, cityName, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1071,
+                                    lineNumber: 1503,
                                     columnNumber: 13
                                 }, undefined))
                         ]
                     }, void 0, true, {
                         fileName: "src/App.js",
-                        lineNumber: 1064,
+                        lineNumber: 1496,
                         columnNumber: 9
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 1056,
+                lineNumber: 1488,
                 columnNumber: 7
             }, undefined),
             filteredJobs.length === 0 ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26743,7 +27594,7 @@ const JobsScreen = ()=>{
                 children: "No hay ofertas de trabajo disponibles con estos filtros. \xa1S\xe9 el primero en publicar!"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1077,
+                lineNumber: 1509,
                 columnNumber: 9
             }, undefined) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "overflow-y-auto flex-1",
@@ -26756,7 +27607,7 @@ const JobsScreen = ()=>{
                                 children: item.title
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 1082,
+                                lineNumber: 1514,
                                 columnNumber: 15
                             }, undefined),
                             " ",
@@ -26765,7 +27616,7 @@ const JobsScreen = ()=>{
                                 children: item.description
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 1083,
+                                lineNumber: 1515,
                                 columnNumber: 15
                             }, undefined),
                             " ",
@@ -26777,7 +27628,7 @@ const JobsScreen = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 1085,
+                                lineNumber: 1517,
                                 columnNumber: 15
                             }, undefined),
                             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26789,61 +27640,57 @@ const JobsScreen = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 1086,
+                                lineNumber: 1518,
                                 columnNumber: 15
                             }, undefined)
                         ]
                     }, item.id, true, {
                         fileName: "src/App.js",
-                        lineNumber: 1081,
+                        lineNumber: 1513,
                         columnNumber: 13
                     }, undefined))
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1079,
+                lineNumber: 1511,
                 columnNumber: 9
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 1042,
+        lineNumber: 1474,
         columnNumber: 5
     }, undefined);
 };
-_s6(JobsScreen, "cuETU02AJ5Xq56bRc55ZU8NXNe4=");
-_c6 = JobsScreen;
+_s4(JobsScreen, "cuETU02AJ5Xq56bRc55ZU8NXNe4=");
+_c5 = JobsScreen;
 // Formulario para publicar un trabajo
 const PostJobForm = ({ onSubmit, onCancel })=>{
-    _s7();
+    _s5();
     const [title, setTitle] = (0, _react.useState)('');
     const [description, setDescription] = (0, _react.useState)('');
-    // const [contact, setContact] = useState(''); // Eliminado
     const [city, setCity] = (0, _react.useState)('');
     const [message, setMessage] = (0, _react.useState)('');
     const handleSubmit = ()=>{
-        // Validar sin el campo de contacto
         if (title && description && city) {
             onSubmit({
                 title,
                 description,
                 city
-            }); // No pasar 'contact'
+            });
             setMessage('');
         } else setMessage('Por favor, completa todos los campos.');
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "bg-blue-100 p-4 sm:p-6 rounded-2xl mb-4 sm:mb-6 shadow-lg overflow-y-auto max-h-96",
         children: [
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
                 className: "text-xl sm:text-2xl font-bold mb-4 sm:mb-5 text-blue-700 text-center",
                 children: "Publicar Nueva Oferta de Trabajo"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1115,
+                lineNumber: 1545,
                 columnNumber: 7
             }, undefined),
-            " ",
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
                 className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg mb-2 sm:mb-3 bg-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-300",
                 placeholder: "T\xedtulo del Puesto",
@@ -26851,7 +27698,7 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                 onChange: (e)=>setTitle(e.target.value)
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1116,
+                lineNumber: 1546,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
@@ -26862,7 +27709,7 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                 rows: 4
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1122,
+                lineNumber: 1552,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
@@ -26875,7 +27722,7 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                         children: "Selecciona una ciudad"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 1135,
+                        lineNumber: 1564,
                         columnNumber: 9
                     }, undefined),
                     nicaraguanCities.map((cityName)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
@@ -26883,13 +27730,13 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                             children: cityName
                         }, cityName, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1137,
+                            lineNumber: 1566,
                             columnNumber: 11
                         }, undefined))
                 ]
             }, void 0, true, {
                 fileName: "src/App.js",
-                lineNumber: 1130,
+                lineNumber: 1559,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26898,7 +27745,7 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                 children: "Publicar"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1140,
+                lineNumber: 1569,
                 columnNumber: 7
             }, undefined),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -26907,7 +27754,7 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                 children: "Cancelar"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1146,
+                lineNumber: 1575,
                 columnNumber: 7
             }, undefined),
             message && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26915,27 +27762,28 @@ const PostJobForm = ({ onSubmit, onCancel })=>{
                 children: message
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1152,
+                lineNumber: 1581,
                 columnNumber: 19
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 1114,
+        lineNumber: 1544,
         columnNumber: 5
     }, undefined);
 };
-_s7(PostJobForm, "CM2Zvkf5mBTN9gwiH81749iR1kc=");
-_c7 = PostJobForm;
+_s5(PostJobForm, "CM2Zvkf5mBTN9gwiH81749iR1kc=");
+_c6 = PostJobForm;
 // Nueva pantalla de Favoritos
-const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotification })=>{
-    _s8();
+const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotification, onViewSellerReviews })=>{
+    _s6();
     const { db, userId, appId } = (0, _react.useContext)(FirebaseContext); // Obtener appId del contexto
     const [favoriteProducts, setFavoriteProducts] = (0, _react.useState)([]);
     const [loading, setLoading] = (0, _react.useState)(true);
+    // Cargar productos favoritos del user
     (0, _react.useEffect)(()=>{
         if (!db || !userId || !appId) return; // Asegurarse de que appId esté disponible
-        // Ruta de la colección privada de favoritos del usuario
+        // Ruta de la colección privada de favoritos del user
         const favoritesCollectionRef = (0, _firestore.collection)(db, `artifacts/${appId}/users/${userId}/favorites`);
         const q = (0, _firestore.query)(favoritesCollectionRef);
         const unsubscribe = (0, _firestore.onSnapshot)(q, async (snapshot)=>{
@@ -26982,7 +27830,7 @@ const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotifica
                     className: "animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1204,
+                    lineNumber: 1634,
                     columnNumber: 11
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -26990,18 +27838,18 @@ const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotifica
                     children: "Cargando favoritos..."
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1205,
+                    lineNumber: 1635,
                     columnNumber: 11
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 1203,
+            lineNumber: 1633,
             columnNumber: 9
         }, undefined)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 1202,
+        lineNumber: 1632,
         columnNumber: 7
     }, undefined);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27013,7 +27861,7 @@ const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotifica
                 children: "Mis Productos Favoritos"
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1213,
+                lineNumber: 1643,
                 columnNumber: 7
             }, undefined),
             " ",
@@ -27022,7 +27870,7 @@ const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotifica
                 children: "No tienes productos guardados en favoritos."
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1215,
+                lineNumber: 1645,
                 columnNumber: 9
             }, undefined) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                 className: "overflow-y-auto flex-1",
@@ -27031,43 +27879,44 @@ const FavoritesScreen = ({ onContactSeller, onLeaveReview, showSimulatedNotifica
                         isFavoriteView: true,
                         onToggleFavorite: ()=>handleRemoveFavorite(item.favoriteDocId),
                         onContactSeller: onContactSeller,
-                        onLeaveReview: onLeaveReview
+                        onLeaveReview: onLeaveReview,
+                        onViewSellerReviews: onViewSellerReviews
                     }, item.id, false, {
                         fileName: "src/App.js",
-                        lineNumber: 1219,
+                        lineNumber: 1649,
                         columnNumber: 13
                     }, undefined))
             }, void 0, false, {
                 fileName: "src/App.js",
-                lineNumber: 1217,
+                lineNumber: 1647,
                 columnNumber: 9
             }, undefined)
         ]
     }, void 0, true, {
         fileName: "src/App.js",
-        lineNumber: 1212,
+        lineNumber: 1642,
         columnNumber: 5
     }, undefined);
 };
-_s8(FavoritesScreen, "CXYFVsDCasp+bxR9NMGHyAbymDI=");
-_c8 = FavoritesScreen;
+_s6(FavoritesScreen, "CXYFVsDCasp+bxR9NMGHyAbymDI=");
+_c7 = FavoritesScreen;
 // Componente de Chat
 const ChatScreen = ({ recipientId, productName, onCloseChat, showSimulatedNotification })=>{
-    _s9();
+    _s7();
     const { db, userId } = (0, _react.useContext)(FirebaseContext);
     const [messages, setMessages] = (0, _react.useState)([]);
     const [newMessage, setNewMessage] = (0, _react.useState)('');
     const messagesEndRef = (0, _react.useRef)(null);
-    // Generar un chatId único y consistente para la conversación entre dos usuarios
+    // Generar un chatId único y consistente para la conversación entre dos users
     const chatId = [
         userId,
         recipientId
     ].sort().join('_');
+    // Efecto para cargar los mensajes del chat en tiempo real
     (0, _react.useEffect)(()=>{
         if (!db || !userId || !recipientId) return;
         const messagesCollectionRef = (0, _firestore.collection)(db, `conversations/${chatId}/messages`);
-        // Ordenar mensajes por timestamp y limitar para mejor rendimiento
-        const q = (0, _firestore.query)(messagesCollectionRef, (0, _firestore.orderBy)('timestamp', 'asc'), (0, _firestore.limit)(50));
+        const q = (0, _firestore.query)(messagesCollectionRef, (0, _firestore.orderBy)('timestamp', 'asc'), (0, _firestore.limit)(50)); // Ordenar por timestamp y limitar mensajes
         const unsubscribe = (0, _firestore.onSnapshot)(q, (snapshot)=>{
             const msgs = snapshot.docs.map((doc)=>({
                     id: doc.id,
@@ -27077,14 +27926,14 @@ const ChatScreen = ({ recipientId, productName, onCloseChat, showSimulatedNotifi
         }, (error)=>{
             console.error("Error al obtener mensajes:", error);
         });
-        return ()=>unsubscribe();
+        return ()=>unsubscribe(); // Limpiar el listener
     }, [
         db,
         userId,
         recipientId,
         chatId
     ]);
-    // Scroll al final de los mensajes cuando se actualizan
+    // Efecto para hacer scroll al final de los mensajes cuando se actualizan
     (0, _react.useEffect)(()=>{
         messagesEndRef.current?.scrollIntoView({
             behavior: "smooth"
@@ -27092,6 +27941,7 @@ const ChatScreen = ({ recipientId, productName, onCloseChat, showSimulatedNotifi
     }, [
         messages
     ]);
+    // Manejador para enviar un mensaje
     const handleSendMessage = async ()=>{
         if (!db || !userId || !recipientId || newMessage.trim() === '') return;
         try {
@@ -27102,7 +27952,7 @@ const ChatScreen = ({ recipientId, productName, onCloseChat, showSimulatedNotifi
                 text: newMessage.trim(),
                 timestamp: new Date().toISOString()
             });
-            setNewMessage('');
+            setNewMessage(''); // Limpiar el campo de entrada
             showSimulatedNotification(`Mensaje enviado a ${recipientId.substring(0, 8)}...`, "info");
         } catch (error) {
             console.error("Error al enviar mensaje:", error);
@@ -27111,148 +27961,140 @@ const ChatScreen = ({ recipientId, productName, onCloseChat, showSimulatedNotifi
     };
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
-        children: [
-            " ",
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "bg-white rounded-xl shadow-2xl w-full max-w-lg h-5/6 flex flex-col",
-                children: [
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "bg-blue-600 p-3 sm:p-4 rounded-t-xl flex justify-between items-center",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
-                                className: "text-lg sm:text-xl font-bold text-white",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "bg-white rounded-xl shadow-2xl w-full max-w-lg h-5/6 flex flex-col",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "bg-blue-600 p-3 sm:p-4 rounded-t-xl flex justify-between items-center",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                            className: "text-lg sm:text-xl font-bold text-white",
+                            children: [
+                                "Chat con ",
+                                recipientId.substring(0, 8),
+                                "... sobre ",
+                                productName
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/App.js",
+                            lineNumber: 1724,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                            className: "text-white text-xl sm:text-2xl font-bold hover:text-gray-200",
+                            onClick: onCloseChat,
+                            children: "\xd7"
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1725,
+                            columnNumber: 11
+                        }, undefined)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/App.js",
+                    lineNumber: 1723,
+                    columnNumber: 9
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col-reverse",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                            ref: messagesEndRef
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1733,
+                            columnNumber: 11
+                        }, undefined),
+                        messages.slice().reverse().map((msg)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                className: `mb-1 sm:mb-2 p-2 sm:p-3 rounded-lg max-w-[80%] text-sm sm:text-base ${msg.senderId === userId ? 'bg-blue-100 self-end text-right' : 'bg-gray-100 self-start text-left'}`,
                                 children: [
-                                    "Chat con ",
-                                    recipientId.substring(0, 8),
-                                    "... sobre ",
-                                    productName
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        className: "text-sm sm:text-base text-gray-800",
+                                        children: msg.text
+                                    }, void 0, false, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 1743,
+                                        columnNumber: 15
+                                    }, undefined),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        className: "text-xs text-gray-500 mt-1",
+                                        children: [
+                                            msg.senderId === userId ? "T\xfa" : msg.senderId.substring(0, 8),
+                                            "... - ",
+                                            new Date(msg.timestamp).toLocaleTimeString()
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/App.js",
+                                        lineNumber: 1744,
+                                        columnNumber: 15
+                                    }, undefined)
                                 ]
-                            }, void 0, true, {
+                            }, msg.id, true, {
                                 fileName: "src/App.js",
-                                lineNumber: 1292,
-                                columnNumber: 11
-                            }, undefined),
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "text-white text-xl sm:text-2xl font-bold hover:text-gray-200",
-                                onClick: onCloseChat,
-                                children: "\xd7"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1293,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1291,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col-reverse",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                ref: messagesEndRef
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1301,
-                                columnNumber: 11
-                            }, undefined),
-                            " ",
-                            messages.slice().reverse().map((msg)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                    className: `mb-1 sm:mb-2 p-2 sm:p-3 rounded-lg max-w-[80%] text-sm sm:text-base ${msg.senderId === userId ? 'bg-blue-100 self-end text-right' : 'bg-gray-100 self-start text-left'}`,
-                                    children: [
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            className: "text-sm sm:text-base text-gray-800",
-                                            children: msg.text
-                                        }, void 0, false, {
-                                            fileName: "src/App.js",
-                                            lineNumber: 1311,
-                                            columnNumber: 15
-                                        }, undefined),
-                                        " ",
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            className: "text-xs text-gray-500 mt-1",
-                                            children: [
-                                                msg.senderId === userId ? "T\xfa" : msg.senderId.substring(0, 8),
-                                                "... - ",
-                                                new Date(msg.timestamp).toLocaleTimeString()
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/App.js",
-                                            lineNumber: 1312,
-                                            columnNumber: 15
-                                        }, undefined)
-                                    ]
-                                }, msg.id, true, {
-                                    fileName: "src/App.js",
-                                    lineNumber: 1303,
-                                    columnNumber: 13
-                                }, undefined))
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1300,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "p-3 sm:p-4 border-t border-gray-200 flex",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                                type: "text",
-                                className: "flex-1 p-2 sm:p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base",
-                                placeholder: "Escribe un mensaje...",
-                                value: newMessage,
-                                onChange: (e)=>setNewMessage(e.target.value),
-                                onKeyPress: (e)=>{
-                                    if (e.key === 'Enter') handleSendMessage();
-                                }
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1319,
-                                columnNumber: 11
-                            }, undefined),
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-5 rounded-r-lg shadow-md transition duration-300 ease-in-out text-sm sm:text-base",
-                                onClick: handleSendMessage,
-                                children: "Enviar"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1331,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1318,
-                        columnNumber: 9
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 1290,
-                columnNumber: 7
-            }, undefined)
-        ]
-    }, void 0, true, {
+                                lineNumber: 1735,
+                                columnNumber: 13
+                            }, undefined))
+                    ]
+                }, void 0, true, {
+                    fileName: "src/App.js",
+                    lineNumber: 1732,
+                    columnNumber: 9
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "p-3 sm:p-4 border-t border-gray-200 flex",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
+                            type: "text",
+                            className: "flex-1 p-2 sm:p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm sm:text-base",
+                            placeholder: "Escribe un mensaje...",
+                            value: newMessage,
+                            onChange: (e)=>setNewMessage(e.target.value),
+                            onKeyPress: (e)=>{
+                                if (e.key === 'Enter') handleSendMessage();
+                            }
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1751,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-5 rounded-r-lg shadow-md transition duration-300 ease-in-out text-sm sm:text-base",
+                            onClick: handleSendMessage,
+                            children: "Enviar"
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1763,
+                            columnNumber: 11
+                        }, undefined)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/App.js",
+                    lineNumber: 1750,
+                    columnNumber: 9
+                }, undefined)
+            ]
+        }, void 0, true, {
+            fileName: "src/App.js",
+            lineNumber: 1722,
+            columnNumber: 7
+        }, undefined)
+    }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 1289,
+        lineNumber: 1721,
         columnNumber: 5
     }, undefined);
 };
-_s9(ChatScreen, "fJiwiRCkrJ6X5g2vofATo+WsPQU=");
-_c9 = ChatScreen;
+_s7(ChatScreen, "fJiwiRCkrJ6X5g2vofATo+WsPQU=");
+_c8 = ChatScreen;
 // Componente para el formulario de reseña
 const ReviewForm = ({ sellerId, productId, onClose, showSimulatedNotification })=>{
-    _s10();
-    const { db, userId, appId } = (0, _react.useContext)(FirebaseContext); // Obtener appId del contexto
+    _s8();
+    const { db, userId, appId } = (0, _react.useContext)(FirebaseContext);
     const [rating, setRating] = (0, _react.useState)(5); // Valor por defecto de 5 estrellas
     const [comment, setComment] = (0, _react.useState)('');
     const [message, setMessage] = (0, _react.useState)('');
     const [isSubmitting, setIsSubmitting] = (0, _react.useState)(false);
+    // Manejador para enviar la reseña
     const handleSubmitReview = async ()=>{
         if (!db || !userId || !sellerId || !rating || !appId) {
             setMessage("Por favor, selecciona una calificaci\xf3n y aseg\xfarate de que la aplicaci\xf3n est\xe9 inicializada.");
@@ -27262,8 +28104,8 @@ const ReviewForm = ({ sellerId, productId, onClose, showSimulatedNotification })
             setMessage("No puedes dejar una rese\xf1a a ti mismo.");
             return;
         }
-        setIsSubmitting(true);
-        setMessage('');
+        setIsSubmitting(true); // Activar indicador de envío
+        setMessage(''); // Limpiar mensajes anteriores
         try {
             const reviewsCollectionRef = (0, _firestore.collection)(db, `artifacts/${appId}/users/${sellerId}/reviews`);
             await (0, _firestore.addDoc)(reviewsCollectionRef, {
@@ -27275,7 +28117,7 @@ const ReviewForm = ({ sellerId, productId, onClose, showSimulatedNotification })
             });
             setMessage("\xa1Rese\xf1a enviada con \xe9xito!");
             showSimulatedNotification(`Rese\xf1a enviada a ${sellerId.substring(0, 8)}...`, "success");
-            setRating(5);
+            setRating(5); // Resetear formulario
             setComment('');
             setTimeout(onClose, 1500); // Cerrar el formulario después de un breve mensaje de éxito
         } catch (error) {
@@ -27283,273 +28125,9 @@ const ReviewForm = ({ sellerId, productId, onClose, showSimulatedNotification })
             setMessage(`Error al enviar rese\xf1a: ${error.message}`);
             showSimulatedNotification(`Error al enviar rese\xf1a: ${error.message}`, "error");
         } finally{
-            setIsSubmitting(false);
+            setIsSubmitting(false); // Desactivar indicador de envío
         }
     };
-    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
-        children: [
-            " ",
-            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                className: "bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col p-4 sm:p-6",
-                children: [
-                    " ",
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "flex justify-between items-center mb-3 sm:mb-4",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
-                                className: "text-xl sm:text-2xl font-bold text-blue-700",
-                                children: [
-                                    "Dejar Rese\xf1a para ",
-                                    sellerId.substring(0, 8),
-                                    "..."
-                                ]
-                            }, void 0, true, {
-                                fileName: "src/App.js",
-                                lineNumber: 1391,
-                                columnNumber: 11
-                            }, undefined),
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                className: "text-gray-600 text-xl sm:text-2xl font-bold hover:text-gray-800",
-                                onClick: onClose,
-                                children: "\xd7"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1392,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1390,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "mb-3 sm:mb-4",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                                htmlFor: "rating",
-                                className: "block text-gray-700 text-sm font-bold mb-1 sm:mb-2",
-                                children: "Calificaci\xf3n:"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1401,
-                                columnNumber: 11
-                            }, undefined),
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
-                                id: "rating",
-                                className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg bg-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-300",
-                                value: rating,
-                                onChange: (e)=>setRating(e.target.value),
-                                children: [
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                        value: "5",
-                                        children: "5 Estrellas - Excelente"
-                                    }, void 0, false, {
-                                        fileName: "src/App.js",
-                                        lineNumber: 1408,
-                                        columnNumber: 13
-                                    }, undefined),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                        value: "4",
-                                        children: "4 Estrellas - Muy Bueno"
-                                    }, void 0, false, {
-                                        fileName: "src/App.js",
-                                        lineNumber: 1409,
-                                        columnNumber: 13
-                                    }, undefined),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                        value: "3",
-                                        children: "3 Estrellas - Bueno"
-                                    }, void 0, false, {
-                                        fileName: "src/App.js",
-                                        lineNumber: 1410,
-                                        columnNumber: 13
-                                    }, undefined),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                        value: "2",
-                                        children: "2 Estrellas - Regular"
-                                    }, void 0, false, {
-                                        fileName: "src/App.js",
-                                        lineNumber: 1411,
-                                        columnNumber: 13
-                                    }, undefined),
-                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                        value: "1",
-                                        children: "1 Estrella - Malo"
-                                    }, void 0, false, {
-                                        fileName: "src/App.js",
-                                        lineNumber: 1412,
-                                        columnNumber: 13
-                                    }, undefined)
-                                ]
-                            }, void 0, true, {
-                                fileName: "src/App.js",
-                                lineNumber: 1402,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1400,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                        className: "mb-3 sm:mb-4",
-                        children: [
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                                htmlFor: "comment",
-                                className: "block text-gray-700 text-sm font-bold mb-1 sm:mb-2",
-                                children: "Comentario (opcional):"
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1417,
-                                columnNumber: 11
-                            }, undefined),
-                            " ",
-                            /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
-                                id: "comment",
-                                className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg bg-white text-sm sm:text-base h-20 sm:h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-300",
-                                placeholder: "Escribe tu comentario aqu\xed...",
-                                value: comment,
-                                onChange: (e)=>setComment(e.target.value),
-                                rows: 4
-                            }, void 0, false, {
-                                fileName: "src/App.js",
-                                lineNumber: 1418,
-                                columnNumber: 11
-                            }, undefined)
-                        ]
-                    }, void 0, true, {
-                        fileName: "src/App.js",
-                        lineNumber: 1416,
-                        columnNumber: 9
-                    }, undefined),
-                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                        className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-xl w-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-base",
-                        onClick: handleSubmitReview,
-                        disabled: isSubmitting,
-                        children: isSubmitting ? 'Enviando...' : "Enviar Rese\xf1a"
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 1428,
-                        columnNumber: 9
-                    }, undefined),
-                    message && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                        className: `mt-3 sm:mt-4 text-xs sm:text-sm text-center ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`,
-                        children: message
-                    }, void 0, false, {
-                        fileName: "src/App.js",
-                        lineNumber: 1435,
-                        columnNumber: 21
-                    }, undefined)
-                ]
-            }, void 0, true, {
-                fileName: "src/App.js",
-                lineNumber: 1389,
-                columnNumber: 7
-            }, undefined)
-        ]
-    }, void 0, true, {
-        fileName: "src/App.js",
-        lineNumber: 1388,
-        columnNumber: 5
-    }, undefined);
-};
-_s10(ReviewForm, "ySbEya0o7424BHgMspOGZKVhs1U=");
-_c10 = ReviewForm;
-// Nuevo componente para la configuración de perfil
-const ProfileSettingsForm = ({ onClose, showSimulatedNotification })=>{
-    _s11();
-    const { db, userId, appId } = (0, _react.useContext)(FirebaseContext); // Obtener appId del contexto
-    const [username, setUsername] = (0, _react.useState)('');
-    const [contactInfo, setContactInfo] = (0, _react.useState)('');
-    const [message, setMessage] = (0, _react.useState)('');
-    const [loading, setLoading] = (0, _react.useState)(true);
-    const [isSubmitting, setIsSubmitting] = (0, _react.useState)(false);
-    (0, _react.useEffect)(()=>{
-        const fetchProfile = async ()=>{
-            if (!db || !userId || !appId) return; // Asegurarse de que appId esté disponible
-            try {
-                const profileDocRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${userId}/profile`, 'userProfile');
-                const docSnap = await (0, _firestore.getDoc)(profileDocRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setUsername(data.username || '');
-                    setContactInfo(data.contactInfo || '');
-                }
-            } catch (error) {
-                console.error("Error al cargar el perfil:", error);
-                setMessage("Error al cargar la informaci\xf3n del perfil.");
-            } finally{
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, [
-        db,
-        userId,
-        appId
-    ]); // Añadir appId a las dependencias
-    const handleSaveProfile = async ()=>{
-        if (!db || !userId || !appId) return; // Asegurarse de que appId esté disponible
-        setIsSubmitting(true);
-        setMessage('');
-        try {
-            const profileDocRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${userId}/profile`, 'userProfile');
-            await (0, _firestore.setDoc)(profileDocRef, {
-                username: username.trim(),
-                contactInfo: contactInfo.trim(),
-                lastUpdated: new Date().toISOString()
-            }, {
-                merge: true
-            }); // Usar merge para no sobrescribir otros campos si existen
-            showSimulatedNotification("Perfil actualizado con \xe9xito.", "success");
-            setTimeout(onClose, 1500);
-        } catch (error) {
-            console.error("Error al guardar el perfil:", error);
-            setMessage(`Error al guardar el perfil: ${error.message}`);
-            showSimulatedNotification(`Error al guardar el perfil: ${error.message}`, "error");
-        } finally{
-            setIsSubmitting(false);
-        }
-    };
-    if (loading) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-        className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
-        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-            className: "bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col p-4 sm:p-6 items-center",
-            children: [
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                    className: "animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
-                }, void 0, false, {
-                    fileName: "src/App.js",
-                    lineNumber: 1498,
-                    columnNumber: 11
-                }, undefined),
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                    className: "mt-4 text-base text-gray-700",
-                    children: "Cargando perfil..."
-                }, void 0, false, {
-                    fileName: "src/App.js",
-                    lineNumber: 1499,
-                    columnNumber: 11
-                }, undefined)
-            ]
-        }, void 0, true, {
-            fileName: "src/App.js",
-            lineNumber: 1497,
-            columnNumber: 9
-        }, undefined)
-    }, void 0, false, {
-        fileName: "src/App.js",
-        lineNumber: 1496,
-        columnNumber: 7
-    }, undefined);
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
         children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27560,10 +28138,14 @@ const ProfileSettingsForm = ({ onClose, showSimulatedNotification })=>{
                     children: [
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
                             className: "text-xl sm:text-2xl font-bold text-blue-700",
-                            children: "Configuraci\xf3n de Perfil"
-                        }, void 0, false, {
+                            children: [
+                                "Dejar Rese\xf1a para ",
+                                sellerId.substring(0, 8),
+                                "..."
+                            ]
+                        }, void 0, true, {
                             fileName: "src/App.js",
-                            lineNumber: 1509,
+                            lineNumber: 1824,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27572,92 +28154,123 @@ const ProfileSettingsForm = ({ onClose, showSimulatedNotification })=>{
                             children: "\xd7"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1510,
+                            lineNumber: 1825,
                             columnNumber: 11
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/App.js",
-                    lineNumber: 1508,
+                    lineNumber: 1823,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                     className: "mb-3 sm:mb-4",
                     children: [
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                            htmlFor: "username",
+                            htmlFor: "rating",
                             className: "block text-gray-700 text-sm font-bold mb-1 sm:mb-2",
-                            children: "Nombre de Usuario:"
+                            children: "Calificaci\xf3n:"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1519,
+                            lineNumber: 1834,
                             columnNumber: 11
                         }, undefined),
-                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                            id: "username",
-                            type: "text",
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
+                            id: "rating",
                             className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg bg-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-300",
-                            value: username,
-                            onChange: (e)=>setUsername(e.target.value),
-                            placeholder: "Tu nombre de usuario"
-                        }, void 0, false, {
+                            value: rating,
+                            onChange: (e)=>setRating(e.target.value),
+                            children: [
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: "5",
+                                    children: "5 Estrellas - Excelente"
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1841,
+                                    columnNumber: 13
+                                }, undefined),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: "4",
+                                    children: "4 Estrellas - Muy Bueno"
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1842,
+                                    columnNumber: 13
+                                }, undefined),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: "3",
+                                    children: "3 Estrellas - Bueno"
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1843,
+                                    columnNumber: 13
+                                }, undefined),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: "2",
+                                    children: "2 Estrellas - Regular"
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1844,
+                                    columnNumber: 13
+                                }, undefined),
+                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
+                                    value: "1",
+                                    children: "1 Estrella - Malo"
+                                }, void 0, false, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1845,
+                                    columnNumber: 13
+                                }, undefined)
+                            ]
+                        }, void 0, true, {
                             fileName: "src/App.js",
-                            lineNumber: 1520,
+                            lineNumber: 1835,
                             columnNumber: 11
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/App.js",
-                    lineNumber: 1518,
+                    lineNumber: 1833,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                     className: "mb-3 sm:mb-4",
                     children: [
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
-                            htmlFor: "contactInfo",
+                            htmlFor: "comment",
                             className: "block text-gray-700 text-sm font-bold mb-1 sm:mb-2",
-                            children: "Informaci\xf3n de Contacto:"
+                            children: "Comentario (opcional):"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1531,
+                            lineNumber: 1850,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("textarea", {
-                            id: "contactInfo",
+                            id: "comment",
                             className: "w-full p-2 sm:p-3 border border-blue-200 rounded-lg bg-white text-sm sm:text-base h-20 sm:h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-300",
-                            placeholder: "Tu informaci\xf3n de contacto (ej: email, tel\xe9fono, redes sociales)",
-                            value: contactInfo,
-                            onChange: (e)=>setContactInfo(e.target.value),
+                            placeholder: "Escribe tu comentario aqu\xed...",
+                            value: comment,
+                            onChange: (e)=>setComment(e.target.value),
                             rows: 4
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1532,
+                            lineNumber: 1851,
                             columnNumber: 11
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/App.js",
-                    lineNumber: 1530,
+                    lineNumber: 1849,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
                     className: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-xl w-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-base",
-                    onClick: handleSaveProfile,
+                    onClick: handleSubmitReview,
                     disabled: isSubmitting,
-                    children: isSubmitting ? 'Guardando...' : 'Guardar Perfil'
+                    children: isSubmitting ? 'Enviando...' : "Enviar Rese\xf1a"
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1542,
-                    columnNumber: 9
-                }, undefined),
-                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                    className: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-xl w-full mt-2 sm:mt-3 shadow-md transition duration-300 ease-in-out transform hover:scale-105",
-                    onClick: onClose,
-                    children: "Cancelar"
-                }, void 0, false, {
-                    fileName: "src/App.js",
-                    lineNumber: 1549,
+                    lineNumber: 1861,
                     columnNumber: 9
                 }, undefined),
                 message && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27665,24 +28278,240 @@ const ProfileSettingsForm = ({ onClose, showSimulatedNotification })=>{
                     children: message
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1555,
+                    lineNumber: 1868,
                     columnNumber: 21
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 1507,
+            lineNumber: 1822,
             columnNumber: 7
         }, undefined)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 1506,
+        lineNumber: 1821,
         columnNumber: 5
     }, undefined);
 };
-_s11(ProfileSettingsForm, "6plo74W2gG3kD3QUHu7kgG46xuY=");
-_c11 = ProfileSettingsForm;
-// Nuevo componente para la Política de Privacidad
+_s8(ReviewForm, "ySbEya0o7424BHgMspOGZKVhs1U=");
+_c9 = ReviewForm;
+// Nuevo componente para mostrar reseñas de un user
+const ReviewsDisplay = ({ targetUserId, onClose, showSimulatedNotification })=>{
+    _s9();
+    const { db, appId } = (0, _react.useContext)(FirebaseContext);
+    const [reviews, setReviews] = (0, _react.useState)([]);
+    const [loading, setLoading] = (0, _react.useState)(true);
+    const [averageRating, setAverageRating] = (0, _react.useState)(0);
+    const [targetUserName, setTargetUserName] = (0, _react.useState)('este user'); // Para mostrar el nombre en lugar del ID
+    // Efecto para cargar las reseñas y el perfil del user objetivo
+    (0, _react.useEffect)(()=>{
+        const fetchReviewsAndProfile = async ()=>{
+            if (!db || !appId || !targetUserId) return;
+            setLoading(true);
+            // Obtener el perfil del user objetivo para mostrar su nombre
+            try {
+                const profileDocRef = (0, _firestore.doc)(db, `artifacts/${appId}/users/${targetUserId}/profiles`, targetUserId);
+                const profileSnap = await (0, _firestore.getDoc)(profileDocRef);
+                if (profileSnap.exists()) setTargetUserName(profileSnap.data().name || targetUserId.substring(0, 8) + '...');
+                else setTargetUserName(targetUserId.substring(0, 8) + '...');
+            } catch (error) {
+                console.error("Error al obtener el perfil del user objetivo:", error);
+                setTargetUserName(targetUserId.substring(0, 8) + '...'); // Fallback al ID
+            }
+            // Obtener las reseñas para el user objetivo
+            const reviewsCollectionRef = (0, _firestore.collection)(db, `artifacts/${appId}/users/${targetUserId}/reviews`);
+            const q = (0, _firestore.query)(reviewsCollectionRef, (0, _firestore.orderBy)('timestamp', 'desc')); // Ordenar por fecha descendente
+            const unsubscribe = (0, _firestore.onSnapshot)(q, (snapshot)=>{
+                const reviewsList = snapshot.docs.map((doc)=>({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                setReviews(reviewsList);
+                if (reviewsList.length > 0) {
+                    const totalRating = reviewsList.reduce((sum, review)=>sum + review.rating, 0);
+                    setAverageRating((totalRating / reviewsList.length).toFixed(1)); // Calcular promedio
+                } else setAverageRating(0);
+                setLoading(false);
+            }, (error)=>{
+                console.error("Error al obtener rese\xf1as:", error);
+                showSimulatedNotification("Error al cargar las rese\xf1as.", "error");
+                setLoading(false);
+            });
+            return ()=>unsubscribe(); // Limpiar el listener
+        };
+        fetchReviewsAndProfile();
+    }, [
+        db,
+        appId,
+        targetUserId,
+        showSimulatedNotification
+    ]);
+    // Mostrar un spinner de carga mientras se obtienen las reseñas
+    if (loading) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col p-4 sm:p-6 items-center",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-blue-500"
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 1938,
+                    columnNumber: 11
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                    className: "mt-4 text-base text-gray-700",
+                    children: "Cargando rese\xf1as..."
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 1939,
+                    columnNumber: 11
+                }, undefined)
+            ]
+        }, void 0, true, {
+            fileName: "src/App.js",
+            lineNumber: 1937,
+            columnNumber: 9
+        }, undefined)
+    }, void 0, false, {
+        fileName: "src/App.js",
+        lineNumber: 1936,
+        columnNumber: 7
+    }, undefined);
+    return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+        className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
+        children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+            className: "bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col p-4 sm:p-6 overflow-y-auto max-h-[90vh]",
+            children: [
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                    className: "flex justify-between items-center mb-3 sm:mb-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h2", {
+                            className: "text-xl sm:text-2xl font-bold text-blue-700",
+                            children: [
+                                "Rese\xf1as de ",
+                                targetUserName
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/App.js",
+                            lineNumber: 1949,
+                            columnNumber: 11
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                            className: "text-gray-600 text-xl sm:text-2xl font-bold hover:text-gray-800",
+                            onClick: onClose,
+                            children: "\xd7"
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1950,
+                            columnNumber: 11
+                        }, undefined)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/App.js",
+                    lineNumber: 1948,
+                    columnNumber: 9
+                }, undefined),
+                reviews.length > 0 ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
+                    children: [
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                            className: "text-lg font-semibold text-gray-700 mb-4 text-center",
+                            children: [
+                                "Calificaci\xf3n Promedio: ",
+                                averageRating,
+                                " / 5"
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/App.js",
+                            lineNumber: 1960,
+                            columnNumber: 13
+                        }, undefined),
+                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                            className: "space-y-4",
+                            children: reviews.map((review)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
+                                    className: "bg-gray-50 p-4 rounded-lg shadow-sm border-l-4 border-purple-500",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                            className: "font-bold text-purple-800 text-lg",
+                                            children: [
+                                                "Calificaci\xf3n: ",
+                                                review.rating,
+                                                " / 5"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "src/App.js",
+                                            lineNumber: 1964,
+                                            columnNumber: 19
+                                        }, undefined),
+                                        review.comment && /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                            className: "text-gray-700 italic mt-1",
+                                            children: [
+                                                '"',
+                                                review.comment,
+                                                '"'
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "src/App.js",
+                                            lineNumber: 1965,
+                                            columnNumber: 38
+                                        }, undefined),
+                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                            className: "text-xs text-gray-500 mt-2",
+                                            children: [
+                                                "Por: ",
+                                                review.reviewerId.substring(0, 8),
+                                                "... el ",
+                                                new Date(review.timestamp).toLocaleDateString()
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "src/App.js",
+                                            lineNumber: 1966,
+                                            columnNumber: 19
+                                        }, undefined)
+                                    ]
+                                }, review.id, true, {
+                                    fileName: "src/App.js",
+                                    lineNumber: 1963,
+                                    columnNumber: 17
+                                }, undefined))
+                        }, void 0, false, {
+                            fileName: "src/App.js",
+                            lineNumber: 1961,
+                            columnNumber: 13
+                        }, undefined)
+                    ]
+                }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                    className: "text-gray-600 italic text-center text-base mt-4",
+                    children: "Este user a\xfan no ha recibido rese\xf1as."
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 1974,
+                    columnNumber: 11
+                }, undefined),
+                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
+                    className: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-xl w-full mt-6 shadow-md transition duration-300 ease-in-out transform hover:scale-105",
+                    onClick: onClose,
+                    children: "Cerrar"
+                }, void 0, false, {
+                    fileName: "src/App.js",
+                    lineNumber: 1977,
+                    columnNumber: 9
+                }, undefined)
+            ]
+        }, void 0, true, {
+            fileName: "src/App.js",
+            lineNumber: 1947,
+            columnNumber: 7
+        }, undefined)
+    }, void 0, false, {
+        fileName: "src/App.js",
+        lineNumber: 1946,
+        columnNumber: 5
+    }, undefined);
+};
+_s9(ReviewsDisplay, "8M8GAG3QRdK5n+US9TNlALTb9Rg=");
+_c10 = ReviewsDisplay;
+// Componente para la Política de Privacidad
 const PrivacyPolicyScreen = ({ onClose })=>{
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
         className: "fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-2 sm:p-4",
@@ -27697,7 +28526,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "Pol\xedtica de Privacidad"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1567,
+                            lineNumber: 1994,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -27706,25 +28535,24 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "\xd7"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1568,
+                            lineNumber: 1995,
                             columnNumber: 11
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/App.js",
-                    lineNumber: 1566,
+                    lineNumber: 1993,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                     className: "flex-1 overflow-y-auto pr-2",
                     children: [
-                        " ",
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                             className: "mb-4 text-sm sm:text-base text-gray-700",
                             children: "En Cambiazo, nos comprometemos a proteger su privacidad. Esta pol\xedtica de privacidad explica c\xf3mo recopilamos, usamos y protegemos su informaci\xf3n personal."
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1577,
+                            lineNumber: 2004,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27732,7 +28560,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "1. Informaci\xf3n que Recopilamos"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1581,
+                            lineNumber: 2008,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27740,52 +28568,52 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "Recopilamos informaci\xf3n que usted nos proporciona directamente, como:"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1582,
+                            lineNumber: 2009,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
                             className: "list-disc list-inside mb-4 text-sm sm:text-base text-gray-700 ml-4",
                             children: [
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
-                                    children: "**Informaci\xf3n de Perfil:** Nombre de usuario, informaci\xf3n de contacto (si la proporciona)."
+                                    children: "**Informaci\xf3n de Perfil:** Nombre de user, informaci\xf3n de contacto (si la proporciona)."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1586,
+                                    lineNumber: 2013,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
                                     children: "**Informaci\xf3n de Publicaci\xf3n:** Detalles de productos o trabajos que publica (nombre, descripci\xf3n, precio, categor\xeda, ciudad, condici\xf3n, im\xe1genes)."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1587,
+                                    lineNumber: 2014,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
                                     children: "**Mensajes:** Contenido de los mensajes enviados a trav\xe9s de nuestro sistema de chat."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1588,
+                                    lineNumber: 2015,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
-                                    children: "**Rese\xf1as:** Calificaciones y comentarios que deja sobre otros usuarios o productos."
+                                    children: "**Rese\xf1as:** Calificaciones y comentarios que deja sobre otros users o productos."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1589,
+                                    lineNumber: 2016,
                                     columnNumber: 13
                                 }, undefined)
                             ]
                         }, void 0, true, {
                             fileName: "src/App.js",
-                            lineNumber: 1585,
+                            lineNumber: 2012,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
                             className: "mb-4 text-sm sm:text-base text-gray-700",
-                            children: "Tambi\xe9n recopilamos autom\xe1ticamente cierta informaci\xf3n cuando utiliza la aplicaci\xf3n, como su ID de usuario an\xf3nimo (para fines de autenticaci\xf3n y datos de usuario privados) y datos de uso de la aplicaci\xf3n."
+                            children: "Tambi\xe9n recopilamos autom\xe1ticamente cierta informaci\xf3n cuando utiliza la aplicaci\xf3n, como su ID de user an\xf3nimo (para fines de autenticaci\xf3n y datos de user privados) y datos de uso de la aplicaci\xf3n."
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1591,
+                            lineNumber: 2018,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27793,7 +28621,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "2. Uso de la Informaci\xf3n"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1595,
+                            lineNumber: 2022,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27801,7 +28629,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "Utilizamos la informaci\xf3n recopilada para:"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1596,
+                            lineNumber: 2023,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
@@ -27811,41 +28639,41 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                                     children: "Facilitar la publicaci\xf3n y b\xfasqueda de productos y trabajos."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1600,
+                                    lineNumber: 2027,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
-                                    children: "Permitir la comunicaci\xf3n entre usuarios (chat)."
+                                    children: "Permitir la comunicaci\xf3n entre users (chat)."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1601,
+                                    lineNumber: 2028,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
                                     children: "Gestionar sus productos favoritos."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1602,
+                                    lineNumber: 2029,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
-                                    children: "Mejorar la experiencia del usuario y la funcionalidad de la aplicaci\xf3n."
+                                    children: "Mejorar la experiencia del user y la funcionalidad de la aplicaci\xf3n."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1603,
+                                    lineNumber: 2030,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
                                     children: "Realizar an\xe1lisis internos y de rendimiento."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1604,
+                                    lineNumber: 2031,
                                     columnNumber: 13
                                 }, undefined)
                             ]
                         }, void 0, true, {
                             fileName: "src/App.js",
-                            lineNumber: 1599,
+                            lineNumber: 2026,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27853,7 +28681,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "3. Compartir Informaci\xf3n"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1607,
+                            lineNumber: 2034,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27861,7 +28689,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "No compartimos su informaci\xf3n personal con terceros, excepto en las siguientes circunstancias:"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1608,
+                            lineNumber: 2035,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("ul", {
@@ -27871,27 +28699,27 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                                     children: "Con su consentimiento expl\xedcito."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1612,
+                                    lineNumber: 2039,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
                                     children: "Para cumplir con obligaciones legales."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1613,
+                                    lineNumber: 2040,
                                     columnNumber: 13
                                 }, undefined),
                                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("li", {
-                                    children: "Para proteger los derechos, la propiedad o la seguridad de Cambiazo, nuestros usuarios o el p\xfablico."
+                                    children: "Para proteger los derechos, la propiedad o la seguridad de Cambiazo, nuestros users o el p\xfablico."
                                 }, void 0, false, {
                                     fileName: "src/App.js",
-                                    lineNumber: 1614,
+                                    lineNumber: 2041,
                                     columnNumber: 13
                                 }, undefined)
                             ]
                         }, void 0, true, {
                             fileName: "src/App.js",
-                            lineNumber: 1611,
+                            lineNumber: 2038,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27899,7 +28727,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "4. Seguridad de la Informaci\xf3n"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1617,
+                            lineNumber: 2044,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27907,7 +28735,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "Implementamos medidas de seguridad razonables para proteger su informaci\xf3n personal contra el acceso no autorizado, la alteraci\xf3n, la divulgaci\xf3n o la destrucci\xf3n. Sin embargo, ninguna transmisi\xf3n de datos por Internet o sistema de almacenamiento electr\xf3nico es 100% segura."
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1618,
+                            lineNumber: 2045,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27918,12 +28746,12 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                                 className: "rounded-lg shadow-md w-full max-w-xs"
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 1622,
+                                lineNumber: 2049,
                                 columnNumber: 13
                             }, undefined)
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1621,
+                            lineNumber: 2048,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27931,7 +28759,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "5. Sus Derechos"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1629,
+                            lineNumber: 2056,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27939,23 +28767,23 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: 'Usted tiene derecho a acceder, corregir o eliminar su informaci\xf3n personal. Puede gestionar la mayor\xeda de sus datos a trav\xe9s de la secci\xf3n "Configuraci\xf3n de Perfil" de la aplicaci\xf3n. Para solicitudes adicionales, cont\xe1ctenos.'
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1630,
+                            lineNumber: 2057,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                             className: "flex justify-center my-4",
                             children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("img", {
-                                src: "https://placehold.co/400x200/90EE90/000000?text=Control+de+Usuario",
-                                alt: "Representaci\xf3n de control de usuario",
+                                src: "https://placehold.co/400x200/90EE90/000000?text=Control+de+User",
+                                alt: "Representaci\xf3n de control de user",
                                 className: "rounded-lg shadow-md w-full max-w-xs"
                             }, void 0, false, {
                                 fileName: "src/App.js",
-                                lineNumber: 1634,
+                                lineNumber: 2061,
                                 columnNumber: 13
                             }, undefined)
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1633,
+                            lineNumber: 2060,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
@@ -27963,7 +28791,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "6. Cambios a esta Pol\xedtica"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1641,
+                            lineNumber: 2068,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27971,7 +28799,7 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "Podemos actualizar esta pol\xedtica de privacidad ocasionalmente. Le notificaremos sobre cualquier cambio publicando la nueva pol\xedtica en esta p\xe1gina. Se le recomienda revisar esta pol\xedtica peri\xf3dicamente para cualquier cambio."
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1642,
+                            lineNumber: 2069,
                             columnNumber: 11
                         }, undefined),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
@@ -27979,13 +28807,13 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                             children: "\xdaltima actualizaci\xf3n: 6 de Julio de 2025"
                         }, void 0, false, {
                             fileName: "src/App.js",
-                            lineNumber: 1646,
+                            lineNumber: 2073,
                             columnNumber: 11
                         }, undefined)
                     ]
                 }, void 0, true, {
                     fileName: "src/App.js",
-                    lineNumber: 1576,
+                    lineNumber: 2003,
                     columnNumber: 9
                 }, undefined),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -27996,3680 +28824,47 @@ const PrivacyPolicyScreen = ({ onClose })=>{
                         children: "Cerrar"
                     }, void 0, false, {
                         fileName: "src/App.js",
-                        lineNumber: 1652,
+                        lineNumber: 2079,
                         columnNumber: 11
                     }, undefined)
                 }, void 0, false, {
                     fileName: "src/App.js",
-                    lineNumber: 1651,
+                    lineNumber: 2078,
                     columnNumber: 9
                 }, undefined)
             ]
         }, void 0, true, {
             fileName: "src/App.js",
-            lineNumber: 1565,
+            lineNumber: 1992,
             columnNumber: 7
         }, undefined)
     }, void 0, false, {
         fileName: "src/App.js",
-        lineNumber: 1564,
+        lineNumber: 1991,
         columnNumber: 5
     }, undefined);
 };
-_c12 = PrivacyPolicyScreen;
-exports.default = App;
-var _c, _c1, _c2, _c3, _c4, _c5, _c6, _c7, _c8, _c9, _c10, _c11, _c12;
-$RefreshReg$(_c, "NotificationBanner");
+_c11 = PrivacyPolicyScreen;
+var _c, _c1, _c2, _c3, _c4, _c5, _c6, _c7, _c8, _c9, _c10, _c11;
+$RefreshReg$(_c, "MessageBox");
 $RefreshReg$(_c1, "App");
-$RefreshReg$(_c2, "MainApp");
-$RefreshReg$(_c3, "ProductCard");
-$RefreshReg$(_c4, "ProductsScreen");
-$RefreshReg$(_c5, "PostProductForm");
-$RefreshReg$(_c6, "JobsScreen");
-$RefreshReg$(_c7, "PostJobForm");
-$RefreshReg$(_c8, "FavoritesScreen");
-$RefreshReg$(_c9, "ChatScreen");
-$RefreshReg$(_c10, "ReviewForm");
-$RefreshReg$(_c11, "ProfileSettingsForm");
-$RefreshReg$(_c12, "PrivacyPolicyScreen");
+$RefreshReg$(_c2, "ProductCard");
+$RefreshReg$(_c3, "ProductsScreen");
+$RefreshReg$(_c4, "PostProductForm");
+$RefreshReg$(_c5, "JobsScreen");
+$RefreshReg$(_c6, "PostJobForm");
+$RefreshReg$(_c7, "FavoritesScreen");
+$RefreshReg$(_c8, "ChatScreen");
+$RefreshReg$(_c9, "ReviewForm");
+$RefreshReg$(_c10, "ReviewsDisplay");
+$RefreshReg$(_c11, "PrivacyPolicyScreen");
 
   $parcel$ReactRefreshHelpers$4089.postlude(module);
 } finally {
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","firebase/app":"cYOm2","firebase/auth":"4ZBbi","firebase/firestore":"3RBs1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi"}],"cYOm2":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _app = require("@firebase/app");
-parcelHelpers.exportAll(_app, exports);
-var name = "firebase";
-var version = "10.14.1";
-/**
- * @license
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ (0, _app.registerVersion)(name, version, 'app');
-
-},{"@firebase/app":"hLmie","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hLmie":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "FirebaseError", ()=>(0, _util.FirebaseError));
-parcelHelpers.export(exports, "SDK_VERSION", ()=>SDK_VERSION);
-parcelHelpers.export(exports, "_DEFAULT_ENTRY_NAME", ()=>DEFAULT_ENTRY_NAME);
-parcelHelpers.export(exports, "_addComponent", ()=>_addComponent);
-parcelHelpers.export(exports, "_addOrOverwriteComponent", ()=>_addOrOverwriteComponent);
-parcelHelpers.export(exports, "_apps", ()=>_apps);
-parcelHelpers.export(exports, "_clearComponents", ()=>_clearComponents);
-parcelHelpers.export(exports, "_components", ()=>_components);
-parcelHelpers.export(exports, "_getProvider", ()=>_getProvider);
-parcelHelpers.export(exports, "_isFirebaseApp", ()=>_isFirebaseApp);
-parcelHelpers.export(exports, "_isFirebaseServerApp", ()=>_isFirebaseServerApp);
-parcelHelpers.export(exports, "_registerComponent", ()=>_registerComponent);
-parcelHelpers.export(exports, "_removeServiceInstance", ()=>_removeServiceInstance);
-parcelHelpers.export(exports, "_serverApps", ()=>_serverApps);
-parcelHelpers.export(exports, "deleteApp", ()=>deleteApp);
-parcelHelpers.export(exports, "getApp", ()=>getApp);
-parcelHelpers.export(exports, "getApps", ()=>getApps);
-parcelHelpers.export(exports, "initializeApp", ()=>initializeApp);
-parcelHelpers.export(exports, "initializeServerApp", ()=>initializeServerApp);
-parcelHelpers.export(exports, "onLog", ()=>onLog);
-parcelHelpers.export(exports, "registerVersion", ()=>registerVersion);
-parcelHelpers.export(exports, "setLogLevel", ()=>setLogLevel);
-var _component = require("@firebase/component");
-var _logger = require("@firebase/logger");
-var _util = require("@firebase/util");
-var _idb = require("idb");
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ class PlatformLoggerServiceImpl {
-    constructor(container){
-        this.container = container;
-    }
-    // In initial implementation, this will be called by installations on
-    // auth token refresh, and installations will send this string.
-    getPlatformInfoString() {
-        const providers = this.container.getProviders();
-        // Loop through providers and get library/version pairs from any that are
-        // version components.
-        return providers.map((provider)=>{
-            if (isVersionServiceProvider(provider)) {
-                const service = provider.getImmediate();
-                return `${service.library}/${service.version}`;
-            } else return null;
-        }).filter((logString)=>logString).join(' ');
-    }
-}
-/**
- *
- * @param provider check if this provider provides a VersionService
- *
- * NOTE: Using Provider<'app-version'> is a hack to indicate that the provider
- * provides VersionService. The provider is not necessarily a 'app-version'
- * provider.
- */ function isVersionServiceProvider(provider) {
-    const component = provider.getComponent();
-    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */ ;
-}
-const name$q = "@firebase/app";
-const version$1 = "0.10.13";
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const logger = new (0, _logger.Logger)('@firebase/app');
-const name$p = "@firebase/app-compat";
-const name$o = "@firebase/analytics-compat";
-const name$n = "@firebase/analytics";
-const name$m = "@firebase/app-check-compat";
-const name$l = "@firebase/app-check";
-const name$k = "@firebase/auth";
-const name$j = "@firebase/auth-compat";
-const name$i = "@firebase/database";
-const name$h = "@firebase/data-connect";
-const name$g = "@firebase/database-compat";
-const name$f = "@firebase/functions";
-const name$e = "@firebase/functions-compat";
-const name$d = "@firebase/installations";
-const name$c = "@firebase/installations-compat";
-const name$b = "@firebase/messaging";
-const name$a = "@firebase/messaging-compat";
-const name$9 = "@firebase/performance";
-const name$8 = "@firebase/performance-compat";
-const name$7 = "@firebase/remote-config";
-const name$6 = "@firebase/remote-config-compat";
-const name$5 = "@firebase/storage";
-const name$4 = "@firebase/storage-compat";
-const name$3 = "@firebase/firestore";
-const name$2 = "@firebase/vertexai-preview";
-const name$1 = "@firebase/firestore-compat";
-const name = "firebase";
-const version = "10.14.1";
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * The default app name
- *
- * @internal
- */ const DEFAULT_ENTRY_NAME = '[DEFAULT]';
-const PLATFORM_LOG_STRING = {
-    [name$q]: 'fire-core',
-    [name$p]: 'fire-core-compat',
-    [name$n]: 'fire-analytics',
-    [name$o]: 'fire-analytics-compat',
-    [name$l]: 'fire-app-check',
-    [name$m]: 'fire-app-check-compat',
-    [name$k]: 'fire-auth',
-    [name$j]: 'fire-auth-compat',
-    [name$i]: 'fire-rtdb',
-    [name$h]: 'fire-data-connect',
-    [name$g]: 'fire-rtdb-compat',
-    [name$f]: 'fire-fn',
-    [name$e]: 'fire-fn-compat',
-    [name$d]: 'fire-iid',
-    [name$c]: 'fire-iid-compat',
-    [name$b]: 'fire-fcm',
-    [name$a]: 'fire-fcm-compat',
-    [name$9]: 'fire-perf',
-    [name$8]: 'fire-perf-compat',
-    [name$7]: 'fire-rc',
-    [name$6]: 'fire-rc-compat',
-    [name$5]: 'fire-gcs',
-    [name$4]: 'fire-gcs-compat',
-    [name$3]: 'fire-fst',
-    [name$1]: 'fire-fst-compat',
-    [name$2]: 'fire-vertex',
-    'fire-js': 'fire-js',
-    [name]: 'fire-js-all'
-};
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * @internal
- */ const _apps = new Map();
-/**
- * @internal
- */ const _serverApps = new Map();
-/**
- * Registered components.
- *
- * @internal
- */ // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _components = new Map();
-/**
- * @param component - the component being added to this app's container
- *
- * @internal
- */ function _addComponent(app, component) {
-    try {
-        app.container.addComponent(component);
-    } catch (e) {
-        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
-    }
-}
-/**
- *
- * @internal
- */ function _addOrOverwriteComponent(app, component) {
-    app.container.addOrOverwriteComponent(component);
-}
-/**
- *
- * @param component - the component to register
- * @returns whether or not the component is registered successfully
- *
- * @internal
- */ function _registerComponent(component) {
-    const componentName = component.name;
-    if (_components.has(componentName)) {
-        logger.debug(`There were multiple attempts to register component ${componentName}.`);
-        return false;
-    }
-    _components.set(componentName, component);
-    // add the component to existing app instances
-    for (const app of _apps.values())_addComponent(app, component);
-    for (const serverApp of _serverApps.values())_addComponent(serverApp, component);
-    return true;
-}
-/**
- *
- * @param app - FirebaseApp instance
- * @param name - service name
- *
- * @returns the provider for the service with the matching name
- *
- * @internal
- */ function _getProvider(app, name) {
-    const heartbeatController = app.container.getProvider('heartbeat').getImmediate({
-        optional: true
-    });
-    if (heartbeatController) heartbeatController.triggerHeartbeat();
-    return app.container.getProvider(name);
-}
-/**
- *
- * @param app - FirebaseApp instance
- * @param name - service name
- * @param instanceIdentifier - service instance identifier in case the service supports multiple instances
- *
- * @internal
- */ function _removeServiceInstance(app, name, instanceIdentifier = DEFAULT_ENTRY_NAME) {
-    _getProvider(app, name).clearInstance(instanceIdentifier);
-}
-/**
- *
- * @param obj - an object of type FirebaseApp or FirebaseOptions.
- *
- * @returns true if the provide object is of type FirebaseApp.
- *
- * @internal
- */ function _isFirebaseApp(obj) {
-    return obj.options !== undefined;
-}
-/**
- *
- * @param obj - an object of type FirebaseApp.
- *
- * @returns true if the provided object is of type FirebaseServerAppImpl.
- *
- * @internal
- */ function _isFirebaseServerApp(obj) {
-    return obj.settings !== undefined;
-}
-/**
- * Test only
- *
- * @internal
- */ function _clearComponents() {
-    _components.clear();
-}
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const ERRORS = {
-    ["no-app" /* AppError.NO_APP */ ]: "No Firebase App '{$appName}' has been created - call initializeApp() first",
-    ["bad-app-name" /* AppError.BAD_APP_NAME */ ]: "Illegal App name: '{$appName}'",
-    ["duplicate-app" /* AppError.DUPLICATE_APP */ ]: "Firebase App named '{$appName}' already exists with different options or config",
-    ["app-deleted" /* AppError.APP_DELETED */ ]: "Firebase App named '{$appName}' already deleted",
-    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */ ]: 'Firebase Server App has been deleted',
-    ["no-options" /* AppError.NO_OPTIONS */ ]: 'Need to provide options, when not being deployed to hosting via source.',
-    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */ ]: "firebase.{$appName}() takes either no argument or a Firebase App instance.",
-    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */ ]: 'First argument to `onLog` must be null or a function.',
-    ["idb-open" /* AppError.IDB_OPEN */ ]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-get" /* AppError.IDB_GET */ ]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-set" /* AppError.IDB_WRITE */ ]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
-    ["idb-delete" /* AppError.IDB_DELETE */ ]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
-    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */ ]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
-    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */ ]: 'FirebaseServerApp is not for use in browser environments.'
-};
-const ERROR_FACTORY = new (0, _util.ErrorFactory)('app', 'Firebase', ERRORS);
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ class FirebaseAppImpl {
-    constructor(options, config, container){
-        this._isDeleted = false;
-        this._options = Object.assign({}, options);
-        this._config = Object.assign({}, config);
-        this._name = config.name;
-        this._automaticDataCollectionEnabled = config.automaticDataCollectionEnabled;
-        this._container = container;
-        this.container.addComponent(new (0, _component.Component)('app', ()=>this, "PUBLIC" /* ComponentType.PUBLIC */ ));
-    }
-    get automaticDataCollectionEnabled() {
-        this.checkDestroyed();
-        return this._automaticDataCollectionEnabled;
-    }
-    set automaticDataCollectionEnabled(val) {
-        this.checkDestroyed();
-        this._automaticDataCollectionEnabled = val;
-    }
-    get name() {
-        this.checkDestroyed();
-        return this._name;
-    }
-    get options() {
-        this.checkDestroyed();
-        return this._options;
-    }
-    get config() {
-        this.checkDestroyed();
-        return this._config;
-    }
-    get container() {
-        return this._container;
-    }
-    get isDeleted() {
-        return this._isDeleted;
-    }
-    set isDeleted(val) {
-        this._isDeleted = val;
-    }
-    /**
-     * This function will throw an Error if the App has already been deleted -
-     * use before performing API actions on the App.
-     */ checkDestroyed() {
-        if (this.isDeleted) throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */ , {
-            appName: this._name
-        });
-    }
-}
-/**
- * @license
- * Copyright 2023 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ class FirebaseServerAppImpl extends FirebaseAppImpl {
-    constructor(options, serverConfig, name, container){
-        // Build configuration parameters for the FirebaseAppImpl base class.
-        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined ? serverConfig.automaticDataCollectionEnabled : false;
-        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
-        const config = {
-            name,
-            automaticDataCollectionEnabled
-        };
-        if (options.apiKey !== undefined) // Construct the parent FirebaseAppImp object.
-        super(options, config, container);
-        else {
-            const appImpl = options;
-            super(appImpl.options, config, container);
-        }
-        // Now construct the data for the FirebaseServerAppImpl.
-        this._serverConfig = Object.assign({
-            automaticDataCollectionEnabled
-        }, serverConfig);
-        this._finalizationRegistry = null;
-        if (typeof FinalizationRegistry !== 'undefined') this._finalizationRegistry = new FinalizationRegistry(()=>{
-            this.automaticCleanup();
-        });
-        this._refCount = 0;
-        this.incRefCount(this._serverConfig.releaseOnDeref);
-        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
-        // will never trigger.
-        this._serverConfig.releaseOnDeref = undefined;
-        serverConfig.releaseOnDeref = undefined;
-        registerVersion(name$q, version$1, 'serverapp');
-    }
-    toJSON() {
-        return undefined;
-    }
-    get refCount() {
-        return this._refCount;
-    }
-    // Increment the reference count of this server app. If an object is provided, register it
-    // with the finalization registry.
-    incRefCount(obj) {
-        if (this.isDeleted) return;
-        this._refCount++;
-        if (obj !== undefined && this._finalizationRegistry !== null) this._finalizationRegistry.register(obj, this);
-    }
-    // Decrement the reference count.
-    decRefCount() {
-        if (this.isDeleted) return 0;
-        return --this._refCount;
-    }
-    // Invoked by the FinalizationRegistry callback to note that this app should go through its
-    // reference counts and delete itself if no reference count remain. The coordinating logic that
-    // handles this is in deleteApp(...).
-    automaticCleanup() {
-        deleteApp(this);
-    }
-    get settings() {
-        this.checkDestroyed();
-        return this._serverConfig;
-    }
-    /**
-     * This function will throw an Error if the App has already been deleted -
-     * use before performing API actions on the App.
-     */ checkDestroyed() {
-        if (this.isDeleted) throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */ );
-    }
-}
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * The current SDK version.
- *
- * @public
- */ const SDK_VERSION = version;
-function initializeApp(_options, rawConfig = {}) {
-    let options = _options;
-    if (typeof rawConfig !== 'object') {
-        const name = rawConfig;
-        rawConfig = {
-            name
-        };
-    }
-    const config = Object.assign({
-        name: DEFAULT_ENTRY_NAME,
-        automaticDataCollectionEnabled: false
-    }, rawConfig);
-    const name = config.name;
-    if (typeof name !== 'string' || !name) throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */ , {
-        appName: String(name)
-    });
-    options || (options = (0, _util.getDefaultAppConfig)());
-    if (!options) throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */ );
-    const existingApp = _apps.get(name);
-    if (existingApp) {
-        // return the existing app if options and config deep equal the ones in the existing app.
-        if ((0, _util.deepEqual)(options, existingApp.options) && (0, _util.deepEqual)(config, existingApp.config)) return existingApp;
-        else throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */ , {
-            appName: name
-        });
-    }
-    const container = new (0, _component.ComponentContainer)(name);
-    for (const component of _components.values())container.addComponent(component);
-    const newApp = new FirebaseAppImpl(options, config, container);
-    _apps.set(name, newApp);
-    return newApp;
-}
-function initializeServerApp(_options, _serverAppConfig) {
-    if ((0, _util.isBrowser)() && !(0, _util.isWebWorker)()) // FirebaseServerApp isn't designed to be run in browsers.
-    throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */ );
-    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) _serverAppConfig.automaticDataCollectionEnabled = false;
-    let appOptions;
-    if (_isFirebaseApp(_options)) appOptions = _options.options;
-    else appOptions = _options;
-    // Build an app name based on a hash of the configuration options.
-    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
-    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
-    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
-    if (nameObj.releaseOnDeref !== undefined) delete nameObj.releaseOnDeref;
-    const hashCode = (s)=>{
-        return [
-            ...s
-        ].reduce((hash, c)=>Math.imul(31, hash) + c.charCodeAt(0) | 0, 0);
-    };
-    if (_serverAppConfig.releaseOnDeref !== undefined) {
-        if (typeof FinalizationRegistry === 'undefined') throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */ , {});
-    }
-    const nameString = '' + hashCode(JSON.stringify(nameObj));
-    const existingApp = _serverApps.get(nameString);
-    if (existingApp) {
-        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
-        return existingApp;
-    }
-    const container = new (0, _component.ComponentContainer)(nameString);
-    for (const component of _components.values())container.addComponent(component);
-    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
-    _serverApps.set(nameString, newApp);
-    return newApp;
-}
-/**
- * Retrieves a {@link @firebase/app#FirebaseApp} instance.
- *
- * When called with no arguments, the default app is returned. When an app name
- * is provided, the app corresponding to that name is returned.
- *
- * An exception is thrown if the app being retrieved has not yet been
- * initialized.
- *
- * @example
- * ```javascript
- * // Return the default app
- * const app = getApp();
- * ```
- *
- * @example
- * ```javascript
- * // Return a named app
- * const otherApp = getApp("otherApp");
- * ```
- *
- * @param name - Optional name of the app to return. If no name is
- *   provided, the default is `"[DEFAULT]"`.
- *
- * @returns The app corresponding to the provided app name.
- *   If no app name is provided, the default app is returned.
- *
- * @public
- */ function getApp(name = DEFAULT_ENTRY_NAME) {
-    const app = _apps.get(name);
-    if (!app && name === DEFAULT_ENTRY_NAME && (0, _util.getDefaultAppConfig)()) return initializeApp();
-    if (!app) throw ERROR_FACTORY.create("no-app" /* AppError.NO_APP */ , {
-        appName: name
-    });
-    return app;
-}
-/**
- * A (read-only) array of all initialized apps.
- * @public
- */ function getApps() {
-    return Array.from(_apps.values());
-}
-/**
- * Renders this app unusable and frees the resources of all associated
- * services.
- *
- * @example
- * ```javascript
- * deleteApp(app)
- *   .then(function() {
- *     console.log("App deleted successfully");
- *   })
- *   .catch(function(error) {
- *     console.log("Error deleting app:", error);
- *   });
- * ```
- *
- * @public
- */ async function deleteApp(app) {
-    let cleanupProviders = false;
-    const name = app.name;
-    if (_apps.has(name)) {
-        cleanupProviders = true;
-        _apps.delete(name);
-    } else if (_serverApps.has(name)) {
-        const firebaseServerApp = app;
-        if (firebaseServerApp.decRefCount() <= 0) {
-            _serverApps.delete(name);
-            cleanupProviders = true;
-        }
-    }
-    if (cleanupProviders) {
-        await Promise.all(app.container.getProviders().map((provider)=>provider.delete()));
-        app.isDeleted = true;
-    }
-}
-/**
- * Registers a library's name and version for platform logging purposes.
- * @param library - Name of 1p or 3p library (e.g. firestore, angularfire)
- * @param version - Current version of that library.
- * @param variant - Bundle variant, e.g., node, rn, etc.
- *
- * @public
- */ function registerVersion(libraryKeyOrName, version, variant) {
-    var _a;
-    // TODO: We can use this check to whitelist strings when/if we set up
-    // a good whitelist system.
-    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
-    if (variant) library += `-${variant}`;
-    const libraryMismatch = library.match(/\s|\//);
-    const versionMismatch = version.match(/\s|\//);
-    if (libraryMismatch || versionMismatch) {
-        const warning = [
-            `Unable to register library "${library}" with version "${version}":`
-        ];
-        if (libraryMismatch) warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
-        if (libraryMismatch && versionMismatch) warning.push('and');
-        if (versionMismatch) warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
-        logger.warn(warning.join(' '));
-        return;
-    }
-    _registerComponent(new (0, _component.Component)(`${library}-version`, ()=>({
-            library,
-            version
-        }), "VERSION" /* ComponentType.VERSION */ ));
-}
-/**
- * Sets log handler for all Firebase SDKs.
- * @param logCallback - An optional custom log handler that executes user code whenever
- * the Firebase SDK makes a logging call.
- *
- * @public
- */ function onLog(logCallback, options) {
-    if (logCallback !== null && typeof logCallback !== 'function') throw ERROR_FACTORY.create("invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */ );
-    (0, _logger.setUserLogHandler)(logCallback, options);
-}
-/**
- * Sets log level for all Firebase SDKs.
- *
- * All of the log types above the current log level are captured (i.e. if
- * you set the log level to `info`, errors are logged, but `debug` and
- * `verbose` logs are not).
- *
- * @public
- */ function setLogLevel(logLevel) {
-    (0, _logger.setLogLevel)(logLevel);
-}
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const DB_NAME = 'firebase-heartbeat-database';
-const DB_VERSION = 1;
-const STORE_NAME = 'firebase-heartbeat-store';
-let dbPromise = null;
-function getDbPromise() {
-    if (!dbPromise) dbPromise = (0, _idb.openDB)(DB_NAME, DB_VERSION, {
-        upgrade: (db, oldVersion)=>{
-            // We don't use 'break' in this switch statement, the fall-through
-            // behavior is what we want, because if there are multiple versions between
-            // the old version and the current version, we want ALL the migrations
-            // that correspond to those versions to run, not only the last one.
-            // eslint-disable-next-line default-case
-            switch(oldVersion){
-                case 0:
-                    try {
-                        db.createObjectStore(STORE_NAME);
-                    } catch (e) {
-                        // Safari/iOS browsers throw occasional exceptions on
-                        // db.createObjectStore() that may be a bug. Avoid blocking
-                        // the rest of the app functionality.
-                        console.warn(e);
-                    }
-            }
-        }
-    }).catch((e)=>{
-        throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */ , {
-            originalErrorMessage: e.message
-        });
-    });
-    return dbPromise;
-}
-async function readHeartbeatsFromIndexedDB(app) {
-    try {
-        const db = await getDbPromise();
-        const tx = db.transaction(STORE_NAME);
-        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
-        // We already have the value but tx.done can throw,
-        // so we need to await it here to catch errors
-        await tx.done;
-        return result;
-    } catch (e) {
-        if (e instanceof (0, _util.FirebaseError)) logger.warn(e.message);
-        else {
-            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */ , {
-                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
-            });
-            logger.warn(idbGetError.message);
-        }
-    }
-}
-async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
-    try {
-        const db = await getDbPromise();
-        const tx = db.transaction(STORE_NAME, 'readwrite');
-        const objectStore = tx.objectStore(STORE_NAME);
-        await objectStore.put(heartbeatObject, computeKey(app));
-        await tx.done;
-    } catch (e) {
-        if (e instanceof (0, _util.FirebaseError)) logger.warn(e.message);
-        else {
-            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */ , {
-                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
-            });
-            logger.warn(idbGetError.message);
-        }
-    }
-}
-function computeKey(app) {
-    return `${app.name}!${app.options.appId}`;
-}
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const MAX_HEADER_BYTES = 1024;
-// 30 days
-const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 2592000000;
-class HeartbeatServiceImpl {
-    constructor(container){
-        this.container = container;
-        /**
-         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
-         * the header string.
-         * Stores one record per date. This will be consolidated into the standard
-         * format of one record per user agent string before being sent as a header.
-         * Populated from indexedDB when the controller is instantiated and should
-         * be kept in sync with indexedDB.
-         * Leave public for easier testing.
-         */ this._heartbeatsCache = null;
-        const app = this.container.getProvider('app').getImmediate();
-        this._storage = new HeartbeatStorageImpl(app);
-        this._heartbeatsCachePromise = this._storage.read().then((result)=>{
-            this._heartbeatsCache = result;
-            return result;
-        });
-    }
-    /**
-     * Called to report a heartbeat. The function will generate
-     * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
-     * to IndexedDB.
-     * Note that we only store one heartbeat per day. So if a heartbeat for today is
-     * already logged, subsequent calls to this function in the same day will be ignored.
-     */ async triggerHeartbeat() {
-        var _a, _b;
-        try {
-            const platformLogger = this.container.getProvider('platform-logger').getImmediate();
-            // This is the "Firebase user agent" string from the platform logger
-            // service, not the browser user agent.
-            const agent = platformLogger.getPlatformInfoString();
-            const date = getUTCDateString();
-            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
-                this._heartbeatsCache = await this._heartbeatsCachePromise;
-                // If we failed to construct a heartbeats cache, then return immediately.
-                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) return;
-            }
-            // Do not store a heartbeat if one is already stored for this day
-            // or if a header has already been sent today.
-            if (this._heartbeatsCache.lastSentHeartbeatDate === date || this._heartbeatsCache.heartbeats.some((singleDateHeartbeat)=>singleDateHeartbeat.date === date)) return;
-            else // There is no entry for this date. Create one.
-            this._heartbeatsCache.heartbeats.push({
-                date,
-                agent
-            });
-            // Remove entries older than 30 days.
-            this._heartbeatsCache.heartbeats = this._heartbeatsCache.heartbeats.filter((singleDateHeartbeat)=>{
-                const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-                const now = Date.now();
-                return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-            });
-            return this._storage.overwrite(this._heartbeatsCache);
-        } catch (e) {
-            logger.warn(e);
-        }
-    }
-    /**
-     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
-     * It also clears all heartbeats from memory as well as in IndexedDB.
-     *
-     * NOTE: Consuming product SDKs should not send the header if this method
-     * returns an empty string.
-     */ async getHeartbeatsHeader() {
-        var _a;
-        try {
-            if (this._heartbeatsCache === null) await this._heartbeatsCachePromise;
-            // If it's still null or the array is empty, there is no data to send.
-            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null || this._heartbeatsCache.heartbeats.length === 0) return '';
-            const date = getUTCDateString();
-            // Extract as many heartbeats from the cache as will fit under the size limit.
-            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
-            const headerString = (0, _util.base64urlEncodeWithoutPadding)(JSON.stringify({
-                version: 2,
-                heartbeats: heartbeatsToSend
-            }));
-            // Store last sent date to prevent another being logged/sent for the same day.
-            this._heartbeatsCache.lastSentHeartbeatDate = date;
-            if (unsentEntries.length > 0) {
-                // Store any unsent entries if they exist.
-                this._heartbeatsCache.heartbeats = unsentEntries;
-                // This seems more likely than emptying the array (below) to lead to some odd state
-                // since the cache isn't empty and this will be called again on the next request,
-                // and is probably safest if we await it.
-                await this._storage.overwrite(this._heartbeatsCache);
-            } else {
-                this._heartbeatsCache.heartbeats = [];
-                // Do not wait for this, to reduce latency.
-                this._storage.overwrite(this._heartbeatsCache);
-            }
-            return headerString;
-        } catch (e) {
-            logger.warn(e);
-            return '';
-        }
-    }
-}
-function getUTCDateString() {
-    const today = new Date();
-    // Returns date format 'YYYY-MM-DD'
-    return today.toISOString().substring(0, 10);
-}
-function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
-    // Heartbeats grouped by user agent in the standard format to be sent in
-    // the header.
-    const heartbeatsToSend = [];
-    // Single date format heartbeats that are not sent.
-    let unsentEntries = heartbeatsCache.slice();
-    for (const singleDateHeartbeat of heartbeatsCache){
-        // Look for an existing entry with the same user agent.
-        const heartbeatEntry = heartbeatsToSend.find((hb)=>hb.agent === singleDateHeartbeat.agent);
-        if (!heartbeatEntry) {
-            // If no entry for this user agent exists, create one.
-            heartbeatsToSend.push({
-                agent: singleDateHeartbeat.agent,
-                dates: [
-                    singleDateHeartbeat.date
-                ]
-            });
-            if (countBytes(heartbeatsToSend) > maxSize) {
-                // If the header would exceed max size, remove the added heartbeat
-                // entry and stop adding to the header.
-                heartbeatsToSend.pop();
-                break;
-            }
-        } else {
-            heartbeatEntry.dates.push(singleDateHeartbeat.date);
-            // If the header would exceed max size, remove the added date
-            // and stop adding to the header.
-            if (countBytes(heartbeatsToSend) > maxSize) {
-                heartbeatEntry.dates.pop();
-                break;
-            }
-        }
-        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
-        // quota and the loop breaks early.)
-        unsentEntries = unsentEntries.slice(1);
-    }
-    return {
-        heartbeatsToSend,
-        unsentEntries
-    };
-}
-class HeartbeatStorageImpl {
-    constructor(app){
-        this.app = app;
-        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
-    }
-    async runIndexedDBEnvironmentCheck() {
-        if (!(0, _util.isIndexedDBAvailable)()) return false;
-        else return (0, _util.validateIndexedDBOpenable)().then(()=>true).catch(()=>false);
-    }
-    /**
-     * Read all heartbeats.
-     */ async read() {
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) return {
-            heartbeats: []
-        };
-        else {
-            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) return idbHeartbeatObject;
-            else return {
-                heartbeats: []
-            };
-        }
-    }
-    // overwrite the storage with the provided heartbeats
-    async overwrite(heartbeatsObject) {
-        var _a;
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) return;
-        else {
-            const existingHeartbeatsObject = await this.read();
-            return writeHeartbeatsToIndexedDB(this.app, {
-                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-                heartbeats: heartbeatsObject.heartbeats
-            });
-        }
-    }
-    // add heartbeats
-    async add(heartbeatsObject) {
-        var _a;
-        const canUseIndexedDB = await this._canUseIndexedDBPromise;
-        if (!canUseIndexedDB) return;
-        else {
-            const existingHeartbeatsObject = await this.read();
-            return writeHeartbeatsToIndexedDB(this.app, {
-                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-                heartbeats: [
-                    ...existingHeartbeatsObject.heartbeats,
-                    ...heartbeatsObject.heartbeats
-                ]
-            });
-        }
-    }
-}
-/**
- * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
- * in a platform logging header JSON object, stringified, and converted
- * to base 64.
- */ function countBytes(heartbeatsCache) {
-    // base64 has a restricted set of characters, all of which should be 1 byte.
-    return (0, _util.base64urlEncodeWithoutPadding)(// heartbeatsCache wrapper properties
-    JSON.stringify({
-        version: 2,
-        heartbeats: heartbeatsCache
-    })).length;
-}
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ function registerCoreComponents(variant) {
-    _registerComponent(new (0, _component.Component)('platform-logger', (container)=>new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */ ));
-    _registerComponent(new (0, _component.Component)('heartbeat', (container)=>new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */ ));
-    // Register `app` package.
-    registerVersion(name$q, version$1, variant);
-    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-    registerVersion(name$q, version$1, 'esm2017');
-    // Register platform SDK identifier (no version).
-    registerVersion('fire-js', '');
-}
-/**
- * Firebase App
- *
- * @remarks This package coordinates the communication between the different Firebase components
- * @packageDocumentation
- */ registerCoreComponents('');
-
-},{"@firebase/component":"llS6a","@firebase/logger":"cPhqm","@firebase/util":"5D2HR","idb":"258QC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"llS6a":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Component", ()=>Component);
-parcelHelpers.export(exports, "ComponentContainer", ()=>ComponentContainer);
-parcelHelpers.export(exports, "Provider", ()=>Provider);
-var _util = require("@firebase/util");
-/**
- * Component for service name T, e.g. `auth`, `auth-internal`
- */ class Component {
-    /**
-     *
-     * @param name The public service name, e.g. app, auth, firestore, database
-     * @param instanceFactory Service factory responsible for creating the public interface
-     * @param type whether the service provided by the component is public or private
-     */ constructor(name, instanceFactory, type){
-        this.name = name;
-        this.instanceFactory = instanceFactory;
-        this.type = type;
-        this.multipleInstances = false;
-        /**
-         * Properties to be added to the service namespace
-         */ this.serviceProps = {};
-        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */ ;
-        this.onInstanceCreated = null;
-    }
-    setInstantiationMode(mode) {
-        this.instantiationMode = mode;
-        return this;
-    }
-    setMultipleInstances(multipleInstances) {
-        this.multipleInstances = multipleInstances;
-        return this;
-    }
-    setServiceProps(props) {
-        this.serviceProps = props;
-        return this;
-    }
-    setInstanceCreatedCallback(callback) {
-        this.onInstanceCreated = callback;
-        return this;
-    }
-}
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const DEFAULT_ENTRY_NAME = '[DEFAULT]';
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
- * NameServiceMapping[T] is an alias for the type of the instance
- */ class Provider {
-    constructor(name, container){
-        this.name = name;
-        this.container = container;
-        this.component = null;
-        this.instances = new Map();
-        this.instancesDeferred = new Map();
-        this.instancesOptions = new Map();
-        this.onInitCallbacks = new Map();
-    }
-    /**
-     * @param identifier A provider can provide multiple instances of a service
-     * if this.component.multipleInstances is true.
-     */ get(identifier) {
-        // if multipleInstances is not supported, use the default name
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-        if (!this.instancesDeferred.has(normalizedIdentifier)) {
-            const deferred = new (0, _util.Deferred)();
-            this.instancesDeferred.set(normalizedIdentifier, deferred);
-            if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) // initialize the service if it can be auto-initialized
-            try {
-                const instance = this.getOrInitializeService({
-                    instanceIdentifier: normalizedIdentifier
-                });
-                if (instance) deferred.resolve(instance);
-            } catch (e) {
-            // when the instance factory throws an exception during get(), it should not cause
-            // a fatal error. We just return the unresolved promise in this case.
-            }
-        }
-        return this.instancesDeferred.get(normalizedIdentifier).promise;
-    }
-    getImmediate(options) {
-        var _a;
-        // if multipleInstances is not supported, use the default name
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
-        if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) try {
-            return this.getOrInitializeService({
-                instanceIdentifier: normalizedIdentifier
-            });
-        } catch (e) {
-            if (optional) return null;
-            else throw e;
-        }
-        else {
-            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
-            if (optional) return null;
-            else throw Error(`Service ${this.name} is not available`);
-        }
-    }
-    getComponent() {
-        return this.component;
-    }
-    setComponent(component) {
-        if (component.name !== this.name) throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
-        if (this.component) throw Error(`Component for ${this.name} has already been provided`);
-        this.component = component;
-        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
-        if (!this.shouldAutoInitialize()) return;
-        // if the service is eager, initialize the default instance
-        if (isComponentEager(component)) try {
-            this.getOrInitializeService({
-                instanceIdentifier: DEFAULT_ENTRY_NAME
-            });
-        } catch (e) {
-        // when the instance factory for an eager Component throws an exception during the eager
-        // initialization, it should not cause a fatal error.
-        // TODO: Investigate if we need to make it configurable, because some component may want to cause
-        // a fatal error in this case?
-        }
-        // Create service instances for the pending promises and resolve them
-        // NOTE: if this.multipleInstances is false, only the default instance will be created
-        // and all promises with resolve with it regardless of the identifier.
-        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()){
-            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-            try {
-                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
-                const instance = this.getOrInitializeService({
-                    instanceIdentifier: normalizedIdentifier
-                });
-                instanceDeferred.resolve(instance);
-            } catch (e) {
-            // when the instance factory throws an exception, it should not cause
-            // a fatal error. We just leave the promise unresolved.
-            }
-        }
-    }
-    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
-        this.instancesDeferred.delete(identifier);
-        this.instancesOptions.delete(identifier);
-        this.instances.delete(identifier);
-    }
-    // app.delete() will call this method on every provider to delete the services
-    // TODO: should we mark the provider as deleted?
-    async delete() {
-        const services = Array.from(this.instances.values());
-        await Promise.all([
-            ...services.filter((service)=>'INTERNAL' in service) // legacy services
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((service)=>service.INTERNAL.delete()),
-            ...services.filter((service)=>'_delete' in service) // modularized services
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((service)=>service._delete())
-        ]);
-    }
-    isComponentSet() {
-        return this.component != null;
-    }
-    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
-        return this.instances.has(identifier);
-    }
-    getOptions(identifier = DEFAULT_ENTRY_NAME) {
-        return this.instancesOptions.get(identifier) || {};
-    }
-    initialize(opts = {}) {
-        const { options = {} } = opts;
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
-        if (this.isInitialized(normalizedIdentifier)) throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
-        if (!this.isComponentSet()) throw Error(`Component ${this.name} has not been registered yet`);
-        const instance = this.getOrInitializeService({
-            instanceIdentifier: normalizedIdentifier,
-            options
-        });
-        // resolve any pending promise waiting for the service instance
-        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()){
-            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-            if (normalizedIdentifier === normalizedDeferredIdentifier) instanceDeferred.resolve(instance);
-        }
-        return instance;
-    }
-    /**
-     *
-     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
-     * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
-     *
-     * @param identifier An optional instance identifier
-     * @returns a function to unregister the callback
-     */ onInit(callback, identifier) {
-        var _a;
-        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
-        existingCallbacks.add(callback);
-        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
-        const existingInstance = this.instances.get(normalizedIdentifier);
-        if (existingInstance) callback(existingInstance, normalizedIdentifier);
-        return ()=>{
-            existingCallbacks.delete(callback);
-        };
-    }
-    /**
-     * Invoke onInit callbacks synchronously
-     * @param instance the service instance`
-     */ invokeOnInitCallbacks(instance, identifier) {
-        const callbacks = this.onInitCallbacks.get(identifier);
-        if (!callbacks) return;
-        for (const callback of callbacks)try {
-            callback(instance, identifier);
-        } catch (_a) {
-        // ignore errors in the onInit callback
-        }
-    }
-    getOrInitializeService({ instanceIdentifier, options = {} }) {
-        let instance = this.instances.get(instanceIdentifier);
-        if (!instance && this.component) {
-            instance = this.component.instanceFactory(this.container, {
-                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
-                options
-            });
-            this.instances.set(instanceIdentifier, instance);
-            this.instancesOptions.set(instanceIdentifier, options);
-            /**
-             * Invoke onInit listeners.
-             * Note this.component.onInstanceCreated is different, which is used by the component creator,
-             * while onInit listeners are registered by consumers of the provider.
-             */ this.invokeOnInitCallbacks(instance, instanceIdentifier);
-            /**
-             * Order is important
-             * onInstanceCreated() should be called after this.instances.set(instanceIdentifier, instance); which
-             * makes `isInitialized()` return true.
-             */ if (this.component.onInstanceCreated) try {
-                this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
-            } catch (_a) {
-            // ignore errors in the onInstanceCreatedCallback
-            }
-        }
-        return instance || null;
-    }
-    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
-        if (this.component) return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
-        else return identifier; // assume multiple instances are supported before the component is provided.
-    }
-    shouldAutoInitialize() {
-        return !!this.component && this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */ ;
-    }
-}
-// undefined should be passed to the service factory for the default instance
-function normalizeIdentifierForFactory(identifier) {
-    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
-}
-function isComponentEager(component) {
-    return component.instantiationMode === "EAGER" /* InstantiationMode.EAGER */ ;
-}
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
- */ class ComponentContainer {
-    constructor(name){
-        this.name = name;
-        this.providers = new Map();
-    }
-    /**
-     *
-     * @param component Component being added
-     * @param overwrite When a component with the same name has already been registered,
-     * if overwrite is true: overwrite the existing component with the new component and create a new
-     * provider with the new component. It can be useful in tests where you want to use different mocks
-     * for different tests.
-     * if overwrite is false: throw an exception
-     */ addComponent(component) {
-        const provider = this.getProvider(component.name);
-        if (provider.isComponentSet()) throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
-        provider.setComponent(component);
-    }
-    addOrOverwriteComponent(component) {
-        const provider = this.getProvider(component.name);
-        if (provider.isComponentSet()) // delete the existing provider from the container, so we can register the new component
-        this.providers.delete(component.name);
-        this.addComponent(component);
-    }
-    /**
-     * getProvider provides a type safe interface where it can only be called with a field name
-     * present in NameServiceMapping interface.
-     *
-     * Firebase SDKs providing services should extend NameServiceMapping interface to register
-     * themselves.
-     */ getProvider(name) {
-        if (this.providers.has(name)) return this.providers.get(name);
-        // create a Provider for a service that hasn't registered with Firebase
-        const provider = new Provider(name, this);
-        this.providers.set(name, provider);
-        return provider;
-    }
-    getProviders() {
-        return Array.from(this.providers.values());
-    }
-}
-
-},{"@firebase/util":"5D2HR","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5D2HR":[function(require,module,exports,__globalThis) {
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "CONSTANTS", ()=>CONSTANTS);
-parcelHelpers.export(exports, "DecodeBase64StringError", ()=>DecodeBase64StringError);
-parcelHelpers.export(exports, "Deferred", ()=>Deferred);
-parcelHelpers.export(exports, "ErrorFactory", ()=>ErrorFactory);
-parcelHelpers.export(exports, "FirebaseError", ()=>FirebaseError);
-parcelHelpers.export(exports, "MAX_VALUE_MILLIS", ()=>MAX_VALUE_MILLIS);
-parcelHelpers.export(exports, "RANDOM_FACTOR", ()=>RANDOM_FACTOR);
-parcelHelpers.export(exports, "Sha1", ()=>Sha1);
-parcelHelpers.export(exports, "areCookiesEnabled", ()=>areCookiesEnabled);
-parcelHelpers.export(exports, "assert", ()=>assert);
-parcelHelpers.export(exports, "assertionError", ()=>assertionError);
-parcelHelpers.export(exports, "async", ()=>async);
-parcelHelpers.export(exports, "base64", ()=>base64);
-parcelHelpers.export(exports, "base64Decode", ()=>base64Decode);
-parcelHelpers.export(exports, "base64Encode", ()=>base64Encode);
-parcelHelpers.export(exports, "base64urlEncodeWithoutPadding", ()=>base64urlEncodeWithoutPadding);
-parcelHelpers.export(exports, "calculateBackoffMillis", ()=>calculateBackoffMillis);
-parcelHelpers.export(exports, "contains", ()=>contains);
-parcelHelpers.export(exports, "createMockUserToken", ()=>createMockUserToken);
-parcelHelpers.export(exports, "createSubscribe", ()=>createSubscribe);
-parcelHelpers.export(exports, "decode", ()=>decode);
-parcelHelpers.export(exports, "deepCopy", ()=>deepCopy);
-parcelHelpers.export(exports, "deepEqual", ()=>deepEqual);
-parcelHelpers.export(exports, "deepExtend", ()=>deepExtend);
-parcelHelpers.export(exports, "errorPrefix", ()=>errorPrefix);
-parcelHelpers.export(exports, "extractQuerystring", ()=>extractQuerystring);
-parcelHelpers.export(exports, "getDefaultAppConfig", ()=>getDefaultAppConfig);
-parcelHelpers.export(exports, "getDefaultEmulatorHost", ()=>getDefaultEmulatorHost);
-parcelHelpers.export(exports, "getDefaultEmulatorHostnameAndPort", ()=>getDefaultEmulatorHostnameAndPort);
-parcelHelpers.export(exports, "getDefaults", ()=>getDefaults);
-parcelHelpers.export(exports, "getExperimentalSetting", ()=>getExperimentalSetting);
-parcelHelpers.export(exports, "getGlobal", ()=>getGlobal);
-parcelHelpers.export(exports, "getModularInstance", ()=>getModularInstance);
-parcelHelpers.export(exports, "getUA", ()=>getUA);
-parcelHelpers.export(exports, "isAdmin", ()=>isAdmin);
-parcelHelpers.export(exports, "isBrowser", ()=>isBrowser);
-parcelHelpers.export(exports, "isBrowserExtension", ()=>isBrowserExtension);
-parcelHelpers.export(exports, "isCloudflareWorker", ()=>isCloudflareWorker);
-parcelHelpers.export(exports, "isElectron", ()=>isElectron);
-parcelHelpers.export(exports, "isEmpty", ()=>isEmpty);
-parcelHelpers.export(exports, "isIE", ()=>isIE);
-parcelHelpers.export(exports, "isIndexedDBAvailable", ()=>isIndexedDBAvailable);
-parcelHelpers.export(exports, "isMobileCordova", ()=>isMobileCordova);
-parcelHelpers.export(exports, "isNode", ()=>isNode);
-parcelHelpers.export(exports, "isNodeSdk", ()=>isNodeSdk);
-parcelHelpers.export(exports, "isReactNative", ()=>isReactNative);
-parcelHelpers.export(exports, "isSafari", ()=>isSafari);
-parcelHelpers.export(exports, "isUWP", ()=>isUWP);
-parcelHelpers.export(exports, "isValidFormat", ()=>isValidFormat);
-parcelHelpers.export(exports, "isValidTimestamp", ()=>isValidTimestamp);
-parcelHelpers.export(exports, "isWebWorker", ()=>isWebWorker);
-parcelHelpers.export(exports, "issuedAtTime", ()=>issuedAtTime);
-parcelHelpers.export(exports, "jsonEval", ()=>jsonEval);
-parcelHelpers.export(exports, "map", ()=>map);
-parcelHelpers.export(exports, "ordinal", ()=>ordinal);
-parcelHelpers.export(exports, "promiseWithTimeout", ()=>promiseWithTimeout);
-parcelHelpers.export(exports, "querystring", ()=>querystring);
-parcelHelpers.export(exports, "querystringDecode", ()=>querystringDecode);
-parcelHelpers.export(exports, "safeGet", ()=>safeGet);
-parcelHelpers.export(exports, "stringLength", ()=>stringLength);
-parcelHelpers.export(exports, "stringToByteArray", ()=>stringToByteArray);
-parcelHelpers.export(exports, "stringify", ()=>stringify);
-parcelHelpers.export(exports, "uuidv4", ()=>uuidv4);
-parcelHelpers.export(exports, "validateArgCount", ()=>validateArgCount);
-parcelHelpers.export(exports, "validateCallback", ()=>validateCallback);
-parcelHelpers.export(exports, "validateContextObject", ()=>validateContextObject);
-parcelHelpers.export(exports, "validateIndexedDBOpenable", ()=>validateIndexedDBOpenable);
-parcelHelpers.export(exports, "validateNamespace", ()=>validateNamespace);
-var global = arguments[3];
-const CONSTANTS = {
-    /**
-     * @define {boolean} Whether this is the client Node.js SDK.
-     */ NODE_CLIENT: false,
-    /**
-     * @define {boolean} Whether this is the Admin Node.js SDK.
-     */ NODE_ADMIN: false,
-    /**
-     * Firebase SDK Version
-     */ SDK_VERSION: '${JSCORE_VERSION}'
-};
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Throws an error if the provided assertion is falsy
- */ const assert = function(assertion, message) {
-    if (!assertion) throw assertionError(message);
-};
-/**
- * Returns an Error object suitable for throwing.
- */ const assertionError = function(message) {
-    return new Error('Firebase Database (' + CONSTANTS.SDK_VERSION + ') INTERNAL ASSERT FAILED: ' + message);
-};
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const stringToByteArray$1 = function(str) {
-    // TODO(user): Use native implementations if/when available
-    const out = [];
-    let p = 0;
-    for(let i = 0; i < str.length; i++){
-        let c = str.charCodeAt(i);
-        if (c < 128) out[p++] = c;
-        else if (c < 2048) {
-            out[p++] = c >> 6 | 192;
-            out[p++] = c & 63 | 128;
-        } else if ((c & 0xfc00) === 0xd800 && i + 1 < str.length && (str.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
-            // Surrogate Pair
-            c = 0x10000 + ((c & 0x03ff) << 10) + (str.charCodeAt(++i) & 0x03ff);
-            out[p++] = c >> 18 | 240;
-            out[p++] = c >> 12 & 63 | 128;
-            out[p++] = c >> 6 & 63 | 128;
-            out[p++] = c & 63 | 128;
-        } else {
-            out[p++] = c >> 12 | 224;
-            out[p++] = c >> 6 & 63 | 128;
-            out[p++] = c & 63 | 128;
-        }
-    }
-    return out;
-};
-/**
- * Turns an array of numbers into the string given by the concatenation of the
- * characters to which the numbers correspond.
- * @param bytes Array of numbers representing characters.
- * @return Stringification of the array.
- */ const byteArrayToString = function(bytes) {
-    // TODO(user): Use native implementations if/when available
-    const out = [];
-    let pos = 0, c = 0;
-    while(pos < bytes.length){
-        const c1 = bytes[pos++];
-        if (c1 < 128) out[c++] = String.fromCharCode(c1);
-        else if (c1 > 191 && c1 < 224) {
-            const c2 = bytes[pos++];
-            out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
-        } else if (c1 > 239 && c1 < 365) {
-            // Surrogate Pair
-            const c2 = bytes[pos++];
-            const c3 = bytes[pos++];
-            const c4 = bytes[pos++];
-            const u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 0x10000;
-            out[c++] = String.fromCharCode(0xd800 + (u >> 10));
-            out[c++] = String.fromCharCode(0xdc00 + (u & 1023));
-        } else {
-            const c2 = bytes[pos++];
-            const c3 = bytes[pos++];
-            out[c++] = String.fromCharCode((c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
-        }
-    }
-    return out.join('');
-};
-// We define it as an object literal instead of a class because a class compiled down to es5 can't
-// be treeshaked. https://github.com/rollup/rollup/issues/1691
-// Static lookup maps, lazily populated by init_()
-const base64 = {
-    /**
-     * Maps bytes to characters.
-     */ byteToCharMap_: null,
-    /**
-     * Maps characters to bytes.
-     */ charToByteMap_: null,
-    /**
-     * Maps bytes to websafe characters.
-     * @private
-     */ byteToCharMapWebSafe_: null,
-    /**
-     * Maps websafe characters to bytes.
-     * @private
-     */ charToByteMapWebSafe_: null,
-    /**
-     * Our default alphabet, shared between
-     * ENCODED_VALS and ENCODED_VALS_WEBSAFE
-     */ ENCODED_VALS_BASE: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-    /**
-     * Our default alphabet. Value 64 (=) is special; it means "nothing."
-     */ get ENCODED_VALS () {
-        return this.ENCODED_VALS_BASE + '+/=';
-    },
-    /**
-     * Our websafe alphabet.
-     */ get ENCODED_VALS_WEBSAFE () {
-        return this.ENCODED_VALS_BASE + '-_.';
-    },
-    /**
-     * Whether this browser supports the atob and btoa functions. This extension
-     * started at Mozilla but is now implemented by many browsers. We use the
-     * ASSUME_* variables to avoid pulling in the full useragent detection library
-     * but still allowing the standard per-browser compilations.
-     *
-     */ HAS_NATIVE_SUPPORT: typeof atob === 'function',
-    /**
-     * Base64-encode an array of bytes.
-     *
-     * @param input An array of bytes (numbers with
-     *     value in [0, 255]) to encode.
-     * @param webSafe Boolean indicating we should use the
-     *     alternative alphabet.
-     * @return The base64 encoded string.
-     */ encodeByteArray (input, webSafe) {
-        if (!Array.isArray(input)) throw Error('encodeByteArray takes an array as a parameter');
-        this.init_();
-        const byteToCharMap = webSafe ? this.byteToCharMapWebSafe_ : this.byteToCharMap_;
-        const output = [];
-        for(let i = 0; i < input.length; i += 3){
-            const byte1 = input[i];
-            const haveByte2 = i + 1 < input.length;
-            const byte2 = haveByte2 ? input[i + 1] : 0;
-            const haveByte3 = i + 2 < input.length;
-            const byte3 = haveByte3 ? input[i + 2] : 0;
-            const outByte1 = byte1 >> 2;
-            const outByte2 = (byte1 & 0x03) << 4 | byte2 >> 4;
-            let outByte3 = (byte2 & 0x0f) << 2 | byte3 >> 6;
-            let outByte4 = byte3 & 0x3f;
-            if (!haveByte3) {
-                outByte4 = 64;
-                if (!haveByte2) outByte3 = 64;
-            }
-            output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
-        }
-        return output.join('');
-    },
-    /**
-     * Base64-encode a string.
-     *
-     * @param input A string to encode.
-     * @param webSafe If true, we should use the
-     *     alternative alphabet.
-     * @return The base64 encoded string.
-     */ encodeString (input, webSafe) {
-        // Shortcut for Mozilla browsers that implement
-        // a native base64 encoder in the form of "btoa/atob"
-        if (this.HAS_NATIVE_SUPPORT && !webSafe) return btoa(input);
-        return this.encodeByteArray(stringToByteArray$1(input), webSafe);
-    },
-    /**
-     * Base64-decode a string.
-     *
-     * @param input to decode.
-     * @param webSafe True if we should use the
-     *     alternative alphabet.
-     * @return string representing the decoded value.
-     */ decodeString (input, webSafe) {
-        // Shortcut for Mozilla browsers that implement
-        // a native base64 encoder in the form of "btoa/atob"
-        if (this.HAS_NATIVE_SUPPORT && !webSafe) return atob(input);
-        return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
-    },
-    /**
-     * Base64-decode a string.
-     *
-     * In base-64 decoding, groups of four characters are converted into three
-     * bytes.  If the encoder did not apply padding, the input length may not
-     * be a multiple of 4.
-     *
-     * In this case, the last group will have fewer than 4 characters, and
-     * padding will be inferred.  If the group has one or two characters, it decodes
-     * to one byte.  If the group has three characters, it decodes to two bytes.
-     *
-     * @param input Input to decode.
-     * @param webSafe True if we should use the web-safe alphabet.
-     * @return bytes representing the decoded value.
-     */ decodeStringToByteArray (input, webSafe) {
-        this.init_();
-        const charToByteMap = webSafe ? this.charToByteMapWebSafe_ : this.charToByteMap_;
-        const output = [];
-        for(let i = 0; i < input.length;){
-            const byte1 = charToByteMap[input.charAt(i++)];
-            const haveByte2 = i < input.length;
-            const byte2 = haveByte2 ? charToByteMap[input.charAt(i)] : 0;
-            ++i;
-            const haveByte3 = i < input.length;
-            const byte3 = haveByte3 ? charToByteMap[input.charAt(i)] : 64;
-            ++i;
-            const haveByte4 = i < input.length;
-            const byte4 = haveByte4 ? charToByteMap[input.charAt(i)] : 64;
-            ++i;
-            if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) throw new DecodeBase64StringError();
-            const outByte1 = byte1 << 2 | byte2 >> 4;
-            output.push(outByte1);
-            if (byte3 !== 64) {
-                const outByte2 = byte2 << 4 & 0xf0 | byte3 >> 2;
-                output.push(outByte2);
-                if (byte4 !== 64) {
-                    const outByte3 = byte3 << 6 & 0xc0 | byte4;
-                    output.push(outByte3);
-                }
-            }
-        }
-        return output;
-    },
-    /**
-     * Lazy static initialization function. Called before
-     * accessing any of the static map variables.
-     * @private
-     */ init_ () {
-        if (!this.byteToCharMap_) {
-            this.byteToCharMap_ = {};
-            this.charToByteMap_ = {};
-            this.byteToCharMapWebSafe_ = {};
-            this.charToByteMapWebSafe_ = {};
-            // We want quick mappings back and forth, so we precompute two maps.
-            for(let i = 0; i < this.ENCODED_VALS.length; i++){
-                this.byteToCharMap_[i] = this.ENCODED_VALS.charAt(i);
-                this.charToByteMap_[this.byteToCharMap_[i]] = i;
-                this.byteToCharMapWebSafe_[i] = this.ENCODED_VALS_WEBSAFE.charAt(i);
-                this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i]] = i;
-                // Be forgiving when decoding and correctly decode both encodings.
-                if (i >= this.ENCODED_VALS_BASE.length) {
-                    this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i)] = i;
-                    this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i)] = i;
-                }
-            }
-        }
-    }
-};
-/**
- * An error encountered while decoding base64 string.
- */ class DecodeBase64StringError extends Error {
-    constructor(){
-        super(...arguments);
-        this.name = 'DecodeBase64StringError';
-    }
-}
-/**
- * URL-safe base64 encoding
- */ const base64Encode = function(str) {
-    const utf8Bytes = stringToByteArray$1(str);
-    return base64.encodeByteArray(utf8Bytes, true);
-};
-/**
- * URL-safe base64 encoding (without "." padding in the end).
- * e.g. Used in JSON Web Token (JWT) parts.
- */ const base64urlEncodeWithoutPadding = function(str) {
-    // Use base64url encoding and remove padding in the end (dot characters).
-    return base64Encode(str).replace(/\./g, '');
-};
-/**
- * URL-safe base64 decoding
- *
- * NOTE: DO NOT use the global atob() function - it does NOT support the
- * base64Url variant encoding.
- *
- * @param str To be decoded
- * @return Decoded result, if possible
- */ const base64Decode = function(str) {
-    try {
-        return base64.decodeString(str, true);
-    } catch (e) {
-        console.error('base64Decode failed: ', e);
-    }
-    return null;
-};
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Do a deep-copy of basic JavaScript Objects or Arrays.
- */ function deepCopy(value) {
-    return deepExtend(undefined, value);
-}
-/**
- * Copy properties from source to target (recursively allows extension
- * of Objects and Arrays).  Scalar values in the target are over-written.
- * If target is undefined, an object of the appropriate type will be created
- * (and returned).
- *
- * We recursively copy all child properties of plain Objects in the source- so
- * that namespace- like dictionaries are merged.
- *
- * Note that the target can be a function, in which case the properties in
- * the source Object are copied onto it as static properties of the Function.
- *
- * Note: we don't merge __proto__ to prevent prototype pollution
- */ function deepExtend(target, source) {
-    if (!(source instanceof Object)) return source;
-    switch(source.constructor){
-        case Date:
-            // Treat Dates like scalars; if the target date object had any child
-            // properties - they will be lost!
-            const dateValue = source;
-            return new Date(dateValue.getTime());
-        case Object:
-            if (target === undefined) target = {};
-            break;
-        case Array:
-            // Always copy the array source and overwrite the target.
-            target = [];
-            break;
-        default:
-            // Not a plain Object - treat it as a scalar.
-            return source;
-    }
-    for(const prop in source){
-        // use isValidKey to guard against prototype pollution. See https://snyk.io/vuln/SNYK-JS-LODASH-450202
-        if (!source.hasOwnProperty(prop) || !isValidKey(prop)) continue;
-        target[prop] = deepExtend(target[prop], source[prop]);
-    }
-    return target;
-}
-function isValidKey(key) {
-    return key !== '__proto__';
-}
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Polyfill for `globalThis` object.
- * @returns the `globalThis` object for the given environment.
- * @public
- */ function getGlobal() {
-    if (typeof self !== 'undefined') return self;
-    if (typeof window !== 'undefined') return window;
-    if (typeof global !== 'undefined') return global;
-    throw new Error('Unable to locate global object.');
-}
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ const getDefaultsFromGlobal = ()=>getGlobal().__FIREBASE_DEFAULTS__;
-/**
- * Attempt to read defaults from a JSON string provided to
- * process(.)env(.)__FIREBASE_DEFAULTS__ or a JSON file whose path is in
- * process(.)env(.)__FIREBASE_DEFAULTS_PATH__
- * The dots are in parens because certain compilers (Vite?) cannot
- * handle seeing that variable in comments.
- * See https://github.com/firebase/firebase-js-sdk/issues/6838
- */ const getDefaultsFromEnvVariable = ()=>{
-    return;
-};
-const getDefaultsFromCookie = ()=>{
-    if (typeof document === 'undefined') return;
-    let match;
-    try {
-        match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
-    } catch (e) {
-        // Some environments such as Angular Universal SSR have a
-        // `document` object but error on accessing `document.cookie`.
-        return;
-    }
-    const decoded = match && base64Decode(match[1]);
-    return decoded && JSON.parse(decoded);
-};
-/**
- * Get the __FIREBASE_DEFAULTS__ object. It checks in order:
- * (1) if such an object exists as a property of `globalThis`
- * (2) if such an object was provided on a shell environment variable
- * (3) if such an object exists in a cookie
- * @public
- */ const getDefaults = ()=>{
-    try {
-        return getDefaultsFromGlobal() || getDefaultsFromEnvVariable() || getDefaultsFromCookie();
-    } catch (e) {
-        /**
-         * Catch-all for being unable to get __FIREBASE_DEFAULTS__ due
-         * to any environment case we have not accounted for. Log to
-         * info instead of swallowing so we can find these unknown cases
-         * and add paths for them if needed.
-         */ console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`);
-        return;
-    }
-};
-/**
- * Returns emulator host stored in the __FIREBASE_DEFAULTS__ object
- * for the given product.
- * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
- * @public
- */ const getDefaultEmulatorHost = (productName)=>{
-    var _a, _b;
-    return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
-};
-/**
- * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
- * for the given product.
- * @returns a pair of hostname and port like `["::1", 4000]` if available
- * @public
- */ const getDefaultEmulatorHostnameAndPort = (productName)=>{
-    const host = getDefaultEmulatorHost(productName);
-    if (!host) return undefined;
-    const separatorIndex = host.lastIndexOf(':'); // Finding the last since IPv6 addr also has colons.
-    if (separatorIndex <= 0 || separatorIndex + 1 === host.length) throw new Error(`Invalid host ${host} with no separate hostname and port!`);
-    // eslint-disable-next-line no-restricted-globals
-    const port = parseInt(host.substring(separatorIndex + 1), 10);
-    if (host[0] === '[') // Bracket-quoted `[ipv6addr]:port` => return "ipv6addr" (without brackets).
-    return [
-        host.substring(1, separatorIndex - 1),
-        port
-    ];
-    else return [
-        host.substring(0, separatorIndex),
-        port
-    ];
-};
-/**
- * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
- * @public
- */ const getDefaultAppConfig = ()=>{
-    var _a;
-    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config;
-};
-/**
- * Returns an experimental setting on the __FIREBASE_DEFAULTS__ object (properties
- * prefixed by "_")
- * @public
- */ const getExperimentalSetting = (name)=>{
-    var _a;
-    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`];
-};
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ class Deferred {
-    constructor(){
-        this.reject = ()=>{};
-        this.resolve = ()=>{};
-        this.promise = new Promise((resolve, reject)=>{
-            this.resolve = resolve;
-            this.reject = reject;
-        });
-    }
-    /**
-     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
-     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
-     * and returns a node-style callback which will resolve or reject the Deferred's promise.
-     */ wrapCallback(callback) {
-        return (error, value)=>{
-            if (error) this.reject(error);
-            else this.resolve(value);
-            if (typeof callback === 'function') {
-                // Attaching noop handler just in case developer wasn't expecting
-                // promises
-                this.promise.catch(()=>{});
-                // Some of our callbacks don't expect a value and our own tests
-                // assert that the parameter length is 1
-                if (callback.length === 1) callback(error);
-                else callback(error, value);
-            }
-        };
-    }
-}
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ function createMockUserToken(token, projectId) {
-    if (token.uid) throw new Error('The "uid" field is no longer supported by mockUserToken. Please use "sub" instead for Firebase Auth User ID.');
-    // Unsecured JWTs use "none" as the algorithm.
-    const header = {
-        alg: 'none',
-        type: 'JWT'
-    };
-    const project = projectId || 'demo-project';
-    const iat = token.iat || 0;
-    const sub = token.sub || token.user_id;
-    if (!sub) throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
-    const payload = Object.assign({
-        // Set all required fields to decent defaults
-        iss: `https://securetoken.google.com/${project}`,
-        aud: project,
-        iat,
-        exp: iat + 3600,
-        auth_time: iat,
-        sub,
-        user_id: sub,
-        firebase: {
-            sign_in_provider: 'custom',
-            identities: {}
-        }
-    }, token);
-    // Unsecured JWTs use the empty string as a signature.
-    const signature = '';
-    return [
-        base64urlEncodeWithoutPadding(JSON.stringify(header)),
-        base64urlEncodeWithoutPadding(JSON.stringify(payload)),
-        signature
-    ].join('.');
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Returns navigator.userAgent string or '' if it's not defined.
- * @return user agent string
- */ function getUA() {
-    if (typeof navigator !== 'undefined' && typeof navigator['userAgent'] === 'string') return navigator['userAgent'];
-    else return '';
-}
-/**
- * Detect Cordova / PhoneGap / Ionic frameworks on a mobile device.
- *
- * Deliberately does not rely on checking `file://` URLs (as this fails PhoneGap
- * in the Ripple emulator) nor Cordova `onDeviceReady`, which would normally
- * wait for a callback.
- */ function isMobileCordova() {
-    return typeof window !== 'undefined' && // @ts-ignore Setting up an broadly applicable index signature for Window
-    // just to deal with this case would probably be a bad idea.
-    !!(window['cordova'] || window['phonegap'] || window['PhoneGap']) && /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(getUA());
-}
-/**
- * Detect Node.js.
- *
- * @return true if Node.js environment is detected or specified.
- */ // Node detection logic from: https://github.com/iliakan/detect-node/
-function isNode() {
-    var _a;
-    const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
-    if (forceEnvironment === 'node') return true;
-    else if (forceEnvironment === 'browser') return false;
-    try {
-        return Object.prototype.toString.call(global.process) === '[object process]';
-    } catch (e) {
-        return false;
-    }
-}
-/**
- * Detect Browser Environment.
- * Note: This will return true for certain test frameworks that are incompletely
- * mimicking a browser, and should not lead to assuming all browser APIs are
- * available.
- */ function isBrowser() {
-    return typeof window !== 'undefined' || isWebWorker();
-}
-/**
- * Detect Web Worker context.
- */ function isWebWorker() {
-    return typeof WorkerGlobalScope !== 'undefined' && typeof self !== 'undefined' && self instanceof WorkerGlobalScope;
-}
-/**
- * Detect Cloudflare Worker context.
- */ function isCloudflareWorker() {
-    return typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers';
-}
-function isBrowserExtension() {
-    const runtime = typeof chrome === 'object' ? chrome.runtime : typeof browser === 'object' ? browser.runtime : undefined;
-    return typeof runtime === 'object' && runtime.id !== undefined;
-}
-/**
- * Detect React Native.
- *
- * @return true if ReactNative environment is detected.
- */ function isReactNative() {
-    return typeof navigator === 'object' && navigator['product'] === 'ReactNative';
-}
-/** Detects Electron apps. */ function isElectron() {
-    return getUA().indexOf('Electron/') >= 0;
-}
-/** Detects Internet Explorer. */ function isIE() {
-    const ua = getUA();
-    return ua.indexOf('MSIE ') >= 0 || ua.indexOf('Trident/') >= 0;
-}
-/** Detects Universal Windows Platform apps. */ function isUWP() {
-    return getUA().indexOf('MSAppHost/') >= 0;
-}
-/**
- * Detect whether the current SDK build is the Node version.
- *
- * @return true if it's the Node SDK build.
- */ function isNodeSdk() {
-    return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
-}
-/** Returns true if we are running in Safari. */ function isSafari() {
-    return !isNode() && !!navigator.userAgent && navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
-}
-/**
- * This method checks if indexedDB is supported by current browser/service worker context
- * @return true if indexedDB is supported by current browser/service worker context
- */ function isIndexedDBAvailable() {
-    try {
-        return typeof indexedDB === 'object';
-    } catch (e) {
-        return false;
-    }
-}
-/**
- * This method validates browser/sw context for indexedDB by opening a dummy indexedDB database and reject
- * if errors occur during the database open operation.
- *
- * @throws exception if current browser/sw context can't run idb.open (ex: Safari iframe, Firefox
- * private browsing)
- */ function validateIndexedDBOpenable() {
-    return new Promise((resolve, reject)=>{
-        try {
-            let preExist = true;
-            const DB_CHECK_NAME = 'validate-browser-context-for-indexeddb-analytics-module';
-            const request = self.indexedDB.open(DB_CHECK_NAME);
-            request.onsuccess = ()=>{
-                request.result.close();
-                // delete database only when it doesn't pre-exist
-                if (!preExist) self.indexedDB.deleteDatabase(DB_CHECK_NAME);
-                resolve(true);
-            };
-            request.onupgradeneeded = ()=>{
-                preExist = false;
-            };
-            request.onerror = ()=>{
-                var _a;
-                reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
-            };
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-/**
- *
- * This method checks whether cookie is enabled within current browser
- * @return true if cookie is enabled within current browser
- */ function areCookiesEnabled() {
-    if (typeof navigator === 'undefined' || !navigator.cookieEnabled) return false;
-    return true;
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * @fileoverview Standardized Firebase Error.
- *
- * Usage:
- *
- *   // TypeScript string literals for type-safe codes
- *   type Err =
- *     'unknown' |
- *     'object-not-found'
- *     ;
- *
- *   // Closure enum for type-safe error codes
- *   // at-enum {string}
- *   var Err = {
- *     UNKNOWN: 'unknown',
- *     OBJECT_NOT_FOUND: 'object-not-found',
- *   }
- *
- *   let errors: Map<Err, string> = {
- *     'generic-error': "Unknown error",
- *     'file-not-found': "Could not find file: {$file}",
- *   };
- *
- *   // Type-safe function - must pass a valid error code as param.
- *   let error = new ErrorFactory<Err>('service', 'Service', errors);
- *
- *   ...
- *   throw error.create(Err.GENERIC);
- *   ...
- *   throw error.create(Err.FILE_NOT_FOUND, {'file': fileName});
- *   ...
- *   // Service: Could not file file: foo.txt (service/file-not-found).
- *
- *   catch (e) {
- *     assert(e.message === "Could not find file: foo.txt.");
- *     if ((e as FirebaseError)?.code === 'service/file-not-found') {
- *       console.log("Could not read file: " + e['file']);
- *     }
- *   }
- */ const ERROR_NAME = 'FirebaseError';
-// Based on code from:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types
-class FirebaseError extends Error {
-    constructor(/** The error code for this error. */ code, message, /** Custom data for this error. */ customData){
-        super(message);
-        this.code = code;
-        this.customData = customData;
-        /** The custom name for all FirebaseErrors. */ this.name = ERROR_NAME;
-        // Fix For ES5
-        // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
-        Object.setPrototypeOf(this, FirebaseError.prototype);
-        // Maintains proper stack trace for where our error was thrown.
-        // Only available on V8.
-        if (Error.captureStackTrace) Error.captureStackTrace(this, ErrorFactory.prototype.create);
-    }
-}
-class ErrorFactory {
-    constructor(service, serviceName, errors){
-        this.service = service;
-        this.serviceName = serviceName;
-        this.errors = errors;
-    }
-    create(code, ...data) {
-        const customData = data[0] || {};
-        const fullCode = `${this.service}/${code}`;
-        const template = this.errors[code];
-        const message = template ? replaceTemplate(template, customData) : 'Error';
-        // Service Name: Error message (service/code).
-        const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
-        const error = new FirebaseError(fullCode, fullMessage, customData);
-        return error;
-    }
-}
-function replaceTemplate(template, data) {
-    return template.replace(PATTERN, (_, key)=>{
-        const value = data[key];
-        return value != null ? String(value) : `<${key}?>`;
-    });
-}
-const PATTERN = /\{\$([^}]+)}/g;
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Evaluates a JSON string into a javascript object.
- *
- * @param {string} str A string containing JSON.
- * @return {*} The javascript object representing the specified JSON.
- */ function jsonEval(str) {
-    return JSON.parse(str);
-}
-/**
- * Returns JSON representing a javascript object.
- * @param {*} data JavaScript object to be stringified.
- * @return {string} The JSON contents of the object.
- */ function stringify(data) {
-    return JSON.stringify(data);
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Decodes a Firebase auth. token into constituent parts.
- *
- * Notes:
- * - May return with invalid / incomplete claims if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */ const decode = function(token) {
-    let header = {}, claims = {}, data = {}, signature = '';
-    try {
-        const parts = token.split('.');
-        header = jsonEval(base64Decode(parts[0]) || '');
-        claims = jsonEval(base64Decode(parts[1]) || '');
-        signature = parts[2];
-        data = claims['d'] || {};
-        delete claims['d'];
-    } catch (e) {}
-    return {
-        header,
-        claims,
-        data,
-        signature
-    };
-};
-/**
- * Decodes a Firebase auth. token and checks the validity of its time-based claims. Will return true if the
- * token is within the time window authorized by the 'nbf' (not-before) and 'iat' (issued-at) claims.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */ const isValidTimestamp = function(token) {
-    const claims = decode(token).claims;
-    const now = Math.floor(new Date().getTime() / 1000);
-    let validSince = 0, validUntil = 0;
-    if (typeof claims === 'object') {
-        if (claims.hasOwnProperty('nbf')) validSince = claims['nbf'];
-        else if (claims.hasOwnProperty('iat')) validSince = claims['iat'];
-        if (claims.hasOwnProperty('exp')) validUntil = claims['exp'];
-        else // token will expire after 24h by default
-        validUntil = validSince + 86400;
-    }
-    return !!now && !!validSince && !!validUntil && now >= validSince && now <= validUntil;
-};
-/**
- * Decodes a Firebase auth. token and returns its issued at time if valid, null otherwise.
- *
- * Notes:
- * - May return null if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */ const issuedAtTime = function(token) {
-    const claims = decode(token).claims;
-    if (typeof claims === 'object' && claims.hasOwnProperty('iat')) return claims['iat'];
-    return null;
-};
-/**
- * Decodes a Firebase auth. token and checks the validity of its format. Expects a valid issued-at time.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */ const isValidFormat = function(token) {
-    const decoded = decode(token), claims = decoded.claims;
-    return !!claims && typeof claims === 'object' && claims.hasOwnProperty('iat');
-};
-/**
- * Attempts to peer into an auth token and determine if it's an admin auth token by looking at the claims portion.
- *
- * Notes:
- * - May return a false negative if there's no native base64 decoding support.
- * - Doesn't check if the token is actually valid.
- */ const isAdmin = function(token) {
-    const claims = decode(token).claims;
-    return typeof claims === 'object' && claims['admin'] === true;
-};
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ function contains(obj, key) {
-    return Object.prototype.hasOwnProperty.call(obj, key);
-}
-function safeGet(obj, key) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) return obj[key];
-    else return undefined;
-}
-function isEmpty(obj) {
-    for(const key in obj){
-        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
-    }
-    return true;
-}
-function map(obj, fn, contextObj) {
-    const res = {};
-    for(const key in obj)if (Object.prototype.hasOwnProperty.call(obj, key)) res[key] = fn.call(contextObj, obj[key], key, obj);
-    return res;
-}
-/**
- * Deep equal two objects. Support Arrays and Objects.
- */ function deepEqual(a, b) {
-    if (a === b) return true;
-    const aKeys = Object.keys(a);
-    const bKeys = Object.keys(b);
-    for (const k of aKeys){
-        if (!bKeys.includes(k)) return false;
-        const aProp = a[k];
-        const bProp = b[k];
-        if (isObject(aProp) && isObject(bProp)) {
-            if (!deepEqual(aProp, bProp)) return false;
-        } else if (aProp !== bProp) return false;
-    }
-    for (const k of bKeys){
-        if (!aKeys.includes(k)) return false;
-    }
-    return true;
-}
-function isObject(thing) {
-    return thing !== null && typeof thing === 'object';
-}
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Rejects if the given promise doesn't resolve in timeInMS milliseconds.
- * @internal
- */ function promiseWithTimeout(promise, timeInMS = 2000) {
-    const deferredPromise = new Deferred();
-    setTimeout(()=>deferredPromise.reject('timeout!'), timeInMS);
-    promise.then(deferredPromise.resolve, deferredPromise.reject);
-    return deferredPromise.promise;
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Returns a querystring-formatted string (e.g. &arg=val&arg2=val2) from a
- * params object (e.g. {arg: 'val', arg2: 'val2'})
- * Note: You must prepend it with ? when adding it to a URL.
- */ function querystring(querystringParams) {
-    const params = [];
-    for (const [key, value] of Object.entries(querystringParams))if (Array.isArray(value)) value.forEach((arrayVal)=>{
-        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(arrayVal));
-    });
-    else params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-    return params.length ? '&' + params.join('&') : '';
-}
-/**
- * Decodes a querystring (e.g. ?arg=val&arg2=val2) into a params object
- * (e.g. {arg: 'val', arg2: 'val2'})
- */ function querystringDecode(querystring) {
-    const obj = {};
-    const tokens = querystring.replace(/^\?/, '').split('&');
-    tokens.forEach((token)=>{
-        if (token) {
-            const [key, value] = token.split('=');
-            obj[decodeURIComponent(key)] = decodeURIComponent(value);
-        }
-    });
-    return obj;
-}
-/**
- * Extract the query string part of a URL, including the leading question mark (if present).
- */ function extractQuerystring(url) {
-    const queryStart = url.indexOf('?');
-    if (!queryStart) return '';
-    const fragmentStart = url.indexOf('#', queryStart);
-    return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : undefined);
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * @fileoverview SHA-1 cryptographic hash.
- * Variable names follow the notation in FIPS PUB 180-3:
- * http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf.
- *
- * Usage:
- *   var sha1 = new sha1();
- *   sha1.update(bytes);
- *   var hash = sha1.digest();
- *
- * Performance:
- *   Chrome 23:   ~400 Mbit/s
- *   Firefox 16:  ~250 Mbit/s
- *
- */ /**
- * SHA-1 cryptographic hash constructor.
- *
- * The properties declared here are discussed in the above algorithm document.
- * @constructor
- * @final
- * @struct
- */ class Sha1 {
-    constructor(){
-        /**
-         * Holds the previous values of accumulated variables a-e in the compress_
-         * function.
-         * @private
-         */ this.chain_ = [];
-        /**
-         * A buffer holding the partially computed hash result.
-         * @private
-         */ this.buf_ = [];
-        /**
-         * An array of 80 bytes, each a part of the message to be hashed.  Referred to
-         * as the message schedule in the docs.
-         * @private
-         */ this.W_ = [];
-        /**
-         * Contains data needed to pad messages less than 64 bytes.
-         * @private
-         */ this.pad_ = [];
-        /**
-         * @private {number}
-         */ this.inbuf_ = 0;
-        /**
-         * @private {number}
-         */ this.total_ = 0;
-        this.blockSize = 64;
-        this.pad_[0] = 128;
-        for(let i = 1; i < this.blockSize; ++i)this.pad_[i] = 0;
-        this.reset();
-    }
-    reset() {
-        this.chain_[0] = 0x67452301;
-        this.chain_[1] = 0xefcdab89;
-        this.chain_[2] = 0x98badcfe;
-        this.chain_[3] = 0x10325476;
-        this.chain_[4] = 0xc3d2e1f0;
-        this.inbuf_ = 0;
-        this.total_ = 0;
-    }
-    /**
-     * Internal compress helper function.
-     * @param buf Block to compress.
-     * @param offset Offset of the block in the buffer.
-     * @private
-     */ compress_(buf, offset) {
-        if (!offset) offset = 0;
-        const W = this.W_;
-        // get 16 big endian words
-        if (typeof buf === 'string') for(let i = 0; i < 16; i++){
-            // TODO(user): [bug 8140122] Recent versions of Safari for Mac OS and iOS
-            // have a bug that turns the post-increment ++ operator into pre-increment
-            // during JIT compilation.  We have code that depends heavily on SHA-1 for
-            // correctness and which is affected by this bug, so I've removed all uses
-            // of post-increment ++ in which the result value is used.  We can revert
-            // this change once the Safari bug
-            // (https://bugs.webkit.org/show_bug.cgi?id=109036) has been fixed and
-            // most clients have been updated.
-            W[i] = buf.charCodeAt(offset) << 24 | buf.charCodeAt(offset + 1) << 16 | buf.charCodeAt(offset + 2) << 8 | buf.charCodeAt(offset + 3);
-            offset += 4;
-        }
-        else for(let i = 0; i < 16; i++){
-            W[i] = buf[offset] << 24 | buf[offset + 1] << 16 | buf[offset + 2] << 8 | buf[offset + 3];
-            offset += 4;
-        }
-        // expand to 80 words
-        for(let i = 16; i < 80; i++){
-            const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
-            W[i] = (t << 1 | t >>> 31) & 0xffffffff;
-        }
-        let a = this.chain_[0];
-        let b = this.chain_[1];
-        let c = this.chain_[2];
-        let d = this.chain_[3];
-        let e = this.chain_[4];
-        let f, k;
-        // TODO(user): Try to unroll this loop to speed up the computation.
-        for(let i = 0; i < 80; i++){
-            if (i < 40) {
-                if (i < 20) {
-                    f = d ^ b & (c ^ d);
-                    k = 0x5a827999;
-                } else {
-                    f = b ^ c ^ d;
-                    k = 0x6ed9eba1;
-                }
-            } else if (i < 60) {
-                f = b & c | d & (b | c);
-                k = 0x8f1bbcdc;
-            } else {
-                f = b ^ c ^ d;
-                k = 0xca62c1d6;
-            }
-            const t = (a << 5 | a >>> 27) + f + e + k + W[i] & 0xffffffff;
-            e = d;
-            d = c;
-            c = (b << 30 | b >>> 2) & 0xffffffff;
-            b = a;
-            a = t;
-        }
-        this.chain_[0] = this.chain_[0] + a & 0xffffffff;
-        this.chain_[1] = this.chain_[1] + b & 0xffffffff;
-        this.chain_[2] = this.chain_[2] + c & 0xffffffff;
-        this.chain_[3] = this.chain_[3] + d & 0xffffffff;
-        this.chain_[4] = this.chain_[4] + e & 0xffffffff;
-    }
-    update(bytes, length) {
-        // TODO(johnlenz): tighten the function signature and remove this check
-        if (bytes == null) return;
-        if (length === undefined) length = bytes.length;
-        const lengthMinusBlock = length - this.blockSize;
-        let n = 0;
-        // Using local instead of member variables gives ~5% speedup on Firefox 16.
-        const buf = this.buf_;
-        let inbuf = this.inbuf_;
-        // The outer while loop should execute at most twice.
-        while(n < length){
-            // When we have no data in the block to top up, we can directly process the
-            // input buffer (assuming it contains sufficient data). This gives ~25%
-            // speedup on Chrome 23 and ~15% speedup on Firefox 16, but requires that
-            // the data is provided in large chunks (or in multiples of 64 bytes).
-            if (inbuf === 0) while(n <= lengthMinusBlock){
-                this.compress_(bytes, n);
-                n += this.blockSize;
-            }
-            if (typeof bytes === 'string') while(n < length){
-                buf[inbuf] = bytes.charCodeAt(n);
-                ++inbuf;
-                ++n;
-                if (inbuf === this.blockSize) {
-                    this.compress_(buf);
-                    inbuf = 0;
-                    break;
-                }
-            }
-            else while(n < length){
-                buf[inbuf] = bytes[n];
-                ++inbuf;
-                ++n;
-                if (inbuf === this.blockSize) {
-                    this.compress_(buf);
-                    inbuf = 0;
-                    break;
-                }
-            }
-        }
-        this.inbuf_ = inbuf;
-        this.total_ += length;
-    }
-    /** @override */ digest() {
-        const digest = [];
-        let totalBits = this.total_ * 8;
-        // Add pad 0x80 0x00*.
-        if (this.inbuf_ < 56) this.update(this.pad_, 56 - this.inbuf_);
-        else this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
-        // Add # bits.
-        for(let i = this.blockSize - 1; i >= 56; i--){
-            this.buf_[i] = totalBits & 255;
-            totalBits /= 256; // Don't use bit-shifting here!
-        }
-        this.compress_(this.buf_);
-        let n = 0;
-        for(let i = 0; i < 5; i++)for(let j = 24; j >= 0; j -= 8){
-            digest[n] = this.chain_[i] >> j & 255;
-            ++n;
-        }
-        return digest;
-    }
-}
-/**
- * Helper to make a Subscribe function (just like Promise helps make a
- * Thenable).
- *
- * @param executor Function which can make calls to a single Observer
- *     as a proxy.
- * @param onNoObservers Callback when count of Observers goes to zero.
- */ function createSubscribe(executor, onNoObservers) {
-    const proxy = new ObserverProxy(executor, onNoObservers);
-    return proxy.subscribe.bind(proxy);
-}
-/**
- * Implement fan-out for any number of Observers attached via a subscribe
- * function.
- */ class ObserverProxy {
-    /**
-     * @param executor Function which can make calls to a single Observer
-     *     as a proxy.
-     * @param onNoObservers Callback when count of Observers goes to zero.
-     */ constructor(executor, onNoObservers){
-        this.observers = [];
-        this.unsubscribes = [];
-        this.observerCount = 0;
-        // Micro-task scheduling by calling task.then().
-        this.task = Promise.resolve();
-        this.finalized = false;
-        this.onNoObservers = onNoObservers;
-        // Call the executor asynchronously so subscribers that are called
-        // synchronously after the creation of the subscribe function
-        // can still receive the very first value generated in the executor.
-        this.task.then(()=>{
-            executor(this);
-        }).catch((e)=>{
-            this.error(e);
-        });
-    }
-    next(value) {
-        this.forEachObserver((observer)=>{
-            observer.next(value);
-        });
-    }
-    error(error) {
-        this.forEachObserver((observer)=>{
-            observer.error(error);
-        });
-        this.close(error);
-    }
-    complete() {
-        this.forEachObserver((observer)=>{
-            observer.complete();
-        });
-        this.close();
-    }
-    /**
-     * Subscribe function that can be used to add an Observer to the fan-out list.
-     *
-     * - We require that no event is sent to a subscriber synchronously to their
-     *   call to subscribe().
-     */ subscribe(nextOrObserver, error, complete) {
-        let observer;
-        if (nextOrObserver === undefined && error === undefined && complete === undefined) throw new Error('Missing Observer.');
-        // Assemble an Observer object when passed as callback functions.
-        if (implementsAnyMethods(nextOrObserver, [
-            'next',
-            'error',
-            'complete'
-        ])) observer = nextOrObserver;
-        else observer = {
-            next: nextOrObserver,
-            error,
-            complete
-        };
-        if (observer.next === undefined) observer.next = noop;
-        if (observer.error === undefined) observer.error = noop;
-        if (observer.complete === undefined) observer.complete = noop;
-        const unsub = this.unsubscribeOne.bind(this, this.observers.length);
-        // Attempt to subscribe to a terminated Observable - we
-        // just respond to the Observer with the final error or complete
-        // event.
-        if (this.finalized) // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.task.then(()=>{
-            try {
-                if (this.finalError) observer.error(this.finalError);
-                else observer.complete();
-            } catch (e) {
-            // nothing
-            }
-            return;
-        });
-        this.observers.push(observer);
-        return unsub;
-    }
-    // Unsubscribe is synchronous - we guarantee that no events are sent to
-    // any unsubscribed Observer.
-    unsubscribeOne(i) {
-        if (this.observers === undefined || this.observers[i] === undefined) return;
-        delete this.observers[i];
-        this.observerCount -= 1;
-        if (this.observerCount === 0 && this.onNoObservers !== undefined) this.onNoObservers(this);
-    }
-    forEachObserver(fn) {
-        if (this.finalized) // Already closed by previous event....just eat the additional values.
-        return;
-        // Since sendOne calls asynchronously - there is no chance that
-        // this.observers will become undefined.
-        for(let i = 0; i < this.observers.length; i++)this.sendOne(i, fn);
-    }
-    // Call the Observer via one of it's callback function. We are careful to
-    // confirm that the observe has not been unsubscribed since this asynchronous
-    // function had been queued.
-    sendOne(i, fn) {
-        // Execute the callback asynchronously
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.task.then(()=>{
-            if (this.observers !== undefined && this.observers[i] !== undefined) try {
-                fn(this.observers[i]);
-            } catch (e) {
-                // Ignore exceptions raised in Observers or missing methods of an
-                // Observer.
-                // Log error to console. b/31404806
-                if (typeof console !== 'undefined' && console.error) console.error(e);
-            }
-        });
-    }
-    close(err) {
-        if (this.finalized) return;
-        this.finalized = true;
-        if (err !== undefined) this.finalError = err;
-        // Proxy is no longer needed - garbage collect references
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.task.then(()=>{
-            this.observers = undefined;
-            this.onNoObservers = undefined;
-        });
-    }
-}
-/** Turn synchronous function into one called asynchronously. */ // eslint-disable-next-line @typescript-eslint/ban-types
-function async(fn, onError) {
-    return (...args)=>{
-        Promise.resolve(true).then(()=>{
-            fn(...args);
-        }).catch((error)=>{
-            if (onError) onError(error);
-        });
-    };
-}
-/**
- * Return true if the object passed in implements any of the named methods.
- */ function implementsAnyMethods(obj, methods) {
-    if (typeof obj !== 'object' || obj === null) return false;
-    for (const method of methods){
-        if (method in obj && typeof obj[method] === 'function') return true;
-    }
-    return false;
-}
-function noop() {
-// do nothing
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Check to make sure the appropriate number of arguments are provided for a public function.
- * Throws an error if it fails.
- *
- * @param fnName The function name
- * @param minCount The minimum number of arguments to allow for the function call
- * @param maxCount The maximum number of argument to allow for the function call
- * @param argCount The actual number of arguments provided.
- */ const validateArgCount = function(fnName, minCount, maxCount, argCount) {
-    let argError;
-    if (argCount < minCount) argError = 'at least ' + minCount;
-    else if (argCount > maxCount) argError = maxCount === 0 ? 'none' : 'no more than ' + maxCount;
-    if (argError) {
-        const error = fnName + ' failed: Was called with ' + argCount + (argCount === 1 ? ' argument.' : ' arguments.') + ' Expects ' + argError + '.';
-        throw new Error(error);
-    }
-};
-/**
- * Generates a string to prefix an error message about failed argument validation
- *
- * @param fnName The function name
- * @param argName The name of the argument
- * @return The prefix to add to the error thrown for validation.
- */ function errorPrefix(fnName, argName) {
-    return `${fnName} failed: ${argName} argument `;
-}
-/**
- * @param fnName
- * @param argumentNumber
- * @param namespace
- * @param optional
- */ function validateNamespace(fnName, namespace, optional) {
-    if (optional && !namespace) return;
-    if (typeof namespace !== 'string') //TODO: I should do more validation here. We only allow certain chars in namespaces.
-    throw new Error(errorPrefix(fnName, 'namespace') + 'must be a valid firebase namespace.');
-}
-function validateCallback(fnName, argumentName, // eslint-disable-next-line @typescript-eslint/ban-types
-callback, optional) {
-    if (optional && !callback) return;
-    if (typeof callback !== 'function') throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid function.');
-}
-function validateContextObject(fnName, argumentName, context, optional) {
-    if (optional && !context) return;
-    if (typeof context !== 'object' || context === null) throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid context object.');
-}
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ // Code originally came from goog.crypt.stringToUtf8ByteArray, but for some reason they
-// automatically replaced '\r\n' with '\n', and they didn't handle surrogate pairs,
-// so it's been modified.
-// Note that not all Unicode characters appear as single characters in JavaScript strings.
-// fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
-// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
-// character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
-// pair).
-// See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
-/**
- * @param {string} str
- * @return {Array}
- */ const stringToByteArray = function(str) {
-    const out = [];
-    let p = 0;
-    for(let i = 0; i < str.length; i++){
-        let c = str.charCodeAt(i);
-        // Is this the lead surrogate in a surrogate pair?
-        if (c >= 0xd800 && c <= 0xdbff) {
-            const high = c - 0xd800; // the high 10 bits.
-            i++;
-            assert(i < str.length, 'Surrogate pair missing trail surrogate.');
-            const low = str.charCodeAt(i) - 0xdc00; // the low 10 bits.
-            c = 0x10000 + (high << 10) + low;
-        }
-        if (c < 128) out[p++] = c;
-        else if (c < 2048) {
-            out[p++] = c >> 6 | 192;
-            out[p++] = c & 63 | 128;
-        } else if (c < 65536) {
-            out[p++] = c >> 12 | 224;
-            out[p++] = c >> 6 & 63 | 128;
-            out[p++] = c & 63 | 128;
-        } else {
-            out[p++] = c >> 18 | 240;
-            out[p++] = c >> 12 & 63 | 128;
-            out[p++] = c >> 6 & 63 | 128;
-            out[p++] = c & 63 | 128;
-        }
-    }
-    return out;
-};
-/**
- * Calculate length without actually converting; useful for doing cheaper validation.
- * @param {string} str
- * @return {number}
- */ const stringLength = function(str) {
-    let p = 0;
-    for(let i = 0; i < str.length; i++){
-        const c = str.charCodeAt(i);
-        if (c < 128) p++;
-        else if (c < 2048) p += 2;
-        else if (c >= 0xd800 && c <= 0xdbff) {
-            // Lead surrogate of a surrogate pair.  The pair together will take 4 bytes to represent.
-            p += 4;
-            i++; // skip trail surrogate.
-        } else p += 3;
-    }
-    return p;
-};
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Copied from https://stackoverflow.com/a/2117523
- * Generates a new uuid.
- * @public
- */ const uuidv4 = function() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c)=>{
-        const r = Math.random() * 16 | 0, v = c === 'x' ? r : r & 0x3 | 0x8;
-        return v.toString(16);
-    });
-};
-/**
- * @license
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * The amount of milliseconds to exponentially increase.
- */ const DEFAULT_INTERVAL_MILLIS = 1000;
-/**
- * The factor to backoff by.
- * Should be a number greater than 1.
- */ const DEFAULT_BACKOFF_FACTOR = 2;
-/**
- * The maximum milliseconds to increase to.
- *
- * <p>Visible for testing
- */ const MAX_VALUE_MILLIS = 14400000; // Four hours, like iOS and Android.
-/**
- * The percentage of backoff time to randomize by.
- * See
- * http://go/safe-client-behavior#step-1-determine-the-appropriate-retry-interval-to-handle-spike-traffic
- * for context.
- *
- * <p>Visible for testing
- */ const RANDOM_FACTOR = 0.5;
-/**
- * Based on the backoff method from
- * https://github.com/google/closure-library/blob/master/closure/goog/math/exponentialbackoff.js.
- * Extracted here so we don't need to pass metadata and a stateful ExponentialBackoff object around.
- */ function calculateBackoffMillis(backoffCount, intervalMillis = DEFAULT_INTERVAL_MILLIS, backoffFactor = DEFAULT_BACKOFF_FACTOR) {
-    // Calculates an exponentially increasing value.
-    // Deviation: calculates value from count and a constant interval, so we only need to save value
-    // and count to restore state.
-    const currBaseValue = intervalMillis * Math.pow(backoffFactor, backoffCount);
-    // A random "fuzz" to avoid waves of retries.
-    // Deviation: randomFactor is required.
-    const randomWait = Math.round(// A fraction of the backoff value to add/subtract.
-    // Deviation: changes multiplication order to improve readability.
-    RANDOM_FACTOR * currBaseValue * // A random float (rounded to int by Math.round above) in the range [-1, 1]. Determines
-    // if we add or subtract.
-    (Math.random() - 0.5) * 2);
-    // Limits backoff to max to avoid effectively permanent backoff.
-    return Math.min(MAX_VALUE_MILLIS, currBaseValue + randomWait);
-}
-/**
- * @license
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * Provide English ordinal letters after a number
- */ function ordinal(i) {
-    if (!Number.isFinite(i)) return `${i}`;
-    return i + indicator(i);
-}
-function indicator(i) {
-    i = Math.abs(i);
-    const cent = i % 100;
-    if (cent >= 10 && cent <= 20) return 'th';
-    const dec = i % 10;
-    if (dec === 1) return 'st';
-    if (dec === 2) return 'nd';
-    if (dec === 3) return 'rd';
-    return 'th';
-}
-/**
- * @license
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ function getModularInstance(service) {
-    if (service && service._delegate) return service._delegate;
-    else return service;
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jnFvT":[function(require,module,exports,__globalThis) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, '__esModule', {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === 'default' || key === '__esModule' || Object.prototype.hasOwnProperty.call(dest, key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"cPhqm":[function(require,module,exports,__globalThis) {
-/**
- * @license
- * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */ /**
- * A container for all of the Logger instances
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "LogLevel", ()=>LogLevel);
-parcelHelpers.export(exports, "Logger", ()=>Logger);
-parcelHelpers.export(exports, "setLogLevel", ()=>setLogLevel);
-parcelHelpers.export(exports, "setUserLogHandler", ()=>setUserLogHandler);
-const instances = [];
-/**
- * The JS SDK supports 5 log levels and also allows a user the ability to
- * silence the logs altogether.
- *
- * The order is a follows:
- * DEBUG < VERBOSE < INFO < WARN < ERROR
- *
- * All of the log types above the current log level will be captured (i.e. if
- * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
- * `VERBOSE` logs will not)
- */ var LogLevel;
-(function(LogLevel) {
-    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
-    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
-    LogLevel[LogLevel["INFO"] = 2] = "INFO";
-    LogLevel[LogLevel["WARN"] = 3] = "WARN";
-    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
-    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
-})(LogLevel || (LogLevel = {}));
-const levelStringToEnum = {
-    'debug': LogLevel.DEBUG,
-    'verbose': LogLevel.VERBOSE,
-    'info': LogLevel.INFO,
-    'warn': LogLevel.WARN,
-    'error': LogLevel.ERROR,
-    'silent': LogLevel.SILENT
-};
-/**
- * The default log level
- */ const defaultLogLevel = LogLevel.INFO;
-/**
- * By default, `console.debug` is not displayed in the developer console (in
- * chrome). To avoid forcing users to have to opt-in to these logs twice
- * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
- * logs to the `console.log` function.
- */ const ConsoleMethod = {
-    [LogLevel.DEBUG]: 'log',
-    [LogLevel.VERBOSE]: 'log',
-    [LogLevel.INFO]: 'info',
-    [LogLevel.WARN]: 'warn',
-    [LogLevel.ERROR]: 'error'
-};
-/**
- * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
- * messages on to their corresponding console counterparts (if the log method
- * is supported by the current log level)
- */ const defaultLogHandler = (instance, logType, ...args)=>{
-    if (logType < instance.logLevel) return;
-    const now = new Date().toISOString();
-    const method = ConsoleMethod[logType];
-    if (method) console[method](`[${now}]  ${instance.name}:`, ...args);
-    else throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
-};
-class Logger {
-    /**
-     * Gives you an instance of a Logger to capture messages according to
-     * Firebase's logging scheme.
-     *
-     * @param name The name that the logs will be associated with
-     */ constructor(name){
-        this.name = name;
-        /**
-         * The log level of the given Logger instance.
-         */ this._logLevel = defaultLogLevel;
-        /**
-         * The main (internal) log handler for the Logger instance.
-         * Can be set to a new function in internal package code but not by user.
-         */ this._logHandler = defaultLogHandler;
-        /**
-         * The optional, additional, user-defined log handler for the Logger instance.
-         */ this._userLogHandler = null;
-        /**
-         * Capture the current instance for later use
-         */ instances.push(this);
-    }
-    get logLevel() {
-        return this._logLevel;
-    }
-    set logLevel(val) {
-        if (!(val in LogLevel)) throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
-        this._logLevel = val;
-    }
-    // Workaround for setter/getter having to be the same type.
-    setLogLevel(val) {
-        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-    }
-    get logHandler() {
-        return this._logHandler;
-    }
-    set logHandler(val) {
-        if (typeof val !== 'function') throw new TypeError('Value assigned to `logHandler` must be a function');
-        this._logHandler = val;
-    }
-    get userLogHandler() {
-        return this._userLogHandler;
-    }
-    set userLogHandler(val) {
-        this._userLogHandler = val;
-    }
-    /**
-     * The functions below are all based on the `console` interface
-     */ debug(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
-        this._logHandler(this, LogLevel.DEBUG, ...args);
-    }
-    log(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.VERBOSE, ...args);
-        this._logHandler(this, LogLevel.VERBOSE, ...args);
-    }
-    info(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
-        this._logHandler(this, LogLevel.INFO, ...args);
-    }
-    warn(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
-        this._logHandler(this, LogLevel.WARN, ...args);
-    }
-    error(...args) {
-        this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
-        this._logHandler(this, LogLevel.ERROR, ...args);
-    }
-}
-function setLogLevel(level) {
-    instances.forEach((inst)=>{
-        inst.setLogLevel(level);
-    });
-}
-function setUserLogHandler(logCallback, options) {
-    for (const instance of instances){
-        let customLogLevel = null;
-        if (options && options.level) customLogLevel = levelStringToEnum[options.level];
-        if (logCallback === null) instance.userLogHandler = null;
-        else instance.userLogHandler = (instance, level, ...args)=>{
-            const message = args.map((arg)=>{
-                if (arg == null) return null;
-                else if (typeof arg === 'string') return arg;
-                else if (typeof arg === 'number' || typeof arg === 'boolean') return arg.toString();
-                else if (arg instanceof Error) return arg.message;
-                else try {
-                    return JSON.stringify(arg);
-                } catch (ignored) {
-                    return null;
-                }
-            }).filter((arg)=>arg).join(' ');
-            if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) logCallback({
-                level: LogLevel[level].toLowerCase(),
-                message,
-                args,
-                type: instance.name
-            });
-        };
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"258QC":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "unwrap", ()=>(0, _wrapIdbValueJs.u));
-parcelHelpers.export(exports, "wrap", ()=>(0, _wrapIdbValueJs.w));
-parcelHelpers.export(exports, "deleteDB", ()=>deleteDB);
-parcelHelpers.export(exports, "openDB", ()=>openDB);
-var _wrapIdbValueJs = require("./wrap-idb-value.js");
-/**
- * Open a database.
- *
- * @param name Name of the database.
- * @param version Schema version.
- * @param callbacks Additional callbacks.
- */ function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
-    const request = indexedDB.open(name, version);
-    const openPromise = (0, _wrapIdbValueJs.w)(request);
-    if (upgrade) request.addEventListener('upgradeneeded', (event)=>{
-        upgrade((0, _wrapIdbValueJs.w)(request.result), event.oldVersion, event.newVersion, (0, _wrapIdbValueJs.w)(request.transaction), event);
-    });
-    if (blocked) request.addEventListener('blocked', (event)=>blocked(// Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
-        event.oldVersion, event.newVersion, event));
-    openPromise.then((db)=>{
-        if (terminated) db.addEventListener('close', ()=>terminated());
-        if (blocking) db.addEventListener('versionchange', (event)=>blocking(event.oldVersion, event.newVersion, event));
-    }).catch(()=>{});
-    return openPromise;
-}
-/**
- * Delete a database.
- *
- * @param name Name of the database.
- */ function deleteDB(name, { blocked } = {}) {
-    const request = indexedDB.deleteDatabase(name);
-    if (blocked) request.addEventListener('blocked', (event)=>blocked(// Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
-        event.oldVersion, event));
-    return (0, _wrapIdbValueJs.w)(request).then(()=>undefined);
-}
-const readMethods = [
-    'get',
-    'getKey',
-    'getAll',
-    'getAllKeys',
-    'count'
-];
-const writeMethods = [
-    'put',
-    'add',
-    'delete',
-    'clear'
-];
-const cachedMethods = new Map();
-function getMethod(target, prop) {
-    if (!(target instanceof IDBDatabase && !(prop in target) && typeof prop === 'string')) return;
-    if (cachedMethods.get(prop)) return cachedMethods.get(prop);
-    const targetFuncName = prop.replace(/FromIndex$/, '');
-    const useIndex = prop !== targetFuncName;
-    const isWrite = writeMethods.includes(targetFuncName);
-    if (// Bail if the target doesn't exist on the target. Eg, getAll isn't in Edge.
-    !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) || !(isWrite || readMethods.includes(targetFuncName))) return;
-    const method = async function(storeName, ...args) {
-        // isWrite ? 'readwrite' : undefined gzipps better, but fails in Edge :(
-        const tx = this.transaction(storeName, isWrite ? 'readwrite' : 'readonly');
-        let target = tx.store;
-        if (useIndex) target = target.index(args.shift());
-        // Must reject if op rejects.
-        // If it's a write operation, must reject if tx.done rejects.
-        // Must reject with op rejection first.
-        // Must resolve with op value.
-        // Must handle both promises (no unhandled rejections)
-        return (await Promise.all([
-            target[targetFuncName](...args),
-            isWrite && tx.done
-        ]))[0];
-    };
-    cachedMethods.set(prop, method);
-    return method;
-}
-(0, _wrapIdbValueJs.r)((oldTraps)=>({
-        ...oldTraps,
-        get: (target, prop, receiver)=>getMethod(target, prop) || oldTraps.get(target, prop, receiver),
-        has: (target, prop)=>!!getMethod(target, prop) || oldTraps.has(target, prop)
-    }));
-
-},{"./wrap-idb-value.js":"98T2L","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"98T2L":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "a", ()=>reverseTransformCache);
-parcelHelpers.export(exports, "i", ()=>instanceOfAny);
-parcelHelpers.export(exports, "r", ()=>replaceTraps);
-parcelHelpers.export(exports, "u", ()=>unwrap);
-parcelHelpers.export(exports, "w", ()=>wrap);
-const instanceOfAny = (object, constructors)=>constructors.some((c)=>object instanceof c);
-let idbProxyableTypes;
-let cursorAdvanceMethods;
-// This is a function to prevent it throwing up in node environments.
-function getIdbProxyableTypes() {
-    return idbProxyableTypes || (idbProxyableTypes = [
-        IDBDatabase,
-        IDBObjectStore,
-        IDBIndex,
-        IDBCursor,
-        IDBTransaction
-    ]);
-}
-// This is a function to prevent it throwing up in node environments.
-function getCursorAdvanceMethods() {
-    return cursorAdvanceMethods || (cursorAdvanceMethods = [
-        IDBCursor.prototype.advance,
-        IDBCursor.prototype.continue,
-        IDBCursor.prototype.continuePrimaryKey
-    ]);
-}
-const cursorRequestMap = new WeakMap();
-const transactionDoneMap = new WeakMap();
-const transactionStoreNamesMap = new WeakMap();
-const transformCache = new WeakMap();
-const reverseTransformCache = new WeakMap();
-function promisifyRequest(request) {
-    const promise = new Promise((resolve, reject)=>{
-        const unlisten = ()=>{
-            request.removeEventListener('success', success);
-            request.removeEventListener('error', error);
-        };
-        const success = ()=>{
-            resolve(wrap(request.result));
-            unlisten();
-        };
-        const error = ()=>{
-            reject(request.error);
-            unlisten();
-        };
-        request.addEventListener('success', success);
-        request.addEventListener('error', error);
-    });
-    promise.then((value)=>{
-        // Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
-        // (see wrapFunction).
-        if (value instanceof IDBCursor) cursorRequestMap.set(value, request);
-    // Catching to avoid "Uncaught Promise exceptions"
-    }).catch(()=>{});
-    // This mapping exists in reverseTransformCache but doesn't doesn't exist in transformCache. This
-    // is because we create many promises from a single IDBRequest.
-    reverseTransformCache.set(promise, request);
-    return promise;
-}
-function cacheDonePromiseForTransaction(tx) {
-    // Early bail if we've already created a done promise for this transaction.
-    if (transactionDoneMap.has(tx)) return;
-    const done = new Promise((resolve, reject)=>{
-        const unlisten = ()=>{
-            tx.removeEventListener('complete', complete);
-            tx.removeEventListener('error', error);
-            tx.removeEventListener('abort', error);
-        };
-        const complete = ()=>{
-            resolve();
-            unlisten();
-        };
-        const error = ()=>{
-            reject(tx.error || new DOMException('AbortError', 'AbortError'));
-            unlisten();
-        };
-        tx.addEventListener('complete', complete);
-        tx.addEventListener('error', error);
-        tx.addEventListener('abort', error);
-    });
-    // Cache it for later retrieval.
-    transactionDoneMap.set(tx, done);
-}
-let idbProxyTraps = {
-    get (target, prop, receiver) {
-        if (target instanceof IDBTransaction) {
-            // Special handling for transaction.done.
-            if (prop === 'done') return transactionDoneMap.get(target);
-            // Polyfill for objectStoreNames because of Edge.
-            if (prop === 'objectStoreNames') return target.objectStoreNames || transactionStoreNamesMap.get(target);
-            // Make tx.store return the only store in the transaction, or undefined if there are many.
-            if (prop === 'store') return receiver.objectStoreNames[1] ? undefined : receiver.objectStore(receiver.objectStoreNames[0]);
-        }
-        // Else transform whatever we get back.
-        return wrap(target[prop]);
-    },
-    set (target, prop, value) {
-        target[prop] = value;
-        return true;
-    },
-    has (target, prop) {
-        if (target instanceof IDBTransaction && (prop === 'done' || prop === 'store')) return true;
-        return prop in target;
-    }
-};
-function replaceTraps(callback) {
-    idbProxyTraps = callback(idbProxyTraps);
-}
-function wrapFunction(func) {
-    // Due to expected object equality (which is enforced by the caching in `wrap`), we
-    // only create one new func per func.
-    // Edge doesn't support objectStoreNames (booo), so we polyfill it here.
-    if (func === IDBDatabase.prototype.transaction && !('objectStoreNames' in IDBTransaction.prototype)) return function(storeNames, ...args) {
-        const tx = func.call(unwrap(this), storeNames, ...args);
-        transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [
-            storeNames
-        ]);
-        return wrap(tx);
-    };
-    // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
-    // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
-    // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
-    // with real promises, so each advance methods returns a new promise for the cursor object, or
-    // undefined if the end of the cursor has been reached.
-    if (getCursorAdvanceMethods().includes(func)) return function(...args) {
-        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
-        // the original object.
-        func.apply(unwrap(this), args);
-        return wrap(cursorRequestMap.get(this));
-    };
-    return function(...args) {
-        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
-        // the original object.
-        return wrap(func.apply(unwrap(this), args));
-    };
-}
-function transformCachableValue(value) {
-    if (typeof value === 'function') return wrapFunction(value);
-    // This doesn't return, it just creates a 'done' promise for the transaction,
-    // which is later returned for transaction.done (see idbObjectHandler).
-    if (value instanceof IDBTransaction) cacheDonePromiseForTransaction(value);
-    if (instanceOfAny(value, getIdbProxyableTypes())) return new Proxy(value, idbProxyTraps);
-    // Return the same value back if we're not going to transform it.
-    return value;
-}
-function wrap(value) {
-    // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
-    // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
-    if (value instanceof IDBRequest) return promisifyRequest(value);
-    // If we've already transformed this value before, reuse the transformed value.
-    // This is faster, but it also provides object equality.
-    if (transformCache.has(value)) return transformCache.get(value);
-    const newValue = transformCachableValue(value);
-    // Not all types are transformed.
-    // These may be primitive types, so they can't be WeakMap keys.
-    if (newValue !== value) {
-        transformCache.set(value, newValue);
-        reverseTransformCache.set(newValue, value);
-    }
-    return newValue;
-}
-const unwrap = (value)=>reverseTransformCache.get(value);
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"4ZBbi":[function(require,module,exports,__globalThis) {
+},{"react/jsx-dev-runtime":"dVPUn","react":"jMk1U","firebase/auth":"4ZBbi","firebase/firestore":"3RBs1","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"7h6Pi","firebase/app":"cYOm2"}],"4ZBbi":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _auth = require("@firebase/auth");
@@ -41184,7 +38379,3614 @@ _setExternalJSProvider({
 });
 registerAuth("Browser" /* ClientPlatform.BROWSER */ );
 
-},{"@firebase/app":"hLmie","@firebase/util":"5D2HR","@firebase/logger":"cPhqm","tslib":"iC1Dx","@firebase/component":"llS6a","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"iC1Dx":[function(require,module,exports,__globalThis) {
+},{"@firebase/app":"hLmie","@firebase/util":"5D2HR","@firebase/logger":"cPhqm","tslib":"iC1Dx","@firebase/component":"llS6a","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hLmie":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "FirebaseError", ()=>(0, _util.FirebaseError));
+parcelHelpers.export(exports, "SDK_VERSION", ()=>SDK_VERSION);
+parcelHelpers.export(exports, "_DEFAULT_ENTRY_NAME", ()=>DEFAULT_ENTRY_NAME);
+parcelHelpers.export(exports, "_addComponent", ()=>_addComponent);
+parcelHelpers.export(exports, "_addOrOverwriteComponent", ()=>_addOrOverwriteComponent);
+parcelHelpers.export(exports, "_apps", ()=>_apps);
+parcelHelpers.export(exports, "_clearComponents", ()=>_clearComponents);
+parcelHelpers.export(exports, "_components", ()=>_components);
+parcelHelpers.export(exports, "_getProvider", ()=>_getProvider);
+parcelHelpers.export(exports, "_isFirebaseApp", ()=>_isFirebaseApp);
+parcelHelpers.export(exports, "_isFirebaseServerApp", ()=>_isFirebaseServerApp);
+parcelHelpers.export(exports, "_registerComponent", ()=>_registerComponent);
+parcelHelpers.export(exports, "_removeServiceInstance", ()=>_removeServiceInstance);
+parcelHelpers.export(exports, "_serverApps", ()=>_serverApps);
+parcelHelpers.export(exports, "deleteApp", ()=>deleteApp);
+parcelHelpers.export(exports, "getApp", ()=>getApp);
+parcelHelpers.export(exports, "getApps", ()=>getApps);
+parcelHelpers.export(exports, "initializeApp", ()=>initializeApp);
+parcelHelpers.export(exports, "initializeServerApp", ()=>initializeServerApp);
+parcelHelpers.export(exports, "onLog", ()=>onLog);
+parcelHelpers.export(exports, "registerVersion", ()=>registerVersion);
+parcelHelpers.export(exports, "setLogLevel", ()=>setLogLevel);
+var _component = require("@firebase/component");
+var _logger = require("@firebase/logger");
+var _util = require("@firebase/util");
+var _idb = require("idb");
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ class PlatformLoggerServiceImpl {
+    constructor(container){
+        this.container = container;
+    }
+    // In initial implementation, this will be called by installations on
+    // auth token refresh, and installations will send this string.
+    getPlatformInfoString() {
+        const providers = this.container.getProviders();
+        // Loop through providers and get library/version pairs from any that are
+        // version components.
+        return providers.map((provider)=>{
+            if (isVersionServiceProvider(provider)) {
+                const service = provider.getImmediate();
+                return `${service.library}/${service.version}`;
+            } else return null;
+        }).filter((logString)=>logString).join(' ');
+    }
+}
+/**
+ *
+ * @param provider check if this provider provides a VersionService
+ *
+ * NOTE: Using Provider<'app-version'> is a hack to indicate that the provider
+ * provides VersionService. The provider is not necessarily a 'app-version'
+ * provider.
+ */ function isVersionServiceProvider(provider) {
+    const component = provider.getComponent();
+    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */ ;
+}
+const name$q = "@firebase/app";
+const version$1 = "0.10.13";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const logger = new (0, _logger.Logger)('@firebase/app');
+const name$p = "@firebase/app-compat";
+const name$o = "@firebase/analytics-compat";
+const name$n = "@firebase/analytics";
+const name$m = "@firebase/app-check-compat";
+const name$l = "@firebase/app-check";
+const name$k = "@firebase/auth";
+const name$j = "@firebase/auth-compat";
+const name$i = "@firebase/database";
+const name$h = "@firebase/data-connect";
+const name$g = "@firebase/database-compat";
+const name$f = "@firebase/functions";
+const name$e = "@firebase/functions-compat";
+const name$d = "@firebase/installations";
+const name$c = "@firebase/installations-compat";
+const name$b = "@firebase/messaging";
+const name$a = "@firebase/messaging-compat";
+const name$9 = "@firebase/performance";
+const name$8 = "@firebase/performance-compat";
+const name$7 = "@firebase/remote-config";
+const name$6 = "@firebase/remote-config-compat";
+const name$5 = "@firebase/storage";
+const name$4 = "@firebase/storage-compat";
+const name$3 = "@firebase/firestore";
+const name$2 = "@firebase/vertexai-preview";
+const name$1 = "@firebase/firestore-compat";
+const name = "firebase";
+const version = "10.14.1";
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * The default app name
+ *
+ * @internal
+ */ const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+const PLATFORM_LOG_STRING = {
+    [name$q]: 'fire-core',
+    [name$p]: 'fire-core-compat',
+    [name$n]: 'fire-analytics',
+    [name$o]: 'fire-analytics-compat',
+    [name$l]: 'fire-app-check',
+    [name$m]: 'fire-app-check-compat',
+    [name$k]: 'fire-auth',
+    [name$j]: 'fire-auth-compat',
+    [name$i]: 'fire-rtdb',
+    [name$h]: 'fire-data-connect',
+    [name$g]: 'fire-rtdb-compat',
+    [name$f]: 'fire-fn',
+    [name$e]: 'fire-fn-compat',
+    [name$d]: 'fire-iid',
+    [name$c]: 'fire-iid-compat',
+    [name$b]: 'fire-fcm',
+    [name$a]: 'fire-fcm-compat',
+    [name$9]: 'fire-perf',
+    [name$8]: 'fire-perf-compat',
+    [name$7]: 'fire-rc',
+    [name$6]: 'fire-rc-compat',
+    [name$5]: 'fire-gcs',
+    [name$4]: 'fire-gcs-compat',
+    [name$3]: 'fire-fst',
+    [name$1]: 'fire-fst-compat',
+    [name$2]: 'fire-vertex',
+    'fire-js': 'fire-js',
+    [name]: 'fire-js-all'
+};
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * @internal
+ */ const _apps = new Map();
+/**
+ * @internal
+ */ const _serverApps = new Map();
+/**
+ * Registered components.
+ *
+ * @internal
+ */ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _components = new Map();
+/**
+ * @param component - the component being added to this app's container
+ *
+ * @internal
+ */ function _addComponent(app, component) {
+    try {
+        app.container.addComponent(component);
+    } catch (e) {
+        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
+    }
+}
+/**
+ *
+ * @internal
+ */ function _addOrOverwriteComponent(app, component) {
+    app.container.addOrOverwriteComponent(component);
+}
+/**
+ *
+ * @param component - the component to register
+ * @returns whether or not the component is registered successfully
+ *
+ * @internal
+ */ function _registerComponent(component) {
+    const componentName = component.name;
+    if (_components.has(componentName)) {
+        logger.debug(`There were multiple attempts to register component ${componentName}.`);
+        return false;
+    }
+    _components.set(componentName, component);
+    // add the component to existing app instances
+    for (const app of _apps.values())_addComponent(app, component);
+    for (const serverApp of _serverApps.values())_addComponent(serverApp, component);
+    return true;
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ *
+ * @returns the provider for the service with the matching name
+ *
+ * @internal
+ */ function _getProvider(app, name) {
+    const heartbeatController = app.container.getProvider('heartbeat').getImmediate({
+        optional: true
+    });
+    if (heartbeatController) heartbeatController.triggerHeartbeat();
+    return app.container.getProvider(name);
+}
+/**
+ *
+ * @param app - FirebaseApp instance
+ * @param name - service name
+ * @param instanceIdentifier - service instance identifier in case the service supports multiple instances
+ *
+ * @internal
+ */ function _removeServiceInstance(app, name, instanceIdentifier = DEFAULT_ENTRY_NAME) {
+    _getProvider(app, name).clearInstance(instanceIdentifier);
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp or FirebaseOptions.
+ *
+ * @returns true if the provide object is of type FirebaseApp.
+ *
+ * @internal
+ */ function _isFirebaseApp(obj) {
+    return obj.options !== undefined;
+}
+/**
+ *
+ * @param obj - an object of type FirebaseApp.
+ *
+ * @returns true if the provided object is of type FirebaseServerAppImpl.
+ *
+ * @internal
+ */ function _isFirebaseServerApp(obj) {
+    return obj.settings !== undefined;
+}
+/**
+ * Test only
+ *
+ * @internal
+ */ function _clearComponents() {
+    _components.clear();
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const ERRORS = {
+    ["no-app" /* AppError.NO_APP */ ]: "No Firebase App '{$appName}' has been created - call initializeApp() first",
+    ["bad-app-name" /* AppError.BAD_APP_NAME */ ]: "Illegal App name: '{$appName}'",
+    ["duplicate-app" /* AppError.DUPLICATE_APP */ ]: "Firebase App named '{$appName}' already exists with different options or config",
+    ["app-deleted" /* AppError.APP_DELETED */ ]: "Firebase App named '{$appName}' already deleted",
+    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */ ]: 'Firebase Server App has been deleted',
+    ["no-options" /* AppError.NO_OPTIONS */ ]: 'Need to provide options, when not being deployed to hosting via source.',
+    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */ ]: "firebase.{$appName}() takes either no argument or a Firebase App instance.",
+    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */ ]: 'First argument to `onLog` must be null or a function.',
+    ["idb-open" /* AppError.IDB_OPEN */ ]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-get" /* AppError.IDB_GET */ ]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-set" /* AppError.IDB_WRITE */ ]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
+    ["idb-delete" /* AppError.IDB_DELETE */ ]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
+    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */ ]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
+    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */ ]: 'FirebaseServerApp is not for use in browser environments.'
+};
+const ERROR_FACTORY = new (0, _util.ErrorFactory)('app', 'Firebase', ERRORS);
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ class FirebaseAppImpl {
+    constructor(options, config, container){
+        this._isDeleted = false;
+        this._options = Object.assign({}, options);
+        this._config = Object.assign({}, config);
+        this._name = config.name;
+        this._automaticDataCollectionEnabled = config.automaticDataCollectionEnabled;
+        this._container = container;
+        this.container.addComponent(new (0, _component.Component)('app', ()=>this, "PUBLIC" /* ComponentType.PUBLIC */ ));
+    }
+    get automaticDataCollectionEnabled() {
+        this.checkDestroyed();
+        return this._automaticDataCollectionEnabled;
+    }
+    set automaticDataCollectionEnabled(val) {
+        this.checkDestroyed();
+        this._automaticDataCollectionEnabled = val;
+    }
+    get name() {
+        this.checkDestroyed();
+        return this._name;
+    }
+    get options() {
+        this.checkDestroyed();
+        return this._options;
+    }
+    get config() {
+        this.checkDestroyed();
+        return this._config;
+    }
+    get container() {
+        return this._container;
+    }
+    get isDeleted() {
+        return this._isDeleted;
+    }
+    set isDeleted(val) {
+        this._isDeleted = val;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */ checkDestroyed() {
+        if (this.isDeleted) throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */ , {
+            appName: this._name
+        });
+    }
+}
+/**
+ * @license
+ * Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ class FirebaseServerAppImpl extends FirebaseAppImpl {
+    constructor(options, serverConfig, name, container){
+        // Build configuration parameters for the FirebaseAppImpl base class.
+        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined ? serverConfig.automaticDataCollectionEnabled : false;
+        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
+        const config = {
+            name,
+            automaticDataCollectionEnabled
+        };
+        if (options.apiKey !== undefined) // Construct the parent FirebaseAppImp object.
+        super(options, config, container);
+        else {
+            const appImpl = options;
+            super(appImpl.options, config, container);
+        }
+        // Now construct the data for the FirebaseServerAppImpl.
+        this._serverConfig = Object.assign({
+            automaticDataCollectionEnabled
+        }, serverConfig);
+        this._finalizationRegistry = null;
+        if (typeof FinalizationRegistry !== 'undefined') this._finalizationRegistry = new FinalizationRegistry(()=>{
+            this.automaticCleanup();
+        });
+        this._refCount = 0;
+        this.incRefCount(this._serverConfig.releaseOnDeref);
+        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
+        // will never trigger.
+        this._serverConfig.releaseOnDeref = undefined;
+        serverConfig.releaseOnDeref = undefined;
+        registerVersion(name$q, version$1, 'serverapp');
+    }
+    toJSON() {
+        return undefined;
+    }
+    get refCount() {
+        return this._refCount;
+    }
+    // Increment the reference count of this server app. If an object is provided, register it
+    // with the finalization registry.
+    incRefCount(obj) {
+        if (this.isDeleted) return;
+        this._refCount++;
+        if (obj !== undefined && this._finalizationRegistry !== null) this._finalizationRegistry.register(obj, this);
+    }
+    // Decrement the reference count.
+    decRefCount() {
+        if (this.isDeleted) return 0;
+        return --this._refCount;
+    }
+    // Invoked by the FinalizationRegistry callback to note that this app should go through its
+    // reference counts and delete itself if no reference count remain. The coordinating logic that
+    // handles this is in deleteApp(...).
+    automaticCleanup() {
+        deleteApp(this);
+    }
+    get settings() {
+        this.checkDestroyed();
+        return this._serverConfig;
+    }
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */ checkDestroyed() {
+        if (this.isDeleted) throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */ );
+    }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * The current SDK version.
+ *
+ * @public
+ */ const SDK_VERSION = version;
+function initializeApp(_options, rawConfig = {}) {
+    let options = _options;
+    if (typeof rawConfig !== 'object') {
+        const name = rawConfig;
+        rawConfig = {
+            name
+        };
+    }
+    const config = Object.assign({
+        name: DEFAULT_ENTRY_NAME,
+        automaticDataCollectionEnabled: false
+    }, rawConfig);
+    const name = config.name;
+    if (typeof name !== 'string' || !name) throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */ , {
+        appName: String(name)
+    });
+    options || (options = (0, _util.getDefaultAppConfig)());
+    if (!options) throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */ );
+    const existingApp = _apps.get(name);
+    if (existingApp) {
+        // return the existing app if options and config deep equal the ones in the existing app.
+        if ((0, _util.deepEqual)(options, existingApp.options) && (0, _util.deepEqual)(config, existingApp.config)) return existingApp;
+        else throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */ , {
+            appName: name
+        });
+    }
+    const container = new (0, _component.ComponentContainer)(name);
+    for (const component of _components.values())container.addComponent(component);
+    const newApp = new FirebaseAppImpl(options, config, container);
+    _apps.set(name, newApp);
+    return newApp;
+}
+function initializeServerApp(_options, _serverAppConfig) {
+    if ((0, _util.isBrowser)() && !(0, _util.isWebWorker)()) // FirebaseServerApp isn't designed to be run in browsers.
+    throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */ );
+    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) _serverAppConfig.automaticDataCollectionEnabled = false;
+    let appOptions;
+    if (_isFirebaseApp(_options)) appOptions = _options.options;
+    else appOptions = _options;
+    // Build an app name based on a hash of the configuration options.
+    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
+    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
+    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
+    if (nameObj.releaseOnDeref !== undefined) delete nameObj.releaseOnDeref;
+    const hashCode = (s)=>{
+        return [
+            ...s
+        ].reduce((hash, c)=>Math.imul(31, hash) + c.charCodeAt(0) | 0, 0);
+    };
+    if (_serverAppConfig.releaseOnDeref !== undefined) {
+        if (typeof FinalizationRegistry === 'undefined') throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */ , {});
+    }
+    const nameString = '' + hashCode(JSON.stringify(nameObj));
+    const existingApp = _serverApps.get(nameString);
+    if (existingApp) {
+        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
+        return existingApp;
+    }
+    const container = new (0, _component.ComponentContainer)(nameString);
+    for (const component of _components.values())container.addComponent(component);
+    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+    _serverApps.set(nameString, newApp);
+    return newApp;
+}
+/**
+ * Retrieves a {@link @firebase/app#FirebaseApp} instance.
+ *
+ * When called with no arguments, the default app is returned. When an app name
+ * is provided, the app corresponding to that name is returned.
+ *
+ * An exception is thrown if the app being retrieved has not yet been
+ * initialized.
+ *
+ * @example
+ * ```javascript
+ * // Return the default app
+ * const app = getApp();
+ * ```
+ *
+ * @example
+ * ```javascript
+ * // Return a named app
+ * const otherApp = getApp("otherApp");
+ * ```
+ *
+ * @param name - Optional name of the app to return. If no name is
+ *   provided, the default is `"[DEFAULT]"`.
+ *
+ * @returns The app corresponding to the provided app name.
+ *   If no app name is provided, the default app is returned.
+ *
+ * @public
+ */ function getApp(name = DEFAULT_ENTRY_NAME) {
+    const app = _apps.get(name);
+    if (!app && name === DEFAULT_ENTRY_NAME && (0, _util.getDefaultAppConfig)()) return initializeApp();
+    if (!app) throw ERROR_FACTORY.create("no-app" /* AppError.NO_APP */ , {
+        appName: name
+    });
+    return app;
+}
+/**
+ * A (read-only) array of all initialized apps.
+ * @public
+ */ function getApps() {
+    return Array.from(_apps.values());
+}
+/**
+ * Renders this app unusable and frees the resources of all associated
+ * services.
+ *
+ * @example
+ * ```javascript
+ * deleteApp(app)
+ *   .then(function() {
+ *     console.log("App deleted successfully");
+ *   })
+ *   .catch(function(error) {
+ *     console.log("Error deleting app:", error);
+ *   });
+ * ```
+ *
+ * @public
+ */ async function deleteApp(app) {
+    let cleanupProviders = false;
+    const name = app.name;
+    if (_apps.has(name)) {
+        cleanupProviders = true;
+        _apps.delete(name);
+    } else if (_serverApps.has(name)) {
+        const firebaseServerApp = app;
+        if (firebaseServerApp.decRefCount() <= 0) {
+            _serverApps.delete(name);
+            cleanupProviders = true;
+        }
+    }
+    if (cleanupProviders) {
+        await Promise.all(app.container.getProviders().map((provider)=>provider.delete()));
+        app.isDeleted = true;
+    }
+}
+/**
+ * Registers a library's name and version for platform logging purposes.
+ * @param library - Name of 1p or 3p library (e.g. firestore, angularfire)
+ * @param version - Current version of that library.
+ * @param variant - Bundle variant, e.g., node, rn, etc.
+ *
+ * @public
+ */ function registerVersion(libraryKeyOrName, version, variant) {
+    var _a;
+    // TODO: We can use this check to whitelist strings when/if we set up
+    // a good whitelist system.
+    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+    if (variant) library += `-${variant}`;
+    const libraryMismatch = library.match(/\s|\//);
+    const versionMismatch = version.match(/\s|\//);
+    if (libraryMismatch || versionMismatch) {
+        const warning = [
+            `Unable to register library "${library}" with version "${version}":`
+        ];
+        if (libraryMismatch) warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
+        if (libraryMismatch && versionMismatch) warning.push('and');
+        if (versionMismatch) warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
+        logger.warn(warning.join(' '));
+        return;
+    }
+    _registerComponent(new (0, _component.Component)(`${library}-version`, ()=>({
+            library,
+            version
+        }), "VERSION" /* ComponentType.VERSION */ ));
+}
+/**
+ * Sets log handler for all Firebase SDKs.
+ * @param logCallback - An optional custom log handler that executes user code whenever
+ * the Firebase SDK makes a logging call.
+ *
+ * @public
+ */ function onLog(logCallback, options) {
+    if (logCallback !== null && typeof logCallback !== 'function') throw ERROR_FACTORY.create("invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */ );
+    (0, _logger.setUserLogHandler)(logCallback, options);
+}
+/**
+ * Sets log level for all Firebase SDKs.
+ *
+ * All of the log types above the current log level are captured (i.e. if
+ * you set the log level to `info`, errors are logged, but `debug` and
+ * `verbose` logs are not).
+ *
+ * @public
+ */ function setLogLevel(logLevel) {
+    (0, _logger.setLogLevel)(logLevel);
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const DB_NAME = 'firebase-heartbeat-database';
+const DB_VERSION = 1;
+const STORE_NAME = 'firebase-heartbeat-store';
+let dbPromise = null;
+function getDbPromise() {
+    if (!dbPromise) dbPromise = (0, _idb.openDB)(DB_NAME, DB_VERSION, {
+        upgrade: (db, oldVersion)=>{
+            // We don't use 'break' in this switch statement, the fall-through
+            // behavior is what we want, because if there are multiple versions between
+            // the old version and the current version, we want ALL the migrations
+            // that correspond to those versions to run, not only the last one.
+            // eslint-disable-next-line default-case
+            switch(oldVersion){
+                case 0:
+                    try {
+                        db.createObjectStore(STORE_NAME);
+                    } catch (e) {
+                        // Safari/iOS browsers throw occasional exceptions on
+                        // db.createObjectStore() that may be a bug. Avoid blocking
+                        // the rest of the app functionality.
+                        console.warn(e);
+                    }
+            }
+        }
+    }).catch((e)=>{
+        throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */ , {
+            originalErrorMessage: e.message
+        });
+    });
+    return dbPromise;
+}
+async function readHeartbeatsFromIndexedDB(app) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME);
+        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+        // We already have the value but tx.done can throw,
+        // so we need to await it here to catch errors
+        await tx.done;
+        return result;
+    } catch (e) {
+        if (e instanceof (0, _util.FirebaseError)) logger.warn(e.message);
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */ , {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
+    try {
+        const db = await getDbPromise();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const objectStore = tx.objectStore(STORE_NAME);
+        await objectStore.put(heartbeatObject, computeKey(app));
+        await tx.done;
+    } catch (e) {
+        if (e instanceof (0, _util.FirebaseError)) logger.warn(e.message);
+        else {
+            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */ , {
+                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+            });
+            logger.warn(idbGetError.message);
+        }
+    }
+}
+function computeKey(app) {
+    return `${app.name}!${app.options.appId}`;
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const MAX_HEADER_BYTES = 1024;
+// 30 days
+const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 2592000000;
+class HeartbeatServiceImpl {
+    constructor(container){
+        this.container = container;
+        /**
+         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
+         * the header string.
+         * Stores one record per date. This will be consolidated into the standard
+         * format of one record per user agent string before being sent as a header.
+         * Populated from indexedDB when the controller is instantiated and should
+         * be kept in sync with indexedDB.
+         * Leave public for easier testing.
+         */ this._heartbeatsCache = null;
+        const app = this.container.getProvider('app').getImmediate();
+        this._storage = new HeartbeatStorageImpl(app);
+        this._heartbeatsCachePromise = this._storage.read().then((result)=>{
+            this._heartbeatsCache = result;
+            return result;
+        });
+    }
+    /**
+     * Called to report a heartbeat. The function will generate
+     * a HeartbeatsByUserAgent object, update heartbeatsCache, and persist it
+     * to IndexedDB.
+     * Note that we only store one heartbeat per day. So if a heartbeat for today is
+     * already logged, subsequent calls to this function in the same day will be ignored.
+     */ async triggerHeartbeat() {
+        var _a, _b;
+        try {
+            const platformLogger = this.container.getProvider('platform-logger').getImmediate();
+            // This is the "Firebase user agent" string from the platform logger
+            // service, not the browser user agent.
+            const agent = platformLogger.getPlatformInfoString();
+            const date = getUTCDateString();
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+                this._heartbeatsCache = await this._heartbeatsCachePromise;
+                // If we failed to construct a heartbeats cache, then return immediately.
+                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) return;
+            }
+            // Do not store a heartbeat if one is already stored for this day
+            // or if a header has already been sent today.
+            if (this._heartbeatsCache.lastSentHeartbeatDate === date || this._heartbeatsCache.heartbeats.some((singleDateHeartbeat)=>singleDateHeartbeat.date === date)) return;
+            else // There is no entry for this date. Create one.
+            this._heartbeatsCache.heartbeats.push({
+                date,
+                agent
+            });
+            // Remove entries older than 30 days.
+            this._heartbeatsCache.heartbeats = this._heartbeatsCache.heartbeats.filter((singleDateHeartbeat)=>{
+                const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
+                const now = Date.now();
+                return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
+            });
+            return this._storage.overwrite(this._heartbeatsCache);
+        } catch (e) {
+            logger.warn(e);
+        }
+    }
+    /**
+     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
+     * It also clears all heartbeats from memory as well as in IndexedDB.
+     *
+     * NOTE: Consuming product SDKs should not send the header if this method
+     * returns an empty string.
+     */ async getHeartbeatsHeader() {
+        var _a;
+        try {
+            if (this._heartbeatsCache === null) await this._heartbeatsCachePromise;
+            // If it's still null or the array is empty, there is no data to send.
+            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null || this._heartbeatsCache.heartbeats.length === 0) return '';
+            const date = getUTCDateString();
+            // Extract as many heartbeats from the cache as will fit under the size limit.
+            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+            const headerString = (0, _util.base64urlEncodeWithoutPadding)(JSON.stringify({
+                version: 2,
+                heartbeats: heartbeatsToSend
+            }));
+            // Store last sent date to prevent another being logged/sent for the same day.
+            this._heartbeatsCache.lastSentHeartbeatDate = date;
+            if (unsentEntries.length > 0) {
+                // Store any unsent entries if they exist.
+                this._heartbeatsCache.heartbeats = unsentEntries;
+                // This seems more likely than emptying the array (below) to lead to some odd state
+                // since the cache isn't empty and this will be called again on the next request,
+                // and is probably safest if we await it.
+                await this._storage.overwrite(this._heartbeatsCache);
+            } else {
+                this._heartbeatsCache.heartbeats = [];
+                // Do not wait for this, to reduce latency.
+                this._storage.overwrite(this._heartbeatsCache);
+            }
+            return headerString;
+        } catch (e) {
+            logger.warn(e);
+            return '';
+        }
+    }
+}
+function getUTCDateString() {
+    const today = new Date();
+    // Returns date format 'YYYY-MM-DD'
+    return today.toISOString().substring(0, 10);
+}
+function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
+    // Heartbeats grouped by user agent in the standard format to be sent in
+    // the header.
+    const heartbeatsToSend = [];
+    // Single date format heartbeats that are not sent.
+    let unsentEntries = heartbeatsCache.slice();
+    for (const singleDateHeartbeat of heartbeatsCache){
+        // Look for an existing entry with the same user agent.
+        const heartbeatEntry = heartbeatsToSend.find((hb)=>hb.agent === singleDateHeartbeat.agent);
+        if (!heartbeatEntry) {
+            // If no entry for this user agent exists, create one.
+            heartbeatsToSend.push({
+                agent: singleDateHeartbeat.agent,
+                dates: [
+                    singleDateHeartbeat.date
+                ]
+            });
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                // If the header would exceed max size, remove the added heartbeat
+                // entry and stop adding to the header.
+                heartbeatsToSend.pop();
+                break;
+            }
+        } else {
+            heartbeatEntry.dates.push(singleDateHeartbeat.date);
+            // If the header would exceed max size, remove the added date
+            // and stop adding to the header.
+            if (countBytes(heartbeatsToSend) > maxSize) {
+                heartbeatEntry.dates.pop();
+                break;
+            }
+        }
+        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
+        // quota and the loop breaks early.)
+        unsentEntries = unsentEntries.slice(1);
+    }
+    return {
+        heartbeatsToSend,
+        unsentEntries
+    };
+}
+class HeartbeatStorageImpl {
+    constructor(app){
+        this.app = app;
+        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
+    }
+    async runIndexedDBEnvironmentCheck() {
+        if (!(0, _util.isIndexedDBAvailable)()) return false;
+        else return (0, _util.validateIndexedDBOpenable)().then(()=>true).catch(()=>false);
+    }
+    /**
+     * Read all heartbeats.
+     */ async read() {
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) return {
+            heartbeats: []
+        };
+        else {
+            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
+            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) return idbHeartbeatObject;
+            else return {
+                heartbeats: []
+            };
+        }
+    }
+    // overwrite the storage with the provided heartbeats
+    async overwrite(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) return;
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: heartbeatsObject.heartbeats
+            });
+        }
+    }
+    // add heartbeats
+    async add(heartbeatsObject) {
+        var _a;
+        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+        if (!canUseIndexedDB) return;
+        else {
+            const existingHeartbeatsObject = await this.read();
+            return writeHeartbeatsToIndexedDB(this.app, {
+                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                heartbeats: [
+                    ...existingHeartbeatsObject.heartbeats,
+                    ...heartbeatsObject.heartbeats
+                ]
+            });
+        }
+    }
+}
+/**
+ * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
+ * in a platform logging header JSON object, stringified, and converted
+ * to base 64.
+ */ function countBytes(heartbeatsCache) {
+    // base64 has a restricted set of characters, all of which should be 1 byte.
+    return (0, _util.base64urlEncodeWithoutPadding)(// heartbeatsCache wrapper properties
+    JSON.stringify({
+        version: 2,
+        heartbeats: heartbeatsCache
+    })).length;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ function registerCoreComponents(variant) {
+    _registerComponent(new (0, _component.Component)('platform-logger', (container)=>new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */ ));
+    _registerComponent(new (0, _component.Component)('heartbeat', (container)=>new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */ ));
+    // Register `app` package.
+    registerVersion(name$q, version$1, variant);
+    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
+    registerVersion(name$q, version$1, 'esm2017');
+    // Register platform SDK identifier (no version).
+    registerVersion('fire-js', '');
+}
+/**
+ * Firebase App
+ *
+ * @remarks This package coordinates the communication between the different Firebase components
+ * @packageDocumentation
+ */ registerCoreComponents('');
+
+},{"@firebase/component":"llS6a","@firebase/logger":"cPhqm","@firebase/util":"5D2HR","idb":"258QC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"llS6a":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Component", ()=>Component);
+parcelHelpers.export(exports, "ComponentContainer", ()=>ComponentContainer);
+parcelHelpers.export(exports, "Provider", ()=>Provider);
+var _util = require("@firebase/util");
+/**
+ * Component for service name T, e.g. `auth`, `auth-internal`
+ */ class Component {
+    /**
+     *
+     * @param name The public service name, e.g. app, auth, firestore, database
+     * @param instanceFactory Service factory responsible for creating the public interface
+     * @param type whether the service provided by the component is public or private
+     */ constructor(name, instanceFactory, type){
+        this.name = name;
+        this.instanceFactory = instanceFactory;
+        this.type = type;
+        this.multipleInstances = false;
+        /**
+         * Properties to be added to the service namespace
+         */ this.serviceProps = {};
+        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */ ;
+        this.onInstanceCreated = null;
+    }
+    setInstantiationMode(mode) {
+        this.instantiationMode = mode;
+        return this;
+    }
+    setMultipleInstances(multipleInstances) {
+        this.multipleInstances = multipleInstances;
+        return this;
+    }
+    setServiceProps(props) {
+        this.serviceProps = props;
+        return this;
+    }
+    setInstanceCreatedCallback(callback) {
+        this.onInstanceCreated = callback;
+        return this;
+    }
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
+ * NameServiceMapping[T] is an alias for the type of the instance
+ */ class Provider {
+    constructor(name, container){
+        this.name = name;
+        this.container = container;
+        this.component = null;
+        this.instances = new Map();
+        this.instancesDeferred = new Map();
+        this.instancesOptions = new Map();
+        this.onInitCallbacks = new Map();
+    }
+    /**
+     * @param identifier A provider can provide multiple instances of a service
+     * if this.component.multipleInstances is true.
+     */ get(identifier) {
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        if (!this.instancesDeferred.has(normalizedIdentifier)) {
+            const deferred = new (0, _util.Deferred)();
+            this.instancesDeferred.set(normalizedIdentifier, deferred);
+            if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) // initialize the service if it can be auto-initialized
+            try {
+                const instance = this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+                if (instance) deferred.resolve(instance);
+            } catch (e) {
+            // when the instance factory throws an exception during get(), it should not cause
+            // a fatal error. We just return the unresolved promise in this case.
+            }
+        }
+        return this.instancesDeferred.get(normalizedIdentifier).promise;
+    }
+    getImmediate(options) {
+        var _a;
+        // if multipleInstances is not supported, use the default name
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
+        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+        if (this.isInitialized(normalizedIdentifier) || this.shouldAutoInitialize()) try {
+            return this.getOrInitializeService({
+                instanceIdentifier: normalizedIdentifier
+            });
+        } catch (e) {
+            if (optional) return null;
+            else throw e;
+        }
+        else {
+            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
+            if (optional) return null;
+            else throw Error(`Service ${this.name} is not available`);
+        }
+    }
+    getComponent() {
+        return this.component;
+    }
+    setComponent(component) {
+        if (component.name !== this.name) throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
+        if (this.component) throw Error(`Component for ${this.name} has already been provided`);
+        this.component = component;
+        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
+        if (!this.shouldAutoInitialize()) return;
+        // if the service is eager, initialize the default instance
+        if (isComponentEager(component)) try {
+            this.getOrInitializeService({
+                instanceIdentifier: DEFAULT_ENTRY_NAME
+            });
+        } catch (e) {
+        // when the instance factory for an eager Component throws an exception during the eager
+        // initialization, it should not cause a fatal error.
+        // TODO: Investigate if we need to make it configurable, because some component may want to cause
+        // a fatal error in this case?
+        }
+        // Create service instances for the pending promises and resolve them
+        // NOTE: if this.multipleInstances is false, only the default instance will be created
+        // and all promises with resolve with it regardless of the identifier.
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()){
+            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            try {
+                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
+                const instance = this.getOrInitializeService({
+                    instanceIdentifier: normalizedIdentifier
+                });
+                instanceDeferred.resolve(instance);
+            } catch (e) {
+            // when the instance factory throws an exception, it should not cause
+            // a fatal error. We just leave the promise unresolved.
+            }
+        }
+    }
+    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
+        this.instancesDeferred.delete(identifier);
+        this.instancesOptions.delete(identifier);
+        this.instances.delete(identifier);
+    }
+    // app.delete() will call this method on every provider to delete the services
+    // TODO: should we mark the provider as deleted?
+    async delete() {
+        const services = Array.from(this.instances.values());
+        await Promise.all([
+            ...services.filter((service)=>'INTERNAL' in service) // legacy services
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .map((service)=>service.INTERNAL.delete()),
+            ...services.filter((service)=>'_delete' in service) // modularized services
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .map((service)=>service._delete())
+        ]);
+    }
+    isComponentSet() {
+        return this.component != null;
+    }
+    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instances.has(identifier);
+    }
+    getOptions(identifier = DEFAULT_ENTRY_NAME) {
+        return this.instancesOptions.get(identifier) || {};
+    }
+    initialize(opts = {}) {
+        const { options = {} } = opts;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
+        if (this.isInitialized(normalizedIdentifier)) throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
+        if (!this.isComponentSet()) throw Error(`Component ${this.name} has not been registered yet`);
+        const instance = this.getOrInitializeService({
+            instanceIdentifier: normalizedIdentifier,
+            options
+        });
+        // resolve any pending promise waiting for the service instance
+        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()){
+            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+            if (normalizedIdentifier === normalizedDeferredIdentifier) instanceDeferred.resolve(instance);
+        }
+        return instance;
+    }
+    /**
+     *
+     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
+     * The function is invoked SYNCHRONOUSLY, so it should not execute any longrunning tasks in order to not block the program.
+     *
+     * @param identifier An optional instance identifier
+     * @returns a function to unregister the callback
+     */ onInit(callback, identifier) {
+        var _a;
+        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+        existingCallbacks.add(callback);
+        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
+        const existingInstance = this.instances.get(normalizedIdentifier);
+        if (existingInstance) callback(existingInstance, normalizedIdentifier);
+        return ()=>{
+            existingCallbacks.delete(callback);
+        };
+    }
+    /**
+     * Invoke onInit callbacks synchronously
+     * @param instance the service instance`
+     */ invokeOnInitCallbacks(instance, identifier) {
+        const callbacks = this.onInitCallbacks.get(identifier);
+        if (!callbacks) return;
+        for (const callback of callbacks)try {
+            callback(instance, identifier);
+        } catch (_a) {
+        // ignore errors in the onInit callback
+        }
+    }
+    getOrInitializeService({ instanceIdentifier, options = {} }) {
+        let instance = this.instances.get(instanceIdentifier);
+        if (!instance && this.component) {
+            instance = this.component.instanceFactory(this.container, {
+                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
+                options
+            });
+            this.instances.set(instanceIdentifier, instance);
+            this.instancesOptions.set(instanceIdentifier, options);
+            /**
+             * Invoke onInit listeners.
+             * Note this.component.onInstanceCreated is different, which is used by the component creator,
+             * while onInit listeners are registered by consumers of the provider.
+             */ this.invokeOnInitCallbacks(instance, instanceIdentifier);
+            /**
+             * Order is important
+             * onInstanceCreated() should be called after this.instances.set(instanceIdentifier, instance); which
+             * makes `isInitialized()` return true.
+             */ if (this.component.onInstanceCreated) try {
+                this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
+            } catch (_a) {
+            // ignore errors in the onInstanceCreatedCallback
+            }
+        }
+        return instance || null;
+    }
+    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
+        if (this.component) return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
+        else return identifier; // assume multiple instances are supported before the component is provided.
+    }
+    shouldAutoInitialize() {
+        return !!this.component && this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */ ;
+    }
+}
+// undefined should be passed to the service factory for the default instance
+function normalizeIdentifierForFactory(identifier) {
+    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
+}
+function isComponentEager(component) {
+    return component.instantiationMode === "EAGER" /* InstantiationMode.EAGER */ ;
+}
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
+ */ class ComponentContainer {
+    constructor(name){
+        this.name = name;
+        this.providers = new Map();
+    }
+    /**
+     *
+     * @param component Component being added
+     * @param overwrite When a component with the same name has already been registered,
+     * if overwrite is true: overwrite the existing component with the new component and create a new
+     * provider with the new component. It can be useful in tests where you want to use different mocks
+     * for different tests.
+     * if overwrite is false: throw an exception
+     */ addComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
+        provider.setComponent(component);
+    }
+    addOrOverwriteComponent(component) {
+        const provider = this.getProvider(component.name);
+        if (provider.isComponentSet()) // delete the existing provider from the container, so we can register the new component
+        this.providers.delete(component.name);
+        this.addComponent(component);
+    }
+    /**
+     * getProvider provides a type safe interface where it can only be called with a field name
+     * present in NameServiceMapping interface.
+     *
+     * Firebase SDKs providing services should extend NameServiceMapping interface to register
+     * themselves.
+     */ getProvider(name) {
+        if (this.providers.has(name)) return this.providers.get(name);
+        // create a Provider for a service that hasn't registered with Firebase
+        const provider = new Provider(name, this);
+        this.providers.set(name, provider);
+        return provider;
+    }
+    getProviders() {
+        return Array.from(this.providers.values());
+    }
+}
+
+},{"@firebase/util":"5D2HR","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"5D2HR":[function(require,module,exports,__globalThis) {
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * @fileoverview Firebase constants.  Some of these (@defines) can be overridden at compile-time.
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CONSTANTS", ()=>CONSTANTS);
+parcelHelpers.export(exports, "DecodeBase64StringError", ()=>DecodeBase64StringError);
+parcelHelpers.export(exports, "Deferred", ()=>Deferred);
+parcelHelpers.export(exports, "ErrorFactory", ()=>ErrorFactory);
+parcelHelpers.export(exports, "FirebaseError", ()=>FirebaseError);
+parcelHelpers.export(exports, "MAX_VALUE_MILLIS", ()=>MAX_VALUE_MILLIS);
+parcelHelpers.export(exports, "RANDOM_FACTOR", ()=>RANDOM_FACTOR);
+parcelHelpers.export(exports, "Sha1", ()=>Sha1);
+parcelHelpers.export(exports, "areCookiesEnabled", ()=>areCookiesEnabled);
+parcelHelpers.export(exports, "assert", ()=>assert);
+parcelHelpers.export(exports, "assertionError", ()=>assertionError);
+parcelHelpers.export(exports, "async", ()=>async);
+parcelHelpers.export(exports, "base64", ()=>base64);
+parcelHelpers.export(exports, "base64Decode", ()=>base64Decode);
+parcelHelpers.export(exports, "base64Encode", ()=>base64Encode);
+parcelHelpers.export(exports, "base64urlEncodeWithoutPadding", ()=>base64urlEncodeWithoutPadding);
+parcelHelpers.export(exports, "calculateBackoffMillis", ()=>calculateBackoffMillis);
+parcelHelpers.export(exports, "contains", ()=>contains);
+parcelHelpers.export(exports, "createMockUserToken", ()=>createMockUserToken);
+parcelHelpers.export(exports, "createSubscribe", ()=>createSubscribe);
+parcelHelpers.export(exports, "decode", ()=>decode);
+parcelHelpers.export(exports, "deepCopy", ()=>deepCopy);
+parcelHelpers.export(exports, "deepEqual", ()=>deepEqual);
+parcelHelpers.export(exports, "deepExtend", ()=>deepExtend);
+parcelHelpers.export(exports, "errorPrefix", ()=>errorPrefix);
+parcelHelpers.export(exports, "extractQuerystring", ()=>extractQuerystring);
+parcelHelpers.export(exports, "getDefaultAppConfig", ()=>getDefaultAppConfig);
+parcelHelpers.export(exports, "getDefaultEmulatorHost", ()=>getDefaultEmulatorHost);
+parcelHelpers.export(exports, "getDefaultEmulatorHostnameAndPort", ()=>getDefaultEmulatorHostnameAndPort);
+parcelHelpers.export(exports, "getDefaults", ()=>getDefaults);
+parcelHelpers.export(exports, "getExperimentalSetting", ()=>getExperimentalSetting);
+parcelHelpers.export(exports, "getGlobal", ()=>getGlobal);
+parcelHelpers.export(exports, "getModularInstance", ()=>getModularInstance);
+parcelHelpers.export(exports, "getUA", ()=>getUA);
+parcelHelpers.export(exports, "isAdmin", ()=>isAdmin);
+parcelHelpers.export(exports, "isBrowser", ()=>isBrowser);
+parcelHelpers.export(exports, "isBrowserExtension", ()=>isBrowserExtension);
+parcelHelpers.export(exports, "isCloudflareWorker", ()=>isCloudflareWorker);
+parcelHelpers.export(exports, "isElectron", ()=>isElectron);
+parcelHelpers.export(exports, "isEmpty", ()=>isEmpty);
+parcelHelpers.export(exports, "isIE", ()=>isIE);
+parcelHelpers.export(exports, "isIndexedDBAvailable", ()=>isIndexedDBAvailable);
+parcelHelpers.export(exports, "isMobileCordova", ()=>isMobileCordova);
+parcelHelpers.export(exports, "isNode", ()=>isNode);
+parcelHelpers.export(exports, "isNodeSdk", ()=>isNodeSdk);
+parcelHelpers.export(exports, "isReactNative", ()=>isReactNative);
+parcelHelpers.export(exports, "isSafari", ()=>isSafari);
+parcelHelpers.export(exports, "isUWP", ()=>isUWP);
+parcelHelpers.export(exports, "isValidFormat", ()=>isValidFormat);
+parcelHelpers.export(exports, "isValidTimestamp", ()=>isValidTimestamp);
+parcelHelpers.export(exports, "isWebWorker", ()=>isWebWorker);
+parcelHelpers.export(exports, "issuedAtTime", ()=>issuedAtTime);
+parcelHelpers.export(exports, "jsonEval", ()=>jsonEval);
+parcelHelpers.export(exports, "map", ()=>map);
+parcelHelpers.export(exports, "ordinal", ()=>ordinal);
+parcelHelpers.export(exports, "promiseWithTimeout", ()=>promiseWithTimeout);
+parcelHelpers.export(exports, "querystring", ()=>querystring);
+parcelHelpers.export(exports, "querystringDecode", ()=>querystringDecode);
+parcelHelpers.export(exports, "safeGet", ()=>safeGet);
+parcelHelpers.export(exports, "stringLength", ()=>stringLength);
+parcelHelpers.export(exports, "stringToByteArray", ()=>stringToByteArray);
+parcelHelpers.export(exports, "stringify", ()=>stringify);
+parcelHelpers.export(exports, "uuidv4", ()=>uuidv4);
+parcelHelpers.export(exports, "validateArgCount", ()=>validateArgCount);
+parcelHelpers.export(exports, "validateCallback", ()=>validateCallback);
+parcelHelpers.export(exports, "validateContextObject", ()=>validateContextObject);
+parcelHelpers.export(exports, "validateIndexedDBOpenable", ()=>validateIndexedDBOpenable);
+parcelHelpers.export(exports, "validateNamespace", ()=>validateNamespace);
+var global = arguments[3];
+const CONSTANTS = {
+    /**
+     * @define {boolean} Whether this is the client Node.js SDK.
+     */ NODE_CLIENT: false,
+    /**
+     * @define {boolean} Whether this is the Admin Node.js SDK.
+     */ NODE_ADMIN: false,
+    /**
+     * Firebase SDK Version
+     */ SDK_VERSION: '${JSCORE_VERSION}'
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Throws an error if the provided assertion is falsy
+ */ const assert = function(assertion, message) {
+    if (!assertion) throw assertionError(message);
+};
+/**
+ * Returns an Error object suitable for throwing.
+ */ const assertionError = function(message) {
+    return new Error('Firebase Database (' + CONSTANTS.SDK_VERSION + ') INTERNAL ASSERT FAILED: ' + message);
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const stringToByteArray$1 = function(str) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let p = 0;
+    for(let i = 0; i < str.length; i++){
+        let c = str.charCodeAt(i);
+        if (c < 128) out[p++] = c;
+        else if (c < 2048) {
+            out[p++] = c >> 6 | 192;
+            out[p++] = c & 63 | 128;
+        } else if ((c & 0xfc00) === 0xd800 && i + 1 < str.length && (str.charCodeAt(i + 1) & 0xfc00) === 0xdc00) {
+            // Surrogate Pair
+            c = 0x10000 + ((c & 0x03ff) << 10) + (str.charCodeAt(++i) & 0x03ff);
+            out[p++] = c >> 18 | 240;
+            out[p++] = c >> 12 & 63 | 128;
+            out[p++] = c >> 6 & 63 | 128;
+            out[p++] = c & 63 | 128;
+        } else {
+            out[p++] = c >> 12 | 224;
+            out[p++] = c >> 6 & 63 | 128;
+            out[p++] = c & 63 | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Turns an array of numbers into the string given by the concatenation of the
+ * characters to which the numbers correspond.
+ * @param bytes Array of numbers representing characters.
+ * @return Stringification of the array.
+ */ const byteArrayToString = function(bytes) {
+    // TODO(user): Use native implementations if/when available
+    const out = [];
+    let pos = 0, c = 0;
+    while(pos < bytes.length){
+        const c1 = bytes[pos++];
+        if (c1 < 128) out[c++] = String.fromCharCode(c1);
+        else if (c1 > 191 && c1 < 224) {
+            const c2 = bytes[pos++];
+            out[c++] = String.fromCharCode((c1 & 31) << 6 | c2 & 63);
+        } else if (c1 > 239 && c1 < 365) {
+            // Surrogate Pair
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            const c4 = bytes[pos++];
+            const u = ((c1 & 7) << 18 | (c2 & 63) << 12 | (c3 & 63) << 6 | c4 & 63) - 0x10000;
+            out[c++] = String.fromCharCode(0xd800 + (u >> 10));
+            out[c++] = String.fromCharCode(0xdc00 + (u & 1023));
+        } else {
+            const c2 = bytes[pos++];
+            const c3 = bytes[pos++];
+            out[c++] = String.fromCharCode((c1 & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+        }
+    }
+    return out.join('');
+};
+// We define it as an object literal instead of a class because a class compiled down to es5 can't
+// be treeshaked. https://github.com/rollup/rollup/issues/1691
+// Static lookup maps, lazily populated by init_()
+const base64 = {
+    /**
+     * Maps bytes to characters.
+     */ byteToCharMap_: null,
+    /**
+     * Maps characters to bytes.
+     */ charToByteMap_: null,
+    /**
+     * Maps bytes to websafe characters.
+     * @private
+     */ byteToCharMapWebSafe_: null,
+    /**
+     * Maps websafe characters to bytes.
+     * @private
+     */ charToByteMapWebSafe_: null,
+    /**
+     * Our default alphabet, shared between
+     * ENCODED_VALS and ENCODED_VALS_WEBSAFE
+     */ ENCODED_VALS_BASE: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    /**
+     * Our default alphabet. Value 64 (=) is special; it means "nothing."
+     */ get ENCODED_VALS () {
+        return this.ENCODED_VALS_BASE + '+/=';
+    },
+    /**
+     * Our websafe alphabet.
+     */ get ENCODED_VALS_WEBSAFE () {
+        return this.ENCODED_VALS_BASE + '-_.';
+    },
+    /**
+     * Whether this browser supports the atob and btoa functions. This extension
+     * started at Mozilla but is now implemented by many browsers. We use the
+     * ASSUME_* variables to avoid pulling in the full useragent detection library
+     * but still allowing the standard per-browser compilations.
+     *
+     */ HAS_NATIVE_SUPPORT: typeof atob === 'function',
+    /**
+     * Base64-encode an array of bytes.
+     *
+     * @param input An array of bytes (numbers with
+     *     value in [0, 255]) to encode.
+     * @param webSafe Boolean indicating we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */ encodeByteArray (input, webSafe) {
+        if (!Array.isArray(input)) throw Error('encodeByteArray takes an array as a parameter');
+        this.init_();
+        const byteToCharMap = webSafe ? this.byteToCharMapWebSafe_ : this.byteToCharMap_;
+        const output = [];
+        for(let i = 0; i < input.length; i += 3){
+            const byte1 = input[i];
+            const haveByte2 = i + 1 < input.length;
+            const byte2 = haveByte2 ? input[i + 1] : 0;
+            const haveByte3 = i + 2 < input.length;
+            const byte3 = haveByte3 ? input[i + 2] : 0;
+            const outByte1 = byte1 >> 2;
+            const outByte2 = (byte1 & 0x03) << 4 | byte2 >> 4;
+            let outByte3 = (byte2 & 0x0f) << 2 | byte3 >> 6;
+            let outByte4 = byte3 & 0x3f;
+            if (!haveByte3) {
+                outByte4 = 64;
+                if (!haveByte2) outByte3 = 64;
+            }
+            output.push(byteToCharMap[outByte1], byteToCharMap[outByte2], byteToCharMap[outByte3], byteToCharMap[outByte4]);
+        }
+        return output.join('');
+    },
+    /**
+     * Base64-encode a string.
+     *
+     * @param input A string to encode.
+     * @param webSafe If true, we should use the
+     *     alternative alphabet.
+     * @return The base64 encoded string.
+     */ encodeString (input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) return btoa(input);
+        return this.encodeByteArray(stringToByteArray$1(input), webSafe);
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * @param input to decode.
+     * @param webSafe True if we should use the
+     *     alternative alphabet.
+     * @return string representing the decoded value.
+     */ decodeString (input, webSafe) {
+        // Shortcut for Mozilla browsers that implement
+        // a native base64 encoder in the form of "btoa/atob"
+        if (this.HAS_NATIVE_SUPPORT && !webSafe) return atob(input);
+        return byteArrayToString(this.decodeStringToByteArray(input, webSafe));
+    },
+    /**
+     * Base64-decode a string.
+     *
+     * In base-64 decoding, groups of four characters are converted into three
+     * bytes.  If the encoder did not apply padding, the input length may not
+     * be a multiple of 4.
+     *
+     * In this case, the last group will have fewer than 4 characters, and
+     * padding will be inferred.  If the group has one or two characters, it decodes
+     * to one byte.  If the group has three characters, it decodes to two bytes.
+     *
+     * @param input Input to decode.
+     * @param webSafe True if we should use the web-safe alphabet.
+     * @return bytes representing the decoded value.
+     */ decodeStringToByteArray (input, webSafe) {
+        this.init_();
+        const charToByteMap = webSafe ? this.charToByteMapWebSafe_ : this.charToByteMap_;
+        const output = [];
+        for(let i = 0; i < input.length;){
+            const byte1 = charToByteMap[input.charAt(i++)];
+            const haveByte2 = i < input.length;
+            const byte2 = haveByte2 ? charToByteMap[input.charAt(i)] : 0;
+            ++i;
+            const haveByte3 = i < input.length;
+            const byte3 = haveByte3 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            const haveByte4 = i < input.length;
+            const byte4 = haveByte4 ? charToByteMap[input.charAt(i)] : 64;
+            ++i;
+            if (byte1 == null || byte2 == null || byte3 == null || byte4 == null) throw new DecodeBase64StringError();
+            const outByte1 = byte1 << 2 | byte2 >> 4;
+            output.push(outByte1);
+            if (byte3 !== 64) {
+                const outByte2 = byte2 << 4 & 0xf0 | byte3 >> 2;
+                output.push(outByte2);
+                if (byte4 !== 64) {
+                    const outByte3 = byte3 << 6 & 0xc0 | byte4;
+                    output.push(outByte3);
+                }
+            }
+        }
+        return output;
+    },
+    /**
+     * Lazy static initialization function. Called before
+     * accessing any of the static map variables.
+     * @private
+     */ init_ () {
+        if (!this.byteToCharMap_) {
+            this.byteToCharMap_ = {};
+            this.charToByteMap_ = {};
+            this.byteToCharMapWebSafe_ = {};
+            this.charToByteMapWebSafe_ = {};
+            // We want quick mappings back and forth, so we precompute two maps.
+            for(let i = 0; i < this.ENCODED_VALS.length; i++){
+                this.byteToCharMap_[i] = this.ENCODED_VALS.charAt(i);
+                this.charToByteMap_[this.byteToCharMap_[i]] = i;
+                this.byteToCharMapWebSafe_[i] = this.ENCODED_VALS_WEBSAFE.charAt(i);
+                this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[i]] = i;
+                // Be forgiving when decoding and correctly decode both encodings.
+                if (i >= this.ENCODED_VALS_BASE.length) {
+                    this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(i)] = i;
+                    this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(i)] = i;
+                }
+            }
+        }
+    }
+};
+/**
+ * An error encountered while decoding base64 string.
+ */ class DecodeBase64StringError extends Error {
+    constructor(){
+        super(...arguments);
+        this.name = 'DecodeBase64StringError';
+    }
+}
+/**
+ * URL-safe base64 encoding
+ */ const base64Encode = function(str) {
+    const utf8Bytes = stringToByteArray$1(str);
+    return base64.encodeByteArray(utf8Bytes, true);
+};
+/**
+ * URL-safe base64 encoding (without "." padding in the end).
+ * e.g. Used in JSON Web Token (JWT) parts.
+ */ const base64urlEncodeWithoutPadding = function(str) {
+    // Use base64url encoding and remove padding in the end (dot characters).
+    return base64Encode(str).replace(/\./g, '');
+};
+/**
+ * URL-safe base64 decoding
+ *
+ * NOTE: DO NOT use the global atob() function - it does NOT support the
+ * base64Url variant encoding.
+ *
+ * @param str To be decoded
+ * @return Decoded result, if possible
+ */ const base64Decode = function(str) {
+    try {
+        return base64.decodeString(str, true);
+    } catch (e) {
+        console.error('base64Decode failed: ', e);
+    }
+    return null;
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Do a deep-copy of basic JavaScript Objects or Arrays.
+ */ function deepCopy(value) {
+    return deepExtend(undefined, value);
+}
+/**
+ * Copy properties from source to target (recursively allows extension
+ * of Objects and Arrays).  Scalar values in the target are over-written.
+ * If target is undefined, an object of the appropriate type will be created
+ * (and returned).
+ *
+ * We recursively copy all child properties of plain Objects in the source- so
+ * that namespace- like dictionaries are merged.
+ *
+ * Note that the target can be a function, in which case the properties in
+ * the source Object are copied onto it as static properties of the Function.
+ *
+ * Note: we don't merge __proto__ to prevent prototype pollution
+ */ function deepExtend(target, source) {
+    if (!(source instanceof Object)) return source;
+    switch(source.constructor){
+        case Date:
+            // Treat Dates like scalars; if the target date object had any child
+            // properties - they will be lost!
+            const dateValue = source;
+            return new Date(dateValue.getTime());
+        case Object:
+            if (target === undefined) target = {};
+            break;
+        case Array:
+            // Always copy the array source and overwrite the target.
+            target = [];
+            break;
+        default:
+            // Not a plain Object - treat it as a scalar.
+            return source;
+    }
+    for(const prop in source){
+        // use isValidKey to guard against prototype pollution. See https://snyk.io/vuln/SNYK-JS-LODASH-450202
+        if (!source.hasOwnProperty(prop) || !isValidKey(prop)) continue;
+        target[prop] = deepExtend(target[prop], source[prop]);
+    }
+    return target;
+}
+function isValidKey(key) {
+    return key !== '__proto__';
+}
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Polyfill for `globalThis` object.
+ * @returns the `globalThis` object for the given environment.
+ * @public
+ */ function getGlobal() {
+    if (typeof self !== 'undefined') return self;
+    if (typeof window !== 'undefined') return window;
+    if (typeof global !== 'undefined') return global;
+    throw new Error('Unable to locate global object.');
+}
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ const getDefaultsFromGlobal = ()=>getGlobal().__FIREBASE_DEFAULTS__;
+/**
+ * Attempt to read defaults from a JSON string provided to
+ * process(.)env(.)__FIREBASE_DEFAULTS__ or a JSON file whose path is in
+ * process(.)env(.)__FIREBASE_DEFAULTS_PATH__
+ * The dots are in parens because certain compilers (Vite?) cannot
+ * handle seeing that variable in comments.
+ * See https://github.com/firebase/firebase-js-sdk/issues/6838
+ */ const getDefaultsFromEnvVariable = ()=>{
+    return;
+};
+const getDefaultsFromCookie = ()=>{
+    if (typeof document === 'undefined') return;
+    let match;
+    try {
+        match = document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/);
+    } catch (e) {
+        // Some environments such as Angular Universal SSR have a
+        // `document` object but error on accessing `document.cookie`.
+        return;
+    }
+    const decoded = match && base64Decode(match[1]);
+    return decoded && JSON.parse(decoded);
+};
+/**
+ * Get the __FIREBASE_DEFAULTS__ object. It checks in order:
+ * (1) if such an object exists as a property of `globalThis`
+ * (2) if such an object was provided on a shell environment variable
+ * (3) if such an object exists in a cookie
+ * @public
+ */ const getDefaults = ()=>{
+    try {
+        return getDefaultsFromGlobal() || getDefaultsFromEnvVariable() || getDefaultsFromCookie();
+    } catch (e) {
+        /**
+         * Catch-all for being unable to get __FIREBASE_DEFAULTS__ due
+         * to any environment case we have not accounted for. Log to
+         * info instead of swallowing so we can find these unknown cases
+         * and add paths for them if needed.
+         */ console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`);
+        return;
+    }
+};
+/**
+ * Returns emulator host stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
+ * @public
+ */ const getDefaultEmulatorHost = (productName)=>{
+    var _a, _b;
+    return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
+};
+/**
+ * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
+ * for the given product.
+ * @returns a pair of hostname and port like `["::1", 4000]` if available
+ * @public
+ */ const getDefaultEmulatorHostnameAndPort = (productName)=>{
+    const host = getDefaultEmulatorHost(productName);
+    if (!host) return undefined;
+    const separatorIndex = host.lastIndexOf(':'); // Finding the last since IPv6 addr also has colons.
+    if (separatorIndex <= 0 || separatorIndex + 1 === host.length) throw new Error(`Invalid host ${host} with no separate hostname and port!`);
+    // eslint-disable-next-line no-restricted-globals
+    const port = parseInt(host.substring(separatorIndex + 1), 10);
+    if (host[0] === '[') // Bracket-quoted `[ipv6addr]:port` => return "ipv6addr" (without brackets).
+    return [
+        host.substring(1, separatorIndex - 1),
+        port
+    ];
+    else return [
+        host.substring(0, separatorIndex),
+        port
+    ];
+};
+/**
+ * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
+ * @public
+ */ const getDefaultAppConfig = ()=>{
+    var _a;
+    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config;
+};
+/**
+ * Returns an experimental setting on the __FIREBASE_DEFAULTS__ object (properties
+ * prefixed by "_")
+ * @public
+ */ const getExperimentalSetting = (name)=>{
+    var _a;
+    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`];
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ class Deferred {
+    constructor(){
+        this.reject = ()=>{};
+        this.resolve = ()=>{};
+        this.promise = new Promise((resolve, reject)=>{
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+    /**
+     * Our API internals are not promisified and cannot because our callback APIs have subtle expectations around
+     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
+     * and returns a node-style callback which will resolve or reject the Deferred's promise.
+     */ wrapCallback(callback) {
+        return (error, value)=>{
+            if (error) this.reject(error);
+            else this.resolve(value);
+            if (typeof callback === 'function') {
+                // Attaching noop handler just in case developer wasn't expecting
+                // promises
+                this.promise.catch(()=>{});
+                // Some of our callbacks don't expect a value and our own tests
+                // assert that the parameter length is 1
+                if (callback.length === 1) callback(error);
+                else callback(error, value);
+            }
+        };
+    }
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ function createMockUserToken(token, projectId) {
+    if (token.uid) throw new Error('The "uid" field is no longer supported by mockUserToken. Please use "sub" instead for Firebase Auth User ID.');
+    // Unsecured JWTs use "none" as the algorithm.
+    const header = {
+        alg: 'none',
+        type: 'JWT'
+    };
+    const project = projectId || 'demo-project';
+    const iat = token.iat || 0;
+    const sub = token.sub || token.user_id;
+    if (!sub) throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
+    const payload = Object.assign({
+        // Set all required fields to decent defaults
+        iss: `https://securetoken.google.com/${project}`,
+        aud: project,
+        iat,
+        exp: iat + 3600,
+        auth_time: iat,
+        sub,
+        user_id: sub,
+        firebase: {
+            sign_in_provider: 'custom',
+            identities: {}
+        }
+    }, token);
+    // Unsecured JWTs use the empty string as a signature.
+    const signature = '';
+    return [
+        base64urlEncodeWithoutPadding(JSON.stringify(header)),
+        base64urlEncodeWithoutPadding(JSON.stringify(payload)),
+        signature
+    ].join('.');
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Returns navigator.userAgent string or '' if it's not defined.
+ * @return user agent string
+ */ function getUA() {
+    if (typeof navigator !== 'undefined' && typeof navigator['userAgent'] === 'string') return navigator['userAgent'];
+    else return '';
+}
+/**
+ * Detect Cordova / PhoneGap / Ionic frameworks on a mobile device.
+ *
+ * Deliberately does not rely on checking `file://` URLs (as this fails PhoneGap
+ * in the Ripple emulator) nor Cordova `onDeviceReady`, which would normally
+ * wait for a callback.
+ */ function isMobileCordova() {
+    return typeof window !== 'undefined' && // @ts-ignore Setting up an broadly applicable index signature for Window
+    // just to deal with this case would probably be a bad idea.
+    !!(window['cordova'] || window['phonegap'] || window['PhoneGap']) && /ios|iphone|ipod|ipad|android|blackberry|iemobile/i.test(getUA());
+}
+/**
+ * Detect Node.js.
+ *
+ * @return true if Node.js environment is detected or specified.
+ */ // Node detection logic from: https://github.com/iliakan/detect-node/
+function isNode() {
+    var _a;
+    const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
+    if (forceEnvironment === 'node') return true;
+    else if (forceEnvironment === 'browser') return false;
+    try {
+        return Object.prototype.toString.call(global.process) === '[object process]';
+    } catch (e) {
+        return false;
+    }
+}
+/**
+ * Detect Browser Environment.
+ * Note: This will return true for certain test frameworks that are incompletely
+ * mimicking a browser, and should not lead to assuming all browser APIs are
+ * available.
+ */ function isBrowser() {
+    return typeof window !== 'undefined' || isWebWorker();
+}
+/**
+ * Detect Web Worker context.
+ */ function isWebWorker() {
+    return typeof WorkerGlobalScope !== 'undefined' && typeof self !== 'undefined' && self instanceof WorkerGlobalScope;
+}
+/**
+ * Detect Cloudflare Worker context.
+ */ function isCloudflareWorker() {
+    return typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers';
+}
+function isBrowserExtension() {
+    const runtime = typeof chrome === 'object' ? chrome.runtime : typeof browser === 'object' ? browser.runtime : undefined;
+    return typeof runtime === 'object' && runtime.id !== undefined;
+}
+/**
+ * Detect React Native.
+ *
+ * @return true if ReactNative environment is detected.
+ */ function isReactNative() {
+    return typeof navigator === 'object' && navigator['product'] === 'ReactNative';
+}
+/** Detects Electron apps. */ function isElectron() {
+    return getUA().indexOf('Electron/') >= 0;
+}
+/** Detects Internet Explorer. */ function isIE() {
+    const ua = getUA();
+    return ua.indexOf('MSIE ') >= 0 || ua.indexOf('Trident/') >= 0;
+}
+/** Detects Universal Windows Platform apps. */ function isUWP() {
+    return getUA().indexOf('MSAppHost/') >= 0;
+}
+/**
+ * Detect whether the current SDK build is the Node version.
+ *
+ * @return true if it's the Node SDK build.
+ */ function isNodeSdk() {
+    return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
+}
+/** Returns true if we are running in Safari. */ function isSafari() {
+    return !isNode() && !!navigator.userAgent && navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome');
+}
+/**
+ * This method checks if indexedDB is supported by current browser/service worker context
+ * @return true if indexedDB is supported by current browser/service worker context
+ */ function isIndexedDBAvailable() {
+    try {
+        return typeof indexedDB === 'object';
+    } catch (e) {
+        return false;
+    }
+}
+/**
+ * This method validates browser/sw context for indexedDB by opening a dummy indexedDB database and reject
+ * if errors occur during the database open operation.
+ *
+ * @throws exception if current browser/sw context can't run idb.open (ex: Safari iframe, Firefox
+ * private browsing)
+ */ function validateIndexedDBOpenable() {
+    return new Promise((resolve, reject)=>{
+        try {
+            let preExist = true;
+            const DB_CHECK_NAME = 'validate-browser-context-for-indexeddb-analytics-module';
+            const request = self.indexedDB.open(DB_CHECK_NAME);
+            request.onsuccess = ()=>{
+                request.result.close();
+                // delete database only when it doesn't pre-exist
+                if (!preExist) self.indexedDB.deleteDatabase(DB_CHECK_NAME);
+                resolve(true);
+            };
+            request.onupgradeneeded = ()=>{
+                preExist = false;
+            };
+            request.onerror = ()=>{
+                var _a;
+                reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
+            };
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+/**
+ *
+ * This method checks whether cookie is enabled within current browser
+ * @return true if cookie is enabled within current browser
+ */ function areCookiesEnabled() {
+    if (typeof navigator === 'undefined' || !navigator.cookieEnabled) return false;
+    return true;
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * @fileoverview Standardized Firebase Error.
+ *
+ * Usage:
+ *
+ *   // TypeScript string literals for type-safe codes
+ *   type Err =
+ *     'unknown' |
+ *     'object-not-found'
+ *     ;
+ *
+ *   // Closure enum for type-safe error codes
+ *   // at-enum {string}
+ *   var Err = {
+ *     UNKNOWN: 'unknown',
+ *     OBJECT_NOT_FOUND: 'object-not-found',
+ *   }
+ *
+ *   let errors: Map<Err, string> = {
+ *     'generic-error': "Unknown error",
+ *     'file-not-found': "Could not find file: {$file}",
+ *   };
+ *
+ *   // Type-safe function - must pass a valid error code as param.
+ *   let error = new ErrorFactory<Err>('service', 'Service', errors);
+ *
+ *   ...
+ *   throw error.create(Err.GENERIC);
+ *   ...
+ *   throw error.create(Err.FILE_NOT_FOUND, {'file': fileName});
+ *   ...
+ *   // Service: Could not file file: foo.txt (service/file-not-found).
+ *
+ *   catch (e) {
+ *     assert(e.message === "Could not find file: foo.txt.");
+ *     if ((e as FirebaseError)?.code === 'service/file-not-found') {
+ *       console.log("Could not read file: " + e['file']);
+ *     }
+ *   }
+ */ const ERROR_NAME = 'FirebaseError';
+// Based on code from:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Custom_Error_Types
+class FirebaseError extends Error {
+    constructor(/** The error code for this error. */ code, message, /** Custom data for this error. */ customData){
+        super(message);
+        this.code = code;
+        this.customData = customData;
+        /** The custom name for all FirebaseErrors. */ this.name = ERROR_NAME;
+        // Fix For ES5
+        // https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        Object.setPrototypeOf(this, FirebaseError.prototype);
+        // Maintains proper stack trace for where our error was thrown.
+        // Only available on V8.
+        if (Error.captureStackTrace) Error.captureStackTrace(this, ErrorFactory.prototype.create);
+    }
+}
+class ErrorFactory {
+    constructor(service, serviceName, errors){
+        this.service = service;
+        this.serviceName = serviceName;
+        this.errors = errors;
+    }
+    create(code, ...data) {
+        const customData = data[0] || {};
+        const fullCode = `${this.service}/${code}`;
+        const template = this.errors[code];
+        const message = template ? replaceTemplate(template, customData) : 'Error';
+        // Service Name: Error message (service/code).
+        const fullMessage = `${this.serviceName}: ${message} (${fullCode}).`;
+        const error = new FirebaseError(fullCode, fullMessage, customData);
+        return error;
+    }
+}
+function replaceTemplate(template, data) {
+    return template.replace(PATTERN, (_, key)=>{
+        const value = data[key];
+        return value != null ? String(value) : `<${key}?>`;
+    });
+}
+const PATTERN = /\{\$([^}]+)}/g;
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Evaluates a JSON string into a javascript object.
+ *
+ * @param {string} str A string containing JSON.
+ * @return {*} The javascript object representing the specified JSON.
+ */ function jsonEval(str) {
+    return JSON.parse(str);
+}
+/**
+ * Returns JSON representing a javascript object.
+ * @param {*} data JavaScript object to be stringified.
+ * @return {string} The JSON contents of the object.
+ */ function stringify(data) {
+    return JSON.stringify(data);
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Decodes a Firebase auth. token into constituent parts.
+ *
+ * Notes:
+ * - May return with invalid / incomplete claims if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */ const decode = function(token) {
+    let header = {}, claims = {}, data = {}, signature = '';
+    try {
+        const parts = token.split('.');
+        header = jsonEval(base64Decode(parts[0]) || '');
+        claims = jsonEval(base64Decode(parts[1]) || '');
+        signature = parts[2];
+        data = claims['d'] || {};
+        delete claims['d'];
+    } catch (e) {}
+    return {
+        header,
+        claims,
+        data,
+        signature
+    };
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its time-based claims. Will return true if the
+ * token is within the time window authorized by the 'nbf' (not-before) and 'iat' (issued-at) claims.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */ const isValidTimestamp = function(token) {
+    const claims = decode(token).claims;
+    const now = Math.floor(new Date().getTime() / 1000);
+    let validSince = 0, validUntil = 0;
+    if (typeof claims === 'object') {
+        if (claims.hasOwnProperty('nbf')) validSince = claims['nbf'];
+        else if (claims.hasOwnProperty('iat')) validSince = claims['iat'];
+        if (claims.hasOwnProperty('exp')) validUntil = claims['exp'];
+        else // token will expire after 24h by default
+        validUntil = validSince + 86400;
+    }
+    return !!now && !!validSince && !!validUntil && now >= validSince && now <= validUntil;
+};
+/**
+ * Decodes a Firebase auth. token and returns its issued at time if valid, null otherwise.
+ *
+ * Notes:
+ * - May return null if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */ const issuedAtTime = function(token) {
+    const claims = decode(token).claims;
+    if (typeof claims === 'object' && claims.hasOwnProperty('iat')) return claims['iat'];
+    return null;
+};
+/**
+ * Decodes a Firebase auth. token and checks the validity of its format. Expects a valid issued-at time.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */ const isValidFormat = function(token) {
+    const decoded = decode(token), claims = decoded.claims;
+    return !!claims && typeof claims === 'object' && claims.hasOwnProperty('iat');
+};
+/**
+ * Attempts to peer into an auth token and determine if it's an admin auth token by looking at the claims portion.
+ *
+ * Notes:
+ * - May return a false negative if there's no native base64 decoding support.
+ * - Doesn't check if the token is actually valid.
+ */ const isAdmin = function(token) {
+    const claims = decode(token).claims;
+    return typeof claims === 'object' && claims['admin'] === true;
+};
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ function contains(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+function safeGet(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) return obj[key];
+    else return undefined;
+}
+function isEmpty(obj) {
+    for(const key in obj){
+        if (Object.prototype.hasOwnProperty.call(obj, key)) return false;
+    }
+    return true;
+}
+function map(obj, fn, contextObj) {
+    const res = {};
+    for(const key in obj)if (Object.prototype.hasOwnProperty.call(obj, key)) res[key] = fn.call(contextObj, obj[key], key, obj);
+    return res;
+}
+/**
+ * Deep equal two objects. Support Arrays and Objects.
+ */ function deepEqual(a, b) {
+    if (a === b) return true;
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    for (const k of aKeys){
+        if (!bKeys.includes(k)) return false;
+        const aProp = a[k];
+        const bProp = b[k];
+        if (isObject(aProp) && isObject(bProp)) {
+            if (!deepEqual(aProp, bProp)) return false;
+        } else if (aProp !== bProp) return false;
+    }
+    for (const k of bKeys){
+        if (!aKeys.includes(k)) return false;
+    }
+    return true;
+}
+function isObject(thing) {
+    return thing !== null && typeof thing === 'object';
+}
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Rejects if the given promise doesn't resolve in timeInMS milliseconds.
+ * @internal
+ */ function promiseWithTimeout(promise, timeInMS = 2000) {
+    const deferredPromise = new Deferred();
+    setTimeout(()=>deferredPromise.reject('timeout!'), timeInMS);
+    promise.then(deferredPromise.resolve, deferredPromise.reject);
+    return deferredPromise.promise;
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Returns a querystring-formatted string (e.g. &arg=val&arg2=val2) from a
+ * params object (e.g. {arg: 'val', arg2: 'val2'})
+ * Note: You must prepend it with ? when adding it to a URL.
+ */ function querystring(querystringParams) {
+    const params = [];
+    for (const [key, value] of Object.entries(querystringParams))if (Array.isArray(value)) value.forEach((arrayVal)=>{
+        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(arrayVal));
+    });
+    else params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    return params.length ? '&' + params.join('&') : '';
+}
+/**
+ * Decodes a querystring (e.g. ?arg=val&arg2=val2) into a params object
+ * (e.g. {arg: 'val', arg2: 'val2'})
+ */ function querystringDecode(querystring) {
+    const obj = {};
+    const tokens = querystring.replace(/^\?/, '').split('&');
+    tokens.forEach((token)=>{
+        if (token) {
+            const [key, value] = token.split('=');
+            obj[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+    });
+    return obj;
+}
+/**
+ * Extract the query string part of a URL, including the leading question mark (if present).
+ */ function extractQuerystring(url) {
+    const queryStart = url.indexOf('?');
+    if (!queryStart) return '';
+    const fragmentStart = url.indexOf('#', queryStart);
+    return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : undefined);
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * @fileoverview SHA-1 cryptographic hash.
+ * Variable names follow the notation in FIPS PUB 180-3:
+ * http://csrc.nist.gov/publications/fips/fips180-3/fips180-3_final.pdf.
+ *
+ * Usage:
+ *   var sha1 = new sha1();
+ *   sha1.update(bytes);
+ *   var hash = sha1.digest();
+ *
+ * Performance:
+ *   Chrome 23:   ~400 Mbit/s
+ *   Firefox 16:  ~250 Mbit/s
+ *
+ */ /**
+ * SHA-1 cryptographic hash constructor.
+ *
+ * The properties declared here are discussed in the above algorithm document.
+ * @constructor
+ * @final
+ * @struct
+ */ class Sha1 {
+    constructor(){
+        /**
+         * Holds the previous values of accumulated variables a-e in the compress_
+         * function.
+         * @private
+         */ this.chain_ = [];
+        /**
+         * A buffer holding the partially computed hash result.
+         * @private
+         */ this.buf_ = [];
+        /**
+         * An array of 80 bytes, each a part of the message to be hashed.  Referred to
+         * as the message schedule in the docs.
+         * @private
+         */ this.W_ = [];
+        /**
+         * Contains data needed to pad messages less than 64 bytes.
+         * @private
+         */ this.pad_ = [];
+        /**
+         * @private {number}
+         */ this.inbuf_ = 0;
+        /**
+         * @private {number}
+         */ this.total_ = 0;
+        this.blockSize = 64;
+        this.pad_[0] = 128;
+        for(let i = 1; i < this.blockSize; ++i)this.pad_[i] = 0;
+        this.reset();
+    }
+    reset() {
+        this.chain_[0] = 0x67452301;
+        this.chain_[1] = 0xefcdab89;
+        this.chain_[2] = 0x98badcfe;
+        this.chain_[3] = 0x10325476;
+        this.chain_[4] = 0xc3d2e1f0;
+        this.inbuf_ = 0;
+        this.total_ = 0;
+    }
+    /**
+     * Internal compress helper function.
+     * @param buf Block to compress.
+     * @param offset Offset of the block in the buffer.
+     * @private
+     */ compress_(buf, offset) {
+        if (!offset) offset = 0;
+        const W = this.W_;
+        // get 16 big endian words
+        if (typeof buf === 'string') for(let i = 0; i < 16; i++){
+            // TODO(user): [bug 8140122] Recent versions of Safari for Mac OS and iOS
+            // have a bug that turns the post-increment ++ operator into pre-increment
+            // during JIT compilation.  We have code that depends heavily on SHA-1 for
+            // correctness and which is affected by this bug, so I've removed all uses
+            // of post-increment ++ in which the result value is used.  We can revert
+            // this change once the Safari bug
+            // (https://bugs.webkit.org/show_bug.cgi?id=109036) has been fixed and
+            // most clients have been updated.
+            W[i] = buf.charCodeAt(offset) << 24 | buf.charCodeAt(offset + 1) << 16 | buf.charCodeAt(offset + 2) << 8 | buf.charCodeAt(offset + 3);
+            offset += 4;
+        }
+        else for(let i = 0; i < 16; i++){
+            W[i] = buf[offset] << 24 | buf[offset + 1] << 16 | buf[offset + 2] << 8 | buf[offset + 3];
+            offset += 4;
+        }
+        // expand to 80 words
+        for(let i = 16; i < 80; i++){
+            const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+            W[i] = (t << 1 | t >>> 31) & 0xffffffff;
+        }
+        let a = this.chain_[0];
+        let b = this.chain_[1];
+        let c = this.chain_[2];
+        let d = this.chain_[3];
+        let e = this.chain_[4];
+        let f, k;
+        // TODO(user): Try to unroll this loop to speed up the computation.
+        for(let i = 0; i < 80; i++){
+            if (i < 40) {
+                if (i < 20) {
+                    f = d ^ b & (c ^ d);
+                    k = 0x5a827999;
+                } else {
+                    f = b ^ c ^ d;
+                    k = 0x6ed9eba1;
+                }
+            } else if (i < 60) {
+                f = b & c | d & (b | c);
+                k = 0x8f1bbcdc;
+            } else {
+                f = b ^ c ^ d;
+                k = 0xca62c1d6;
+            }
+            const t = (a << 5 | a >>> 27) + f + e + k + W[i] & 0xffffffff;
+            e = d;
+            d = c;
+            c = (b << 30 | b >>> 2) & 0xffffffff;
+            b = a;
+            a = t;
+        }
+        this.chain_[0] = this.chain_[0] + a & 0xffffffff;
+        this.chain_[1] = this.chain_[1] + b & 0xffffffff;
+        this.chain_[2] = this.chain_[2] + c & 0xffffffff;
+        this.chain_[3] = this.chain_[3] + d & 0xffffffff;
+        this.chain_[4] = this.chain_[4] + e & 0xffffffff;
+    }
+    update(bytes, length) {
+        // TODO(johnlenz): tighten the function signature and remove this check
+        if (bytes == null) return;
+        if (length === undefined) length = bytes.length;
+        const lengthMinusBlock = length - this.blockSize;
+        let n = 0;
+        // Using local instead of member variables gives ~5% speedup on Firefox 16.
+        const buf = this.buf_;
+        let inbuf = this.inbuf_;
+        // The outer while loop should execute at most twice.
+        while(n < length){
+            // When we have no data in the block to top up, we can directly process the
+            // input buffer (assuming it contains sufficient data). This gives ~25%
+            // speedup on Chrome 23 and ~15% speedup on Firefox 16, but requires that
+            // the data is provided in large chunks (or in multiples of 64 bytes).
+            if (inbuf === 0) while(n <= lengthMinusBlock){
+                this.compress_(bytes, n);
+                n += this.blockSize;
+            }
+            if (typeof bytes === 'string') while(n < length){
+                buf[inbuf] = bytes.charCodeAt(n);
+                ++inbuf;
+                ++n;
+                if (inbuf === this.blockSize) {
+                    this.compress_(buf);
+                    inbuf = 0;
+                    break;
+                }
+            }
+            else while(n < length){
+                buf[inbuf] = bytes[n];
+                ++inbuf;
+                ++n;
+                if (inbuf === this.blockSize) {
+                    this.compress_(buf);
+                    inbuf = 0;
+                    break;
+                }
+            }
+        }
+        this.inbuf_ = inbuf;
+        this.total_ += length;
+    }
+    /** @override */ digest() {
+        const digest = [];
+        let totalBits = this.total_ * 8;
+        // Add pad 0x80 0x00*.
+        if (this.inbuf_ < 56) this.update(this.pad_, 56 - this.inbuf_);
+        else this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
+        // Add # bits.
+        for(let i = this.blockSize - 1; i >= 56; i--){
+            this.buf_[i] = totalBits & 255;
+            totalBits /= 256; // Don't use bit-shifting here!
+        }
+        this.compress_(this.buf_);
+        let n = 0;
+        for(let i = 0; i < 5; i++)for(let j = 24; j >= 0; j -= 8){
+            digest[n] = this.chain_[i] >> j & 255;
+            ++n;
+        }
+        return digest;
+    }
+}
+/**
+ * Helper to make a Subscribe function (just like Promise helps make a
+ * Thenable).
+ *
+ * @param executor Function which can make calls to a single Observer
+ *     as a proxy.
+ * @param onNoObservers Callback when count of Observers goes to zero.
+ */ function createSubscribe(executor, onNoObservers) {
+    const proxy = new ObserverProxy(executor, onNoObservers);
+    return proxy.subscribe.bind(proxy);
+}
+/**
+ * Implement fan-out for any number of Observers attached via a subscribe
+ * function.
+ */ class ObserverProxy {
+    /**
+     * @param executor Function which can make calls to a single Observer
+     *     as a proxy.
+     * @param onNoObservers Callback when count of Observers goes to zero.
+     */ constructor(executor, onNoObservers){
+        this.observers = [];
+        this.unsubscribes = [];
+        this.observerCount = 0;
+        // Micro-task scheduling by calling task.then().
+        this.task = Promise.resolve();
+        this.finalized = false;
+        this.onNoObservers = onNoObservers;
+        // Call the executor asynchronously so subscribers that are called
+        // synchronously after the creation of the subscribe function
+        // can still receive the very first value generated in the executor.
+        this.task.then(()=>{
+            executor(this);
+        }).catch((e)=>{
+            this.error(e);
+        });
+    }
+    next(value) {
+        this.forEachObserver((observer)=>{
+            observer.next(value);
+        });
+    }
+    error(error) {
+        this.forEachObserver((observer)=>{
+            observer.error(error);
+        });
+        this.close(error);
+    }
+    complete() {
+        this.forEachObserver((observer)=>{
+            observer.complete();
+        });
+        this.close();
+    }
+    /**
+     * Subscribe function that can be used to add an Observer to the fan-out list.
+     *
+     * - We require that no event is sent to a subscriber synchronously to their
+     *   call to subscribe().
+     */ subscribe(nextOrObserver, error, complete) {
+        let observer;
+        if (nextOrObserver === undefined && error === undefined && complete === undefined) throw new Error('Missing Observer.');
+        // Assemble an Observer object when passed as callback functions.
+        if (implementsAnyMethods(nextOrObserver, [
+            'next',
+            'error',
+            'complete'
+        ])) observer = nextOrObserver;
+        else observer = {
+            next: nextOrObserver,
+            error,
+            complete
+        };
+        if (observer.next === undefined) observer.next = noop;
+        if (observer.error === undefined) observer.error = noop;
+        if (observer.complete === undefined) observer.complete = noop;
+        const unsub = this.unsubscribeOne.bind(this, this.observers.length);
+        // Attempt to subscribe to a terminated Observable - we
+        // just respond to the Observer with the final error or complete
+        // event.
+        if (this.finalized) // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(()=>{
+            try {
+                if (this.finalError) observer.error(this.finalError);
+                else observer.complete();
+            } catch (e) {
+            // nothing
+            }
+            return;
+        });
+        this.observers.push(observer);
+        return unsub;
+    }
+    // Unsubscribe is synchronous - we guarantee that no events are sent to
+    // any unsubscribed Observer.
+    unsubscribeOne(i) {
+        if (this.observers === undefined || this.observers[i] === undefined) return;
+        delete this.observers[i];
+        this.observerCount -= 1;
+        if (this.observerCount === 0 && this.onNoObservers !== undefined) this.onNoObservers(this);
+    }
+    forEachObserver(fn) {
+        if (this.finalized) // Already closed by previous event....just eat the additional values.
+        return;
+        // Since sendOne calls asynchronously - there is no chance that
+        // this.observers will become undefined.
+        for(let i = 0; i < this.observers.length; i++)this.sendOne(i, fn);
+    }
+    // Call the Observer via one of it's callback function. We are careful to
+    // confirm that the observe has not been unsubscribed since this asynchronous
+    // function had been queued.
+    sendOne(i, fn) {
+        // Execute the callback asynchronously
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(()=>{
+            if (this.observers !== undefined && this.observers[i] !== undefined) try {
+                fn(this.observers[i]);
+            } catch (e) {
+                // Ignore exceptions raised in Observers or missing methods of an
+                // Observer.
+                // Log error to console. b/31404806
+                if (typeof console !== 'undefined' && console.error) console.error(e);
+            }
+        });
+    }
+    close(err) {
+        if (this.finalized) return;
+        this.finalized = true;
+        if (err !== undefined) this.finalError = err;
+        // Proxy is no longer needed - garbage collect references
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.task.then(()=>{
+            this.observers = undefined;
+            this.onNoObservers = undefined;
+        });
+    }
+}
+/** Turn synchronous function into one called asynchronously. */ // eslint-disable-next-line @typescript-eslint/ban-types
+function async(fn, onError) {
+    return (...args)=>{
+        Promise.resolve(true).then(()=>{
+            fn(...args);
+        }).catch((error)=>{
+            if (onError) onError(error);
+        });
+    };
+}
+/**
+ * Return true if the object passed in implements any of the named methods.
+ */ function implementsAnyMethods(obj, methods) {
+    if (typeof obj !== 'object' || obj === null) return false;
+    for (const method of methods){
+        if (method in obj && typeof obj[method] === 'function') return true;
+    }
+    return false;
+}
+function noop() {
+// do nothing
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Check to make sure the appropriate number of arguments are provided for a public function.
+ * Throws an error if it fails.
+ *
+ * @param fnName The function name
+ * @param minCount The minimum number of arguments to allow for the function call
+ * @param maxCount The maximum number of argument to allow for the function call
+ * @param argCount The actual number of arguments provided.
+ */ const validateArgCount = function(fnName, minCount, maxCount, argCount) {
+    let argError;
+    if (argCount < minCount) argError = 'at least ' + minCount;
+    else if (argCount > maxCount) argError = maxCount === 0 ? 'none' : 'no more than ' + maxCount;
+    if (argError) {
+        const error = fnName + ' failed: Was called with ' + argCount + (argCount === 1 ? ' argument.' : ' arguments.') + ' Expects ' + argError + '.';
+        throw new Error(error);
+    }
+};
+/**
+ * Generates a string to prefix an error message about failed argument validation
+ *
+ * @param fnName The function name
+ * @param argName The name of the argument
+ * @return The prefix to add to the error thrown for validation.
+ */ function errorPrefix(fnName, argName) {
+    return `${fnName} failed: ${argName} argument `;
+}
+/**
+ * @param fnName
+ * @param argumentNumber
+ * @param namespace
+ * @param optional
+ */ function validateNamespace(fnName, namespace, optional) {
+    if (optional && !namespace) return;
+    if (typeof namespace !== 'string') //TODO: I should do more validation here. We only allow certain chars in namespaces.
+    throw new Error(errorPrefix(fnName, 'namespace') + 'must be a valid firebase namespace.');
+}
+function validateCallback(fnName, argumentName, // eslint-disable-next-line @typescript-eslint/ban-types
+callback, optional) {
+    if (optional && !callback) return;
+    if (typeof callback !== 'function') throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid function.');
+}
+function validateContextObject(fnName, argumentName, context, optional) {
+    if (optional && !context) return;
+    if (typeof context !== 'object' || context === null) throw new Error(errorPrefix(fnName, argumentName) + 'must be a valid context object.');
+}
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ // Code originally came from goog.crypt.stringToUtf8ByteArray, but for some reason they
+// automatically replaced '\r\n' with '\n', and they didn't handle surrogate pairs,
+// so it's been modified.
+// Note that not all Unicode characters appear as single characters in JavaScript strings.
+// fromCharCode returns the UTF-16 encoding of a character - so some Unicode characters
+// use 2 characters in JavaScript.  All 4-byte UTF-8 characters begin with a first
+// character in the range 0xD800 - 0xDBFF (the first character of a so-called surrogate
+// pair).
+// See http://www.ecma-international.org/ecma-262/5.1/#sec-15.1.3
+/**
+ * @param {string} str
+ * @return {Array}
+ */ const stringToByteArray = function(str) {
+    const out = [];
+    let p = 0;
+    for(let i = 0; i < str.length; i++){
+        let c = str.charCodeAt(i);
+        // Is this the lead surrogate in a surrogate pair?
+        if (c >= 0xd800 && c <= 0xdbff) {
+            const high = c - 0xd800; // the high 10 bits.
+            i++;
+            assert(i < str.length, 'Surrogate pair missing trail surrogate.');
+            const low = str.charCodeAt(i) - 0xdc00; // the low 10 bits.
+            c = 0x10000 + (high << 10) + low;
+        }
+        if (c < 128) out[p++] = c;
+        else if (c < 2048) {
+            out[p++] = c >> 6 | 192;
+            out[p++] = c & 63 | 128;
+        } else if (c < 65536) {
+            out[p++] = c >> 12 | 224;
+            out[p++] = c >> 6 & 63 | 128;
+            out[p++] = c & 63 | 128;
+        } else {
+            out[p++] = c >> 18 | 240;
+            out[p++] = c >> 12 & 63 | 128;
+            out[p++] = c >> 6 & 63 | 128;
+            out[p++] = c & 63 | 128;
+        }
+    }
+    return out;
+};
+/**
+ * Calculate length without actually converting; useful for doing cheaper validation.
+ * @param {string} str
+ * @return {number}
+ */ const stringLength = function(str) {
+    let p = 0;
+    for(let i = 0; i < str.length; i++){
+        const c = str.charCodeAt(i);
+        if (c < 128) p++;
+        else if (c < 2048) p += 2;
+        else if (c >= 0xd800 && c <= 0xdbff) {
+            // Lead surrogate of a surrogate pair.  The pair together will take 4 bytes to represent.
+            p += 4;
+            i++; // skip trail surrogate.
+        } else p += 3;
+    }
+    return p;
+};
+/**
+ * @license
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Copied from https://stackoverflow.com/a/2117523
+ * Generates a new uuid.
+ * @public
+ */ const uuidv4 = function() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c)=>{
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : r & 0x3 | 0x8;
+        return v.toString(16);
+    });
+};
+/**
+ * @license
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * The amount of milliseconds to exponentially increase.
+ */ const DEFAULT_INTERVAL_MILLIS = 1000;
+/**
+ * The factor to backoff by.
+ * Should be a number greater than 1.
+ */ const DEFAULT_BACKOFF_FACTOR = 2;
+/**
+ * The maximum milliseconds to increase to.
+ *
+ * <p>Visible for testing
+ */ const MAX_VALUE_MILLIS = 14400000; // Four hours, like iOS and Android.
+/**
+ * The percentage of backoff time to randomize by.
+ * See
+ * http://go/safe-client-behavior#step-1-determine-the-appropriate-retry-interval-to-handle-spike-traffic
+ * for context.
+ *
+ * <p>Visible for testing
+ */ const RANDOM_FACTOR = 0.5;
+/**
+ * Based on the backoff method from
+ * https://github.com/google/closure-library/blob/master/closure/goog/math/exponentialbackoff.js.
+ * Extracted here so we don't need to pass metadata and a stateful ExponentialBackoff object around.
+ */ function calculateBackoffMillis(backoffCount, intervalMillis = DEFAULT_INTERVAL_MILLIS, backoffFactor = DEFAULT_BACKOFF_FACTOR) {
+    // Calculates an exponentially increasing value.
+    // Deviation: calculates value from count and a constant interval, so we only need to save value
+    // and count to restore state.
+    const currBaseValue = intervalMillis * Math.pow(backoffFactor, backoffCount);
+    // A random "fuzz" to avoid waves of retries.
+    // Deviation: randomFactor is required.
+    const randomWait = Math.round(// A fraction of the backoff value to add/subtract.
+    // Deviation: changes multiplication order to improve readability.
+    RANDOM_FACTOR * currBaseValue * // A random float (rounded to int by Math.round above) in the range [-1, 1]. Determines
+    // if we add or subtract.
+    (Math.random() - 0.5) * 2);
+    // Limits backoff to max to avoid effectively permanent backoff.
+    return Math.min(MAX_VALUE_MILLIS, currBaseValue + randomWait);
+}
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * Provide English ordinal letters after a number
+ */ function ordinal(i) {
+    if (!Number.isFinite(i)) return `${i}`;
+    return i + indicator(i);
+}
+function indicator(i) {
+    i = Math.abs(i);
+    const cent = i % 100;
+    if (cent >= 10 && cent <= 20) return 'th';
+    const dec = i % 10;
+    if (dec === 1) return 'st';
+    if (dec === 2) return 'nd';
+    if (dec === 3) return 'rd';
+    return 'th';
+}
+/**
+ * @license
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ function getModularInstance(service) {
+    if (service && service._delegate) return service._delegate;
+    else return service;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jnFvT":[function(require,module,exports,__globalThis) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, '__esModule', {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === 'default' || key === '__esModule' || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"cPhqm":[function(require,module,exports,__globalThis) {
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ /**
+ * A container for all of the Logger instances
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "LogLevel", ()=>LogLevel);
+parcelHelpers.export(exports, "Logger", ()=>Logger);
+parcelHelpers.export(exports, "setLogLevel", ()=>setLogLevel);
+parcelHelpers.export(exports, "setUserLogHandler", ()=>setUserLogHandler);
+const instances = [];
+/**
+ * The JS SDK supports 5 log levels and also allows a user the ability to
+ * silence the logs altogether.
+ *
+ * The order is a follows:
+ * DEBUG < VERBOSE < INFO < WARN < ERROR
+ *
+ * All of the log types above the current log level will be captured (i.e. if
+ * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
+ * `VERBOSE` logs will not)
+ */ var LogLevel;
+(function(LogLevel) {
+    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
+    LogLevel[LogLevel["INFO"] = 2] = "INFO";
+    LogLevel[LogLevel["WARN"] = 3] = "WARN";
+    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
+})(LogLevel || (LogLevel = {}));
+const levelStringToEnum = {
+    'debug': LogLevel.DEBUG,
+    'verbose': LogLevel.VERBOSE,
+    'info': LogLevel.INFO,
+    'warn': LogLevel.WARN,
+    'error': LogLevel.ERROR,
+    'silent': LogLevel.SILENT
+};
+/**
+ * The default log level
+ */ const defaultLogLevel = LogLevel.INFO;
+/**
+ * By default, `console.debug` is not displayed in the developer console (in
+ * chrome). To avoid forcing users to have to opt-in to these logs twice
+ * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
+ * logs to the `console.log` function.
+ */ const ConsoleMethod = {
+    [LogLevel.DEBUG]: 'log',
+    [LogLevel.VERBOSE]: 'log',
+    [LogLevel.INFO]: 'info',
+    [LogLevel.WARN]: 'warn',
+    [LogLevel.ERROR]: 'error'
+};
+/**
+ * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
+ * messages on to their corresponding console counterparts (if the log method
+ * is supported by the current log level)
+ */ const defaultLogHandler = (instance, logType, ...args)=>{
+    if (logType < instance.logLevel) return;
+    const now = new Date().toISOString();
+    const method = ConsoleMethod[logType];
+    if (method) console[method](`[${now}]  ${instance.name}:`, ...args);
+    else throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+};
+class Logger {
+    /**
+     * Gives you an instance of a Logger to capture messages according to
+     * Firebase's logging scheme.
+     *
+     * @param name The name that the logs will be associated with
+     */ constructor(name){
+        this.name = name;
+        /**
+         * The log level of the given Logger instance.
+         */ this._logLevel = defaultLogLevel;
+        /**
+         * The main (internal) log handler for the Logger instance.
+         * Can be set to a new function in internal package code but not by user.
+         */ this._logHandler = defaultLogHandler;
+        /**
+         * The optional, additional, user-defined log handler for the Logger instance.
+         */ this._userLogHandler = null;
+        /**
+         * Capture the current instance for later use
+         */ instances.push(this);
+    }
+    get logLevel() {
+        return this._logLevel;
+    }
+    set logLevel(val) {
+        if (!(val in LogLevel)) throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+        this._logLevel = val;
+    }
+    // Workaround for setter/getter having to be the same type.
+    setLogLevel(val) {
+        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+    }
+    get logHandler() {
+        return this._logHandler;
+    }
+    set logHandler(val) {
+        if (typeof val !== 'function') throw new TypeError('Value assigned to `logHandler` must be a function');
+        this._logHandler = val;
+    }
+    get userLogHandler() {
+        return this._userLogHandler;
+    }
+    set userLogHandler(val) {
+        this._userLogHandler = val;
+    }
+    /**
+     * The functions below are all based on the `console` interface
+     */ debug(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
+        this._logHandler(this, LogLevel.DEBUG, ...args);
+    }
+    log(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.VERBOSE, ...args);
+        this._logHandler(this, LogLevel.VERBOSE, ...args);
+    }
+    info(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
+        this._logHandler(this, LogLevel.INFO, ...args);
+    }
+    warn(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
+        this._logHandler(this, LogLevel.WARN, ...args);
+    }
+    error(...args) {
+        this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
+        this._logHandler(this, LogLevel.ERROR, ...args);
+    }
+}
+function setLogLevel(level) {
+    instances.forEach((inst)=>{
+        inst.setLogLevel(level);
+    });
+}
+function setUserLogHandler(logCallback, options) {
+    for (const instance of instances){
+        let customLogLevel = null;
+        if (options && options.level) customLogLevel = levelStringToEnum[options.level];
+        if (logCallback === null) instance.userLogHandler = null;
+        else instance.userLogHandler = (instance, level, ...args)=>{
+            const message = args.map((arg)=>{
+                if (arg == null) return null;
+                else if (typeof arg === 'string') return arg;
+                else if (typeof arg === 'number' || typeof arg === 'boolean') return arg.toString();
+                else if (arg instanceof Error) return arg.message;
+                else try {
+                    return JSON.stringify(arg);
+                } catch (ignored) {
+                    return null;
+                }
+            }).filter((arg)=>arg).join(' ');
+            if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) logCallback({
+                level: LogLevel[level].toLowerCase(),
+                message,
+                args,
+                type: instance.name
+            });
+        };
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"258QC":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "unwrap", ()=>(0, _wrapIdbValueJs.u));
+parcelHelpers.export(exports, "wrap", ()=>(0, _wrapIdbValueJs.w));
+parcelHelpers.export(exports, "deleteDB", ()=>deleteDB);
+parcelHelpers.export(exports, "openDB", ()=>openDB);
+var _wrapIdbValueJs = require("./wrap-idb-value.js");
+/**
+ * Open a database.
+ *
+ * @param name Name of the database.
+ * @param version Schema version.
+ * @param callbacks Additional callbacks.
+ */ function openDB(name, version, { blocked, upgrade, blocking, terminated } = {}) {
+    const request = indexedDB.open(name, version);
+    const openPromise = (0, _wrapIdbValueJs.w)(request);
+    if (upgrade) request.addEventListener('upgradeneeded', (event)=>{
+        upgrade((0, _wrapIdbValueJs.w)(request.result), event.oldVersion, event.newVersion, (0, _wrapIdbValueJs.w)(request.transaction), event);
+    });
+    if (blocked) request.addEventListener('blocked', (event)=>blocked(// Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+        event.oldVersion, event.newVersion, event));
+    openPromise.then((db)=>{
+        if (terminated) db.addEventListener('close', ()=>terminated());
+        if (blocking) db.addEventListener('versionchange', (event)=>blocking(event.oldVersion, event.newVersion, event));
+    }).catch(()=>{});
+    return openPromise;
+}
+/**
+ * Delete a database.
+ *
+ * @param name Name of the database.
+ */ function deleteDB(name, { blocked } = {}) {
+    const request = indexedDB.deleteDatabase(name);
+    if (blocked) request.addEventListener('blocked', (event)=>blocked(// Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+        event.oldVersion, event));
+    return (0, _wrapIdbValueJs.w)(request).then(()=>undefined);
+}
+const readMethods = [
+    'get',
+    'getKey',
+    'getAll',
+    'getAllKeys',
+    'count'
+];
+const writeMethods = [
+    'put',
+    'add',
+    'delete',
+    'clear'
+];
+const cachedMethods = new Map();
+function getMethod(target, prop) {
+    if (!(target instanceof IDBDatabase && !(prop in target) && typeof prop === 'string')) return;
+    if (cachedMethods.get(prop)) return cachedMethods.get(prop);
+    const targetFuncName = prop.replace(/FromIndex$/, '');
+    const useIndex = prop !== targetFuncName;
+    const isWrite = writeMethods.includes(targetFuncName);
+    if (// Bail if the target doesn't exist on the target. Eg, getAll isn't in Edge.
+    !(targetFuncName in (useIndex ? IDBIndex : IDBObjectStore).prototype) || !(isWrite || readMethods.includes(targetFuncName))) return;
+    const method = async function(storeName, ...args) {
+        // isWrite ? 'readwrite' : undefined gzipps better, but fails in Edge :(
+        const tx = this.transaction(storeName, isWrite ? 'readwrite' : 'readonly');
+        let target = tx.store;
+        if (useIndex) target = target.index(args.shift());
+        // Must reject if op rejects.
+        // If it's a write operation, must reject if tx.done rejects.
+        // Must reject with op rejection first.
+        // Must resolve with op value.
+        // Must handle both promises (no unhandled rejections)
+        return (await Promise.all([
+            target[targetFuncName](...args),
+            isWrite && tx.done
+        ]))[0];
+    };
+    cachedMethods.set(prop, method);
+    return method;
+}
+(0, _wrapIdbValueJs.r)((oldTraps)=>({
+        ...oldTraps,
+        get: (target, prop, receiver)=>getMethod(target, prop) || oldTraps.get(target, prop, receiver),
+        has: (target, prop)=>!!getMethod(target, prop) || oldTraps.has(target, prop)
+    }));
+
+},{"./wrap-idb-value.js":"98T2L","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"98T2L":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "a", ()=>reverseTransformCache);
+parcelHelpers.export(exports, "i", ()=>instanceOfAny);
+parcelHelpers.export(exports, "r", ()=>replaceTraps);
+parcelHelpers.export(exports, "u", ()=>unwrap);
+parcelHelpers.export(exports, "w", ()=>wrap);
+const instanceOfAny = (object, constructors)=>constructors.some((c)=>object instanceof c);
+let idbProxyableTypes;
+let cursorAdvanceMethods;
+// This is a function to prevent it throwing up in node environments.
+function getIdbProxyableTypes() {
+    return idbProxyableTypes || (idbProxyableTypes = [
+        IDBDatabase,
+        IDBObjectStore,
+        IDBIndex,
+        IDBCursor,
+        IDBTransaction
+    ]);
+}
+// This is a function to prevent it throwing up in node environments.
+function getCursorAdvanceMethods() {
+    return cursorAdvanceMethods || (cursorAdvanceMethods = [
+        IDBCursor.prototype.advance,
+        IDBCursor.prototype.continue,
+        IDBCursor.prototype.continuePrimaryKey
+    ]);
+}
+const cursorRequestMap = new WeakMap();
+const transactionDoneMap = new WeakMap();
+const transactionStoreNamesMap = new WeakMap();
+const transformCache = new WeakMap();
+const reverseTransformCache = new WeakMap();
+function promisifyRequest(request) {
+    const promise = new Promise((resolve, reject)=>{
+        const unlisten = ()=>{
+            request.removeEventListener('success', success);
+            request.removeEventListener('error', error);
+        };
+        const success = ()=>{
+            resolve(wrap(request.result));
+            unlisten();
+        };
+        const error = ()=>{
+            reject(request.error);
+            unlisten();
+        };
+        request.addEventListener('success', success);
+        request.addEventListener('error', error);
+    });
+    promise.then((value)=>{
+        // Since cursoring reuses the IDBRequest (*sigh*), we cache it for later retrieval
+        // (see wrapFunction).
+        if (value instanceof IDBCursor) cursorRequestMap.set(value, request);
+    // Catching to avoid "Uncaught Promise exceptions"
+    }).catch(()=>{});
+    // This mapping exists in reverseTransformCache but doesn't doesn't exist in transformCache. This
+    // is because we create many promises from a single IDBRequest.
+    reverseTransformCache.set(promise, request);
+    return promise;
+}
+function cacheDonePromiseForTransaction(tx) {
+    // Early bail if we've already created a done promise for this transaction.
+    if (transactionDoneMap.has(tx)) return;
+    const done = new Promise((resolve, reject)=>{
+        const unlisten = ()=>{
+            tx.removeEventListener('complete', complete);
+            tx.removeEventListener('error', error);
+            tx.removeEventListener('abort', error);
+        };
+        const complete = ()=>{
+            resolve();
+            unlisten();
+        };
+        const error = ()=>{
+            reject(tx.error || new DOMException('AbortError', 'AbortError'));
+            unlisten();
+        };
+        tx.addEventListener('complete', complete);
+        tx.addEventListener('error', error);
+        tx.addEventListener('abort', error);
+    });
+    // Cache it for later retrieval.
+    transactionDoneMap.set(tx, done);
+}
+let idbProxyTraps = {
+    get (target, prop, receiver) {
+        if (target instanceof IDBTransaction) {
+            // Special handling for transaction.done.
+            if (prop === 'done') return transactionDoneMap.get(target);
+            // Polyfill for objectStoreNames because of Edge.
+            if (prop === 'objectStoreNames') return target.objectStoreNames || transactionStoreNamesMap.get(target);
+            // Make tx.store return the only store in the transaction, or undefined if there are many.
+            if (prop === 'store') return receiver.objectStoreNames[1] ? undefined : receiver.objectStore(receiver.objectStoreNames[0]);
+        }
+        // Else transform whatever we get back.
+        return wrap(target[prop]);
+    },
+    set (target, prop, value) {
+        target[prop] = value;
+        return true;
+    },
+    has (target, prop) {
+        if (target instanceof IDBTransaction && (prop === 'done' || prop === 'store')) return true;
+        return prop in target;
+    }
+};
+function replaceTraps(callback) {
+    idbProxyTraps = callback(idbProxyTraps);
+}
+function wrapFunction(func) {
+    // Due to expected object equality (which is enforced by the caching in `wrap`), we
+    // only create one new func per func.
+    // Edge doesn't support objectStoreNames (booo), so we polyfill it here.
+    if (func === IDBDatabase.prototype.transaction && !('objectStoreNames' in IDBTransaction.prototype)) return function(storeNames, ...args) {
+        const tx = func.call(unwrap(this), storeNames, ...args);
+        transactionStoreNamesMap.set(tx, storeNames.sort ? storeNames.sort() : [
+            storeNames
+        ]);
+        return wrap(tx);
+    };
+    // Cursor methods are special, as the behaviour is a little more different to standard IDB. In
+    // IDB, you advance the cursor and wait for a new 'success' on the IDBRequest that gave you the
+    // cursor. It's kinda like a promise that can resolve with many values. That doesn't make sense
+    // with real promises, so each advance methods returns a new promise for the cursor object, or
+    // undefined if the end of the cursor has been reached.
+    if (getCursorAdvanceMethods().includes(func)) return function(...args) {
+        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+        // the original object.
+        func.apply(unwrap(this), args);
+        return wrap(cursorRequestMap.get(this));
+    };
+    return function(...args) {
+        // Calling the original function with the proxy as 'this' causes ILLEGAL INVOCATION, so we use
+        // the original object.
+        return wrap(func.apply(unwrap(this), args));
+    };
+}
+function transformCachableValue(value) {
+    if (typeof value === 'function') return wrapFunction(value);
+    // This doesn't return, it just creates a 'done' promise for the transaction,
+    // which is later returned for transaction.done (see idbObjectHandler).
+    if (value instanceof IDBTransaction) cacheDonePromiseForTransaction(value);
+    if (instanceOfAny(value, getIdbProxyableTypes())) return new Proxy(value, idbProxyTraps);
+    // Return the same value back if we're not going to transform it.
+    return value;
+}
+function wrap(value) {
+    // We sometimes generate multiple promises from a single IDBRequest (eg when cursoring), because
+    // IDB is weird and a single IDBRequest can yield many responses, so these can't be cached.
+    if (value instanceof IDBRequest) return promisifyRequest(value);
+    // If we've already transformed this value before, reuse the transformed value.
+    // This is faster, but it also provides object equality.
+    if (transformCache.has(value)) return transformCache.get(value);
+    const newValue = transformCachableValue(value);
+    // Not all types are transformed.
+    // These may be primitive types, so they can't be WeakMap keys.
+    if (newValue !== value) {
+        transformCache.set(value, newValue);
+        reverseTransformCache.set(newValue, value);
+    }
+    return newValue;
+}
+const unwrap = (value)=>reverseTransformCache.get(value);
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"iC1Dx":[function(require,module,exports,__globalThis) {
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -68338,6 +69140,30 @@ function $da9882e673ac146b$var$ErrorOverlay() {
     return null;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["5j6Kf","a0t4e"], "a0t4e", "parcelRequire6796", {}, null, null, "http://localhost:1234")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"cYOm2":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _app = require("@firebase/app");
+parcelHelpers.exportAll(_app, exports);
+var name = "firebase";
+var version = "10.14.1";
+/**
+ * @license
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ (0, _app.registerVersion)(name, version, 'app');
+
+},{"@firebase/app":"hLmie","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["5j6Kf","a0t4e"], "a0t4e", "parcelRequire6796", {}, null, null, "http://localhost:1234")
 
 //# sourceMappingURL=public.31b563d9.js.map
